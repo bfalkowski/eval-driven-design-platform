@@ -16,6 +16,22 @@ Health endpoints:
 - `/v1/health`, `/v1/ready` (EDD convention)
 - `/health/live`, `/health/ready` (starter-compatible)
 
+## Phase 1 domain API
+
+- `POST/GET/PATCH/DELETE /v1/eval-specs`
+- `POST/GET/PATCH/DELETE /v1/eval-cases`
+- Tenant from bearer token when auth is enabled, or `tenant_id` query/body when disabled
+
+Example (auth disabled):
+
+```bash
+curl -X POST http://localhost:8000/v1/eval-specs \
+  -H 'content-type: application/json' \
+  -d '{"tenant_id":"tenant-a","name":"Support quality","rubric":"Mention empathy."}'
+
+curl 'http://localhost:8000/v1/eval-specs?tenant_id=tenant-a'
+```
+
 ## Local dev
 
 From repo root:

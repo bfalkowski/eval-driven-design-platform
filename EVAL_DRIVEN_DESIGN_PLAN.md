@@ -79,7 +79,7 @@ Tables: `eval_specs`, `eval_cases`, `experiment_runs`, `evaluation_results`, `qu
 - [x] `/v1/health`, `/v1/ready`
 - [x] Streamlit Overview + API health
 - [x] Dockerfiles + compose + `build_images.sh` + `local_e2e.sh`
-- [ ] `git init` + remote (user)
+- [x] `git init` + remote (user)
 
 **Validation:** `./scripts/local_e2e.sh`, `curl /v1/health`, open :8501
 
@@ -114,12 +114,12 @@ make test
 
 ---
 
-### Phase 1 — Core data model
+### Phase 1 — Core data model ✅ (target)
 
-- SQLAlchemy + Alembic + repositories
-- CRUD `/v1/eval-specs`, `/v1/eval-cases`
-- Demo JWT `RequestContext`, tenant-scoped queries
-- pytest CRUD + tenant isolation
+- [x] SQLAlchemy + Alembic + repositories
+- [x] CRUD `/v1/eval-specs`, `/v1/eval-cases`
+- [x] Demo JWT `RequestContext`, tenant-scoped queries
+- [x] pytest CRUD + tenant isolation
 
 **Validation:** create spec → create case → list by tenant
 

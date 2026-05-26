@@ -9,7 +9,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.core.config import get_settings
-from app.storage.postgres import Base
+from app.storage.orm import Base
 
 config = context.config
 

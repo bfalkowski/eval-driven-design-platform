@@ -65,4 +65,5 @@ Implementation is phased in **`EVAL_DRIVEN_DESIGN_PLAN.md`**. Build incrementall
 
 **Phase 0** — monorepo skeleton, health endpoints, console overview, compose stack.  
 **Phase 0.5** — platform spine imported from starter repos (auth, metrics, OTel, Postgres path, Operations console, Helm skeleton).  
-**Phase 1+** — EvalSpec/EvalCase, experiment runs, Langfuse, quality gates (see plan).
+**Phase 1** — EvalSpec/EvalCase CRUD, tenant-scoped repositories, Alembic migration.  
+**Phase 2+** — experiment runs, Langfuse, quality gates (see plan).
