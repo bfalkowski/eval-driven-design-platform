@@ -1,0 +1,39 @@
+image:
+  tag: latest
+  pullPolicy: Always
+
+config:
+  environment: local
+  otelExporter: console
+  otelOtlpEndpoint: ""
+  autoCreateSchema: false
+  authEnabled: true
+
+worker:
+  enabled: true
+
+secrets:
+  create: true
+  databaseUrl: postgresql+asyncpg://app:app@edd-platform-postgres:5432/edd
+  postgresPassword: app
+  authDemoSecret: local-demo-secret
+
+postgresDemo:
+  enabled: true
+
+migrations:
+  enabled: true
+  useHelmHooks: false
+
+ingress:
+  enabled: false
+
+console:
+  enabled: true
+  image:
+    tag: latest
+    pullPolicy: Always
+  config:
+    apiBaseUrl: ""
+  ingress:
+    enabled: false

@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: edd
+      POSTGRES_USER: edd
+      POSTGRES_PASSWORD: edd
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U edd -d edd"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - edd-postgres-data:/var/lib/postgresql/data
+
+  edd-api:
+    image: edd-api:local
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    environment:
+      APP_ENVIRONMENT: local
+      APP_LOG_LEVEL: INFO
+      APP_OTEL_EXPORTER: none
+      APP_STORAGE_BACKEND: postgres
+      APP_DATABASE_URL: postgresql+asyncpg://edd:edd@postgres:5432/edd
+      APP_AUTO_CREATE_SCHEMA: "false"
+      APP_AUTH_ENABLED: "true"
+      APP_AUTH_DEMO_SECRET: local-demo-secret
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  edd-console:
+    image: edd-console:local
+    build:
+      context: ../console
+      dockerfile: Dockerfile
+    environment:
+      EDD_API_BASE_URL: http://edd-api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      edd-api:
+        condition: service_started
+
+  edd-worker:
+    image: edd-worker:local
+    build:
+      context: ../worker
+      dockerfile: Dockerfile
+    environment:
+      APP_ENVIRONMENT: local
+      APP_LOG_LEVEL: INFO
+      APP_OTEL_EXPORTER: none
+      APP_SERVICE_NAME: edd-worker
+    depends_on:
+      edd-api:
+        condition: service_started
+
+volumes:
+  edd-postgres-data:

@@ -1,0 +1,72 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "edd-platform.fullname" . }}-ingress
+  labels:
+    {{- include "edd-platform.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "edd-platform.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.service.targetPort }}
+{{- if .Values.postgresDemo.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "edd-platform.postgresName" . }}-from-service
+  labels:
+    {{- include "edd-platform.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: postgres
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "edd-platform.selectorLabels" . | nindent 14 }}
+        {{- if .Values.worker.enabled }}
+        - podSelector:
+            matchLabels:
+              {{- include "edd-platform.workerSelectorLabels" . | nindent 14 }}
+        {{- end }}
+        {{- if .Values.migrations.enabled }}
+        - podSelector:
+            matchLabels:
+              {{- include "edd-platform.baseSelectorLabels" . | nindent 14 }}
+              app.kubernetes.io/component: migrations
+        {{- end }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.postgresDemo.service.port }}
+{{- end }}
+{{- if .Values.console.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "edd-platform.consoleName" . }}-ingress
+  labels:
+    {{- include "edd-platform.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "edd-platform.consoleSelectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.console.service.targetPort }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"]
+        }
+      },
+      "required": ["repository", "tag", "pullPolicy"]
+    },
+    "nameOverride": {
+      "type": "string"
+    },
+    "fullnameOverride": {
+      "type": "string"
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "automountToken": {
+          "type": "boolean"
+        },
+        "annotations": {
+          "type": "object"
+        }
+      },
+      "required": ["create", "automountToken"]
+    },
+    "podSecurityContext": {
+      "type": "object"
+    },
+    "securityContext": {
+      "type": "object"
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer"]
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "targetPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["type", "port", "targetPort", "annotations"]
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "processRole": {
+          "type": "string",
+          "enum": ["combined", "api", "worker"]
+        },
+        "logLevel": {
+          "type": "string",
+          "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        },
+        "otelEnabled": {
+          "type": "boolean"
+        },
+        "otelExporter": {
+          "type": "string",
+          "enum": ["console", "otlp", "none"]
+        },
+        "otelOtlpEndpoint": {
+          "type": "string"
+        },
+        "workerStaleJobSeconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "storageBackend": {
+          "type": "string",
+          "enum": ["postgres", "memory"]
+        },
+        "autoCreateSchema": {
+          "type": "boolean"
+        },
+        "authEnabled": {
+          "type": "boolean"
+        },
+        "authIssuer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authAudience": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "environment",
+        "processRole",
+        "logLevel",
+        "otelEnabled",
+        "otelExporter",
+        "otelOtlpEndpoint",
+        "workerStaleJobSeconds",
+        "storageBackend",
+        "autoCreateSchema",
+        "authEnabled",
+        "authIssuer",
+        "authAudience"
+      ]
+    },
+    "worker": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "replicaCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "resources": {
+          "type": "object"
+        }
+      },
+      "required": ["enabled", "replicaCount", "command", "resources"]
+    },
+    "secrets": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "databaseUrl": {
+          "type": "string"
+        },
+        "postgresPassword": {
+          "type": "string"
+        },
+        "authDemoSecret": {
+          "type": "string"
+        },
+        "existingSecretName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "create",
+        "databaseUrl",
+        "postgresPassword",
+        "authDemoSecret",
+        "existingSecretName"
+      ]
+    },
+    "postgresDemo": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "image": {
+          "type": "string",
+          "minLength": 1
+        },
+        "database": {
+          "type": "string",
+          "minLength": 1
+        },
+        "username": {
+          "type": "string",
+          "minLength": 1
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          },
+          "required": ["port"]
+        }
+      },
+      "required": ["enabled", "image", "database", "username", "service"]
+    },
+    "migrations": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "useHelmHooks": {
+          "type": "boolean"
+        },
+        "backoffLimit": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["enabled", "useHelmHooks", "backoffLimit"]
+    },
+    "networkPolicy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": ["enabled"]
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "className": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "object"
+        },
+        "host": {
+          "type": "string"
+        },
+        "tls": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "secretName": {
+              "type": "string"
+            }
+          },
+          "required": ["enabled", "secretName"]
+        }
+      },
+      "required": ["enabled", "className", "annotations", "host", "tls"]
+    },
+    "console": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "replicaCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            }
+          },
+          "required": ["repository", "tag", "pullPolicy"]
+        },
+        "service": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["ClusterIP", "NodePort", "LoadBalancer"]
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "targetPort": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          },
+          "required": ["type", "port", "targetPort"]
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "apiBaseUrl": {
+              "type": "string"
+            }
+          },
+          "required": ["apiBaseUrl"]
+        },
+        "podSecurityContext": {
+          "type": "object"
+        },
+        "securityContext": {
+          "type": "object"
+        },
+        "ingress": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "className": {
+              "type": "string"
+            },
+            "annotations": {
+              "type": "object"
+            },
+            "host": {
+              "type": "string"
+            },
+            "tls": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "secretName": {
+                  "type": "string"
+                }
+              },
+              "required": ["enabled", "secretName"]
+            }
+          },
+          "required": ["enabled", "className", "annotations", "host", "tls"]
+        },
+        "resources": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "enabled",
+        "replicaCount",
+        "image",
+        "service",
+        "config",
+        "podSecurityContext",
+        "securityContext",
+        "ingress",
+        "resources"
+      ]
+    },
+    "resources": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "replicaCount",
+    "image",
+    "serviceAccount",
+    "podSecurityContext",
+    "securityContext",
+    "service",
+    "config",
+    "worker",
+    "secrets",
+    "postgresDemo",
+    "migrations",
+    "networkPolicy",
+    "ingress",
+    "console",
+    "resources"
+  ]
+}

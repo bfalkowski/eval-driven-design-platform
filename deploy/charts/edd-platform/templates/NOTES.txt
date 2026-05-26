@@ -1,0 +1,21 @@
+1. Check rollout status:
+
+   kubectl -n {{ .Release.Namespace }} rollout status deployment/{{ include "edd-platform.fullname" . }}
+
+2. Port-forward the service:
+
+   kubectl -n {{ .Release.Namespace }} port-forward service/{{ include "edd-platform.fullname" . }} 8000:{{ .Values.service.port }}
+
+3. Check readiness:
+
+   curl -s http://localhost:8000/health/ready
+
+{{- if .Values.console.enabled }}
+4. Port-forward the console:
+
+   kubectl -n {{ .Release.Namespace }} port-forward service/{{ include "edd-platform.consoleName" . }} 8501:{{ .Values.console.service.port }}
+
+5. Open:
+
+   http://localhost:8501
+{{- end }}

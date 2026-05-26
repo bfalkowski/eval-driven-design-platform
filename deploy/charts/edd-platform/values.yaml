@@ -1,0 +1,142 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/bfalkowski/edd-platform-starter
+  tag: latest
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automountToken: false
+  annotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+  annotations: {}
+
+config:
+  environment: local
+  processRole: combined
+  logLevel: INFO
+  otelEnabled: true
+  otelExporter: console
+  otelOtlpEndpoint: ""
+  workerStaleJobSeconds: 300
+  storageBackend: postgres
+  autoCreateSchema: false
+  authEnabled: false
+  authIssuer: edd-platform
+  authAudience: edd-platform
+
+worker:
+  enabled: false
+  replicaCount: 1
+  command:
+    - python
+    - -m
+    - app.worker
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+secrets:
+  create: false
+  databaseUrl: ""
+  postgresPassword: ""
+  authDemoSecret: ""
+  existingSecretName: ""
+
+postgresDemo:
+  enabled: false
+  image: postgres:16-alpine
+  database: edd
+  username: app
+  service:
+    port: 5432
+
+migrations:
+  enabled: false
+  useHelmHooks: true
+  backoffLimit: 3
+
+networkPolicy:
+  enabled: true
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  host: ""
+  tls:
+    enabled: false
+    secretName: ""
+
+console:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: ghcr.io/bfalkowski/edd-console
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8501
+  config:
+    apiBaseUrl: ""
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    host: ""
+    tls:
+      enabled: false
+      secretName: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

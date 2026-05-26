@@ -1,0 +1,10 @@
+# Optional Langfuse stack for local dev (Phase 4+).
+# Usage: docker compose -f docker-compose.yml -f docker-compose.langfuse.yml up -d
+#
+# Langfuse upstream compose varies by version — replace this stub when wiring Phase 4.
+# Expose UI on host port 3001 to avoid clashing with other local apps on 3000.
+
+services:
+  langfuse-placeholder:
+    image: busybox:1.36
+    command: ["sh", "-c", "echo Langfuse compose stub — add official Langfuse services in Phase 4 && sleep infinity"]

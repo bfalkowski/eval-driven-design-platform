@@ -1,0 +1,49 @@
+{{- if .Values.console.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "edd-platform.consoleName" . }}
+  labels:
+    {{- include "edd-platform.labels" . | nindent 4 }}
+    app.kubernetes.io/component: console
+spec:
+  replicas: {{ .Values.console.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "edd-platform.consoleSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "edd-platform.consoleSelectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "edd-platform.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountToken }}
+      securityContext:
+        {{- toYaml .Values.console.podSecurityContext | nindent 8 }}
+      containers:
+        - name: console
+          image: "{{ .Values.console.image.repository }}:{{ .Values.console.image.tag }}"
+          imagePullPolicy: {{ .Values.console.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.console.securityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.console.service.targetPort }}
+          env:
+            - name: LLM_EVALUATION_API_BASE_URL
+              value: {{ default (include "edd-platform.serviceUrl" .) .Values.console.config.apiBaseUrl | quote }}
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.console.resources | nindent 12 }}
+{{- end }}

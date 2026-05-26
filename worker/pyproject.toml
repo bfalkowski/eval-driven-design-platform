@@ -1,0 +1,18 @@
+[project]
+name = "edd-worker"
+version = "0.1.0"
+description = "Background worker for Eval Driven Design Platform experiment runs."
+requires-python = ">=3.12"
+dependencies = [
+  "pydantic-settings>=2.4.0",
+  "opentelemetry-api>=1.27.0",
+  "opentelemetry-sdk>=1.27.0",
+  "opentelemetry-exporter-otlp-proto-grpc>=1.27.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

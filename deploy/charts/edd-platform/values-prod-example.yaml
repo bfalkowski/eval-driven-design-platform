@@ -1,0 +1,55 @@
+replicaCount: 2
+
+image:
+  tag: replace-with-full-commit-sha
+  pullPolicy: IfNotPresent
+
+config:
+  environment: production
+  otelExporter: otlp
+  otelOtlpEndpoint: http://otel-collector:4317
+  autoCreateSchema: false
+  authEnabled: true
+
+worker:
+  enabled: true
+  replicaCount: 2
+
+secrets:
+  create: false
+  existingSecretName: edd-platform-secrets
+
+postgresDemo:
+  enabled: false
+
+migrations:
+  enabled: true
+
+ingress:
+  enabled: true
+  className: nginx
+  host: llm-evaluation.example.com
+  tls:
+    enabled: true
+    secretName: edd-platform-tls
+
+console:
+  enabled: true
+  image:
+    tag: replace-with-full-commit-sha
+    pullPolicy: IfNotPresent
+  ingress:
+    enabled: true
+    className: nginx
+    host: edd-console.example.com
+    tls:
+      enabled: true
+      secretName: edd-console-tls
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
