@@ -7,4 +7,7 @@ st.set_page_config(
 )
 
 st.title("Eval Driven Design Platform")
-st.caption("Control plane for eval-driven AI development. Use the sidebar to open Overview.")
+st.caption(
+    "Control plane for eval-driven AI development. "
+    "Use the sidebar to move through specs, cases, runs, and results."
+)

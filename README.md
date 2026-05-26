@@ -67,4 +67,5 @@ Implementation is phased in **`EVAL_DRIVEN_DESIGN_PLAN.md`**. Build incrementall
 **Phase 0.5** — platform spine imported from starter repos (auth, metrics, OTel, Postgres path, Operations console, Helm skeleton).  
 **Phase 1** — EvalSpec/EvalCase CRUD, tenant-scoped repositories, Alembic migration.  
 **Phase 2** — Experiment runs, deterministic mock evaluation, run summaries, seed script.  
-**Phase 3+** — console MVP, Langfuse, quality gates (see plan).
+**Phase 3** — Streamlit console MVP for specs, cases, runs, and results.  
+**Phase 4+** — Langfuse, quality gates (see plan).

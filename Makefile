@@ -2,6 +2,7 @@
 
 test:
 	cd api && uv run pytest -q
+	cd console && uv run pytest -q
 
 build:
 	./scripts/build_images.sh

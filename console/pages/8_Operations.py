@@ -3,16 +3,15 @@ import streamlit as st
 
 from components.metrics import parse_prometheus_text, sum_metric
 from components.platform_sidebar import render_platform_sidebar
+from components.ui import render_page_header, show_api_error
 
-st.header("Operations")
-
-client, auth_mode = render_platform_sidebar()
-st.caption(f"{client.base_url} · {auth_mode}")
+client, auth_mode, _tenant_id = render_platform_sidebar()
+render_page_header("Operations", client_base_url=client.base_url, auth_mode=auth_mode)
 
 try:
     samples = parse_prometheus_text(client.metrics())
 except RuntimeError as exc:
-    st.error(str(exc))
+    show_api_error(exc)
     st.stop()
 
 total_requests = sum_metric(samples, "http_requests_total")

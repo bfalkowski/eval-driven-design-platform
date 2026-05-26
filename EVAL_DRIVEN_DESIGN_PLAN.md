@@ -136,11 +136,18 @@ make test
 
 ---
 
-### Phase 3 — Console MVP
+### Phase 3 — Console MVP ✅ (target)
 
-Pages: Overview, Eval Specs, Eval Cases, Runs, Results Explorer, Quality Gates (placeholder), Langfuse (placeholder).
+- [x] Pages: Overview, Eval Specs, Eval Cases, Runs, Results Explorer, Quality Gates (placeholder), Langfuse (placeholder)
+- [x] Full EDD loop in UI without curl
 
-**Validation:** full loop in UI without curl
+**Validation:**
+
+```bash
+./scripts/local_e2e.sh
+# open console → create spec → case → run → view results on Results Explorer
+make test
+```
 
 ---
 
