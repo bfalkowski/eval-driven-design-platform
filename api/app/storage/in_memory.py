@@ -6,13 +6,22 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from app.core.errors import NotFoundError
-from app.domain.models import EvalCase, EvalSpec, JudgeConfig
+from app.domain.models import (
+    EvalCase,
+    EvalSpec,
+    EvaluationResult,
+    ExperimentRun,
+    ExperimentRunStatus,
+    JudgeConfig,
+)
 
 
 class InMemoryEddRepository:
     def __init__(self) -> None:
         self._specs: dict[UUID, EvalSpec] = {}
         self._cases: dict[UUID, EvalCase] = {}
+        self._runs: dict[UUID, ExperimentRun] = {}
+        self._results: dict[UUID, EvaluationResult] = {}
         self._lock = asyncio.Lock()
 
     async def health_check(self) -> bool:
@@ -168,3 +177,109 @@ class InMemoryEddRepository:
             if case is None or case.tenant_id != tenant_id:
                 raise NotFoundError()
             del self._cases[eval_case_id]
+
+    async def create_experiment_run(
+        self,
+        *,
+        tenant_id: str,
+        eval_spec_id: UUID,
+        candidate_version: str,
+        status: str,
+        result_count: int,
+        completed_at: datetime | None,
+    ) -> ExperimentRun:
+        now = datetime.now(UTC)
+        run = ExperimentRun(
+            experiment_run_id=uuid4(),
+            tenant_id=tenant_id,
+            eval_spec_id=eval_spec_id,
+            candidate_version=candidate_version,
+            status=ExperimentRunStatus(status),
+            result_count=result_count,
+            created_at=now,
+            updated_at=now,
+            completed_at=completed_at,
+        )
+        async with self._lock:
+            self._runs[run.experiment_run_id] = run
+        return run
+
+    async def list_experiment_runs(
+        self,
+        *,
+        tenant_id: str,
+        eval_spec_id: UUID | None = None,
+        limit: int = 100,
+    ) -> list[ExperimentRun]:
+        async with self._lock:
+            rows = [run for run in self._runs.values() if run.tenant_id == tenant_id]
+        if eval_spec_id is not None:
+            rows = [run for run in rows if run.eval_spec_id == eval_spec_id]
+        rows.sort(key=lambda run: run.created_at, reverse=True)
+        return rows[:limit]
+
+    async def get_experiment_run(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID,
+    ) -> ExperimentRun:
+        async with self._lock:
+            run = self._runs.get(experiment_run_id)
+        if run is None or run.tenant_id != tenant_id:
+            raise NotFoundError()
+        return run
+
+    async def create_evaluation_result(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID,
+        eval_case_id: UUID,
+        candidate_version: str,
+        score: float,
+        passed: bool,
+        scaffold_output: dict[str, Any],
+        judge_breakdown: dict[str, Any],
+    ) -> EvaluationResult:
+        result = EvaluationResult(
+            evaluation_result_id=uuid4(),
+            tenant_id=tenant_id,
+            experiment_run_id=experiment_run_id,
+            eval_case_id=eval_case_id,
+            candidate_version=candidate_version,
+            score=score,
+            passed=passed,
+            scaffold_output=scaffold_output,
+            judge_breakdown=judge_breakdown,
+            created_at=datetime.now(UTC),
+        )
+        async with self._lock:
+            self._results[result.evaluation_result_id] = result
+        return result
+
+    async def list_evaluation_results(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID | None = None,
+        limit: int = 100,
+    ) -> list[EvaluationResult]:
+        async with self._lock:
+            rows = [result for result in self._results.values() if result.tenant_id == tenant_id]
+        if experiment_run_id is not None:
+            rows = [result for result in rows if result.experiment_run_id == experiment_run_id]
+        rows.sort(key=lambda result: result.created_at, reverse=True)
+        return rows[:limit]
+
+    async def get_evaluation_result(
+        self,
+        *,
+        tenant_id: str,
+        evaluation_result_id: UUID,
+    ) -> EvaluationResult:
+        async with self._lock:
+            result = self._results.get(evaluation_result_id)
+        if result is None or result.tenant_id != tenant_id:
+            raise NotFoundError()
+        return result

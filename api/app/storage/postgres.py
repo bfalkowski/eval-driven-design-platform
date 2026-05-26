@@ -9,8 +9,15 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
 from app.core.errors import NotFoundError
-from app.domain.models import EvalCase, EvalSpec, JudgeConfig
-from app.storage.orm import Base, EvalCaseRow, EvalSpecRow
+from app.domain.models import (
+    EvalCase,
+    EvalSpec,
+    EvaluationResult,
+    ExperimentRun,
+    ExperimentRunStatus,
+    JudgeConfig,
+)
+from app.storage.orm import Base, EvalCaseRow, EvalSpecRow, EvaluationResultRow, ExperimentRunRow
 
 
 class PostgresEddRepository:
@@ -224,6 +231,128 @@ class PostgresEddRepository:
             await session.delete(row)
             await session.commit()
 
+    async def create_experiment_run(
+        self,
+        *,
+        tenant_id: str,
+        eval_spec_id: UUID,
+        candidate_version: str,
+        status: str,
+        result_count: int,
+        completed_at: datetime | None,
+    ) -> ExperimentRun:
+        now = datetime.now(UTC)
+        row = ExperimentRunRow(
+            experiment_run_id=uuid4(),
+            tenant_id=tenant_id,
+            eval_spec_id=eval_spec_id,
+            candidate_version=candidate_version,
+            status=status,
+            result_count=result_count,
+            created_at=now,
+            updated_at=now,
+            completed_at=completed_at,
+        )
+        async with self._sessionmaker() as session:
+            session.add(row)
+            await session.commit()
+            await session.refresh(row)
+        return _run_to_domain(row)
+
+    async def list_experiment_runs(
+        self,
+        *,
+        tenant_id: str,
+        eval_spec_id: UUID | None = None,
+        limit: int = 100,
+    ) -> list[ExperimentRun]:
+        statement = select(ExperimentRunRow).where(ExperimentRunRow.tenant_id == tenant_id)
+        if eval_spec_id is not None:
+            statement = statement.where(ExperimentRunRow.eval_spec_id == eval_spec_id)
+        statement = statement.order_by(ExperimentRunRow.created_at.desc()).limit(limit)
+        async with self._sessionmaker() as session:
+            rows = (await session.scalars(statement)).all()
+        return [_run_to_domain(row) for row in rows]
+
+    async def get_experiment_run(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID,
+    ) -> ExperimentRun:
+        statement = select(ExperimentRunRow).where(
+            ExperimentRunRow.experiment_run_id == experiment_run_id,
+            ExperimentRunRow.tenant_id == tenant_id,
+        )
+        async with self._sessionmaker() as session:
+            row = await session.scalar(statement)
+        if row is None:
+            raise NotFoundError()
+        return _run_to_domain(row)
+
+    async def create_evaluation_result(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID,
+        eval_case_id: UUID,
+        candidate_version: str,
+        score: float,
+        passed: bool,
+        scaffold_output: dict[str, Any],
+        judge_breakdown: dict[str, Any],
+    ) -> EvaluationResult:
+        row = EvaluationResultRow(
+            evaluation_result_id=uuid4(),
+            tenant_id=tenant_id,
+            experiment_run_id=experiment_run_id,
+            eval_case_id=eval_case_id,
+            candidate_version=candidate_version,
+            score=score,
+            passed=passed,
+            scaffold_output=scaffold_output,
+            judge_breakdown=judge_breakdown,
+            created_at=datetime.now(UTC),
+        )
+        async with self._sessionmaker() as session:
+            session.add(row)
+            await session.commit()
+            await session.refresh(row)
+        return _result_to_domain(row)
+
+    async def list_evaluation_results(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID | None = None,
+        limit: int = 100,
+    ) -> list[EvaluationResult]:
+        statement = select(EvaluationResultRow).where(EvaluationResultRow.tenant_id == tenant_id)
+        if experiment_run_id is not None:
+            statement = statement.where(
+                EvaluationResultRow.experiment_run_id == experiment_run_id
+            )
+        statement = statement.order_by(EvaluationResultRow.created_at.desc()).limit(limit)
+        async with self._sessionmaker() as session:
+            rows = (await session.scalars(statement)).all()
+        return [_result_to_domain(row) for row in rows]
+
+    async def get_evaluation_result(
+        self,
+        *,
+        tenant_id: str,
+        evaluation_result_id: UUID,
+    ) -> EvaluationResult:
+        statement = select(EvaluationResultRow).where(
+            EvaluationResultRow.evaluation_result_id == evaluation_result_id,
+            EvaluationResultRow.tenant_id == tenant_id,
+        )
+        async with self._sessionmaker() as session:
+            row = await session.scalar(statement)
+        if row is None:
+            raise NotFoundError()
+        return _result_to_domain(row)
+
 
 def _spec_to_domain(row: EvalSpecRow) -> EvalSpec:
     return EvalSpec(
@@ -252,4 +381,33 @@ def _case_to_domain(row: EvalCaseRow) -> EvalCase:
         langfuse_trace_id=row.langfuse_trace_id,
         created_at=row.created_at,
         updated_at=row.updated_at,
+    )
+
+
+def _run_to_domain(row: ExperimentRunRow) -> ExperimentRun:
+    return ExperimentRun(
+        experiment_run_id=row.experiment_run_id,
+        tenant_id=row.tenant_id,
+        eval_spec_id=row.eval_spec_id,
+        candidate_version=row.candidate_version,
+        status=ExperimentRunStatus(row.status),
+        result_count=row.result_count,
+        created_at=row.created_at,
+        updated_at=row.updated_at,
+        completed_at=row.completed_at,
+    )
+
+
+def _result_to_domain(row: EvaluationResultRow) -> EvaluationResult:
+    return EvaluationResult(
+        evaluation_result_id=row.evaluation_result_id,
+        tenant_id=row.tenant_id,
+        experiment_run_id=row.experiment_run_id,
+        eval_case_id=row.eval_case_id,
+        candidate_version=row.candidate_version,
+        score=row.score,
+        passed=row.passed,
+        scaffold_output=row.scaffold_output,
+        judge_breakdown=row.judge_breakdown,
+        created_at=row.created_at,
     )

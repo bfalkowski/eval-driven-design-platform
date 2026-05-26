@@ -125,12 +125,12 @@ make test
 
 ---
 
-### Phase 2 — Experiment runs + mock evaluation
+### Phase 2 — Experiment runs + mock evaluation ✅ (target)
 
-- `ExperimentRun`, `EvaluationResult` APIs
-- `scaffold_runner` + mock evaluator (deterministic)
-- Run summary: pass rate, avg score
-- `seed_demo_data.py`
+- [x] `ExperimentRun`, `EvaluationResult` APIs
+- [x] `scaffold_runner` + mock evaluator (deterministic)
+- [x] Run summary: pass rate, avg score
+- [x] `seed_demo_data.py`
 
 **Validation:** POST experiment-runs → GET summary → deterministic scores
 

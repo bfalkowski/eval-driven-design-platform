@@ -18,7 +18,7 @@ def main() -> None:
         settings.otel_exporter,
         settings.otel_otlp_endpoint,
     )
-    logger.info("edd-worker started (Phase 0.5 shell — experiment jobs land in Phase 2)")
+    logger.info("edd-worker started (Phase 2 — experiment execution runs in API for now)")
 
     stop = False
 

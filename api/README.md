@@ -32,6 +32,19 @@ curl -X POST http://localhost:8000/v1/eval-specs \
 curl 'http://localhost:8000/v1/eval-specs?tenant_id=tenant-a'
 ```
 
+## Phase 2 experiment runs
+
+- `POST /v1/experiment-runs` — run mock scaffold + judge for one or more cases
+- `GET /v1/experiment-runs/{id}/summary` — pass rate and average score
+- `GET /v1/evaluation-results?experiment_run_id=...` — per-case scores
+
+Seed demo data against a running API:
+
+```bash
+./scripts/local_e2e.sh
+uv run --directory api python ../scripts/seed_demo_data.py --tenant-id tenant-a
+```
+
 ## Local dev
 
 From repo root:

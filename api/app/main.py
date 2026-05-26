@@ -12,6 +12,8 @@ from starlette.responses import Response
 
 from app.api.eval_cases import router as eval_cases_router
 from app.api.eval_specs import router as eval_specs_router
+from app.api.evaluation_results import router as evaluation_results_router
+from app.api.experiment_runs import router as experiment_runs_router
 from app.api.health import legacy_router as legacy_health_router
 from app.api.health import router as health_router
 from app.api.metrics import router as metrics_router
@@ -91,6 +93,8 @@ def create_app() -> FastAPI:
     app.include_router(metrics_router)
     app.include_router(eval_specs_router)
     app.include_router(eval_cases_router)
+    app.include_router(experiment_runs_router)
+    app.include_router(evaluation_results_router)
     configure_tracing(
         app,
         settings.service_name,

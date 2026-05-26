@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import StrEnum
 from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field
+
+
+class ExperimentRunStatus(StrEnum):
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 
 class JudgeConfig(BaseModel):
@@ -91,4 +97,71 @@ class EvalCaseResponse(EvalCase):
 
 class EvalCaseListResponse(BaseModel):
     eval_cases: list[EvalCase]
+    request_id: str
+
+
+class ExperimentRun(BaseModel):
+    experiment_run_id: UUID
+    tenant_id: str
+    eval_spec_id: UUID
+    candidate_version: str
+    status: ExperimentRunStatus
+    result_count: int
+    created_at: datetime
+    updated_at: datetime
+    completed_at: datetime | None = None
+
+
+class CreateExperimentRunRequest(BaseModel):
+    tenant_id: str | None = Field(default=None, min_length=1, max_length=128)
+    eval_spec_id: UUID
+    candidate_version: str = Field(min_length=1, max_length=128)
+    eval_case_ids: list[UUID] | None = None
+
+
+class ExperimentRunResponse(ExperimentRun):
+    request_id: str
+
+
+class ExperimentRunListResponse(BaseModel):
+    experiment_runs: list[ExperimentRun]
+    request_id: str
+
+
+class ExperimentRunSummary(BaseModel):
+    experiment_run_id: UUID
+    tenant_id: str
+    eval_spec_id: UUID
+    candidate_version: str
+    status: ExperimentRunStatus
+    result_count: int
+    passed_count: int
+    failed_count: int
+    pass_rate: float
+    average_score: float
+
+
+class ExperimentRunSummaryResponse(ExperimentRunSummary):
+    request_id: str
+
+
+class EvaluationResult(BaseModel):
+    evaluation_result_id: UUID
+    tenant_id: str
+    experiment_run_id: UUID
+    eval_case_id: UUID
+    candidate_version: str
+    score: float = Field(ge=0, le=100)
+    passed: bool
+    scaffold_output: dict[str, Any]
+    judge_breakdown: dict[str, Any]
+    created_at: datetime
+
+
+class EvaluationResultResponse(EvaluationResult):
+    request_id: str
+
+
+class EvaluationResultListResponse(BaseModel):
+    evaluation_results: list[EvaluationResult]
     request_id: str

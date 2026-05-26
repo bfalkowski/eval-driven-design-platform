@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Protocol
 from uuid import UUID
 
-from app.domain.models import EvalCase, EvalSpec, JudgeConfig
+from app.domain.models import EvalCase, EvalSpec, EvaluationResult, ExperimentRun, JudgeConfig
 
 
 class EddRepository(Protocol):
@@ -68,3 +69,57 @@ class EddRepository(Protocol):
     ) -> EvalCase: ...
 
     async def delete_eval_case(self, *, tenant_id: str, eval_case_id: UUID) -> None: ...
+
+    async def create_experiment_run(
+        self,
+        *,
+        tenant_id: str,
+        eval_spec_id: UUID,
+        candidate_version: str,
+        status: str,
+        result_count: int,
+        completed_at: datetime | None,
+    ) -> ExperimentRun: ...
+
+    async def list_experiment_runs(
+        self,
+        *,
+        tenant_id: str,
+        eval_spec_id: UUID | None = None,
+        limit: int = 100,
+    ) -> list[ExperimentRun]: ...
+
+    async def get_experiment_run(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID,
+    ) -> ExperimentRun: ...
+
+    async def create_evaluation_result(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID,
+        eval_case_id: UUID,
+        candidate_version: str,
+        score: float,
+        passed: bool,
+        scaffold_output: dict[str, Any],
+        judge_breakdown: dict[str, Any],
+    ) -> EvaluationResult: ...
+
+    async def list_evaluation_results(
+        self,
+        *,
+        tenant_id: str,
+        experiment_run_id: UUID | None = None,
+        limit: int = 100,
+    ) -> list[EvaluationResult]: ...
+
+    async def get_evaluation_result(
+        self,
+        *,
+        tenant_id: str,
+        evaluation_result_id: UUID,
+    ) -> EvaluationResult: ...
