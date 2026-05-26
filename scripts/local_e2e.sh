@@ -3,6 +3,7 @@
 #
 #   ./scripts/local_e2e.sh              # API + console on host (memory backend)
 #   ./scripts/local_e2e.sh --postgres   # docker Postgres + host API + migrations
+#   ./scripts/local_e2e.sh --postgres --langfuse  # above + Langfuse overlay on :3001
 #   ./scripts/local_e2e.sh --compose    # full stack via docker compose
 #   ./scripts/local_e2e.sh --no-smoke   # start only
 #   ./scripts/local_e2e.sh --stop
@@ -27,6 +28,7 @@ BASE_URL="http://127.0.0.1:${PORT}"
 CONSOLE_URL="http://127.0.0.1:${CONSOLE_PORT}"
 
 USE_POSTGRES=false
+USE_LANGFUSE=false
 RUN_SMOKE=true
 START_CONSOLE=true
 MODE="host"
@@ -102,6 +104,31 @@ start_postgres_compose() {
   wait_for_postgres
 }
 
+start_langfuse_compose() {
+  cd "${REPO_ROOT}/deploy"
+  echo "Starting Langfuse overlay (UI on http://localhost:3001)..."
+  docker compose -f docker-compose.yml -f docker-compose.langfuse.yml up -d \
+    langfuse-postgres langfuse-redis langfuse-clickhouse langfuse-minio \
+    langfuse-web langfuse-worker
+  wait_for_langfuse
+  if docker exec deploy-langfuse-redis-1 redis-cli -a myredissecret FLUSHALL >/dev/null 2>&1; then
+    echo "Langfuse Redis cache cleared."
+  fi
+}
+
+wait_for_langfuse() {
+  local attempts=60
+  local i
+  for ((i = 1; i <= attempts; i++)); do
+    if curl -sf http://127.0.0.1:3001/api/public/health >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 2
+  done
+  echo "Langfuse did not become ready at http://localhost:3001" >&2
+  return 1
+}
+
 run_migrations() {
   cd "${REPO_ROOT}/api"
   APP_DATABASE_URL="${DATABASE_URL}" uv run alembic upgrade head
@@ -160,6 +187,15 @@ start_api() {
   else
     api_env+=("APP_STORAGE_BACKEND=memory")
   fi
+  if [[ "${USE_LANGFUSE}" == "true" ]]; then
+    api_env+=(
+      "APP_LANGFUSE_ENABLED=true"
+      "APP_LANGFUSE_HOST=http://127.0.0.1:3001"
+      "APP_LANGFUSE_PUBLIC_KEY=pk-lf-local-demo"
+      "APP_LANGFUSE_SECRET_KEY=sk-lf-local-demo"
+      "APP_LANGFUSE_PROJECT_NAME=local-demo"
+    )
+  fi
   echo "Starting API on ${BASE_URL} (${storage_backend})"
   env "${api_env[@]}" \
     nohup uv run uvicorn app.main:app --host 127.0.0.1 --port "${PORT}" >>"${API_LOG}" 2>&1 &
@@ -208,6 +244,11 @@ print_urls() {
   else
     echo "Storage: in-memory"
   fi
+  if [[ "${USE_LANGFUSE}" == "true" ]]; then
+    echo "Langfuse: http://localhost:3001 (admin@local.dev / local-demo-password)"
+  else
+    echo "Langfuse: disabled (add --langfuse to enable)"
+  fi
   echo "Stop: ./scripts/local_e2e.sh --stop"
 }
 
@@ -215,6 +256,7 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --compose) MODE="compose"; shift ;;
     --postgres) USE_POSTGRES=true; shift ;;
+    --langfuse) USE_LANGFUSE=true; shift ;;
     --no-smoke) RUN_SMOKE=false; shift ;;
     --no-console) START_CONSOLE=false; shift ;;
     --stop) ACTION="stop"; shift ;;
@@ -248,6 +290,10 @@ if [[ "${USE_POSTGRES}" == "true" ]]; then
   run_migrations
 fi
 
+if [[ "${USE_LANGFUSE}" == "true" ]]; then
+  start_langfuse_compose
+fi
+
 start_api
 token="$(create_demo_token)"
 printf '%s\n' "${token}" >"${TOKEN_FILE}"
@@ -258,6 +304,11 @@ fi
 
 if [[ "${RUN_SMOKE}" == "true" ]]; then
   run_smoke_test
+  if [[ "${USE_LANGFUSE}" == "true" ]]; then
+    echo "=== langfuse health ==="
+    curl -sf "${BASE_URL}/v1/integrations/langfuse/health"
+    echo
+  fi
   echo "Smoke test passed."
 fi
 

@@ -151,12 +151,21 @@ make test
 
 ---
 
-### Phase 4 — Langfuse adapter
+### Phase 4 — Langfuse adapter ✅ (target)
 
-- `LangfuseClientAdapter` only in `integrations/`
-- `LANGFUSE_ENABLED` — app works when false
-- `/v1/integrations/langfuse/health`
-- `docker-compose.langfuse.yml` (real stack)
+- [x] `LangfuseClientAdapter` only in `integrations/`
+- [x] `LANGFUSE_ENABLED` — app works when false
+- [x] `/v1/integrations/langfuse/health`
+- [x] `docker-compose.langfuse.yml` (real stack)
+
+**Validation:**
+
+```bash
+curl -sf http://127.0.0.1:8000/v1/integrations/langfuse/health
+# optional overlay:
+cd deploy && docker compose -f docker-compose.yml -f docker-compose.langfuse.yml up -d
+make test
+```
 
 ---
 

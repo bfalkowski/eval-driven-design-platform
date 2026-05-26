@@ -10,6 +10,8 @@ RUN groupadd --gid 10001 app \
 
 COPY --chown=app:app pyproject.toml README.md ./
 COPY --chown=app:app app ./app
+COPY --chown=app:app migrations ./migrations
+COPY --chown=app:app alembic.ini ./alembic.ini
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .

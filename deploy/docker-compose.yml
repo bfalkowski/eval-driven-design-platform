@@ -15,8 +15,23 @@ services:
     volumes:
       - edd-postgres-data:/var/lib/postgresql/data
 
+  edd-migrate:
+    image: edd-api:local
+    pull_policy: build
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    environment:
+      APP_DATABASE_URL: postgresql+asyncpg://edd:edd@postgres:5432/edd
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   edd-api:
     image: edd-api:local
+    pull_policy: build
     build:
       context: ../api
       dockerfile: Dockerfile
@@ -32,11 +47,12 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      postgres:
-        condition: service_healthy
+      edd-migrate:
+        condition: service_completed_successfully
 
   edd-console:
     image: edd-console:local
+    pull_policy: build
     build:
       context: ../console
       dockerfile: Dockerfile
@@ -50,6 +66,7 @@ services:
 
   edd-worker:
     image: edd-worker:local
+    pull_policy: build
     build:
       context: ../worker
       dockerfile: Dockerfile

@@ -66,11 +66,21 @@ try:
             )
 
     st.markdown("## Integrations")
+    langfuse = client.get_langfuse_health()
+    langfuse_status = langfuse.get("status", "unknown")
+    langfuse_pills = {
+        "healthy": ("Connected", "green"),
+        "disabled": ("Disabled", "blue"),
+        "misconfigured": ("Misconfigured", "yellow"),
+        "degraded": ("Degraded", "yellow"),
+        "unreachable": ("Unreachable", "red"),
+    }
+    langfuse_label, langfuse_pill = langfuse_pills.get(langfuse_status, ("Unknown", "blue"))
     integration_card(
         "Langfuse",
-        "Trace inspection and score push arrive in Phase 4.",
-        "Not connected",
-        "yellow",
+        langfuse.get("message", "Langfuse integration status unavailable."),
+        langfuse_label,
+        langfuse_pill,
     )
 except RuntimeError as exc:
     show_api_error(exc)

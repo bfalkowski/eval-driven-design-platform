@@ -26,22 +26,30 @@ scripts/   local_e2e.sh, build_images.sh
 docs/      architecture and integration notes
 ```
 
-## Quick start (Phase 0)
+## Quick start
 
 ```bash
 cd eval-driven-design-platform
 cp .env.example .env
 
-# Host processes (fastest)
-./scripts/local_e2e.sh
+# Recommended: Postgres in Docker, API + console on host
+./scripts/local_e2e.sh --postgres
 
-# Or full Docker stack
-./scripts/local_e2e.sh --compose
+# With Langfuse overlay (UI on http://localhost:3001)
+./scripts/local_e2e.sh --postgres --langfuse
 ```
 
-- Console: http://localhost:8501  
+- Console: http://localhost:8501 — paste the **Bearer token** printed by the script  
 - API: http://localhost:8000/docs  
-- Health: http://localhost:8000/v1/health  
+- Langfuse (with `--langfuse`): http://localhost:3001 — `admin@local.dev` / `local-demo-password`  
+
+Without `--langfuse`, the console correctly shows Langfuse as **Disabled** — integration is optional.
+
+Full Docker compose (heavier; needs stable Colima):
+
+```bash
+./scripts/compose_up_langfuse.sh
+```
 
 Stop:
 
@@ -68,4 +76,5 @@ Implementation is phased in **`EVAL_DRIVEN_DESIGN_PLAN.md`**. Build incrementall
 **Phase 1** — EvalSpec/EvalCase CRUD, tenant-scoped repositories, Alembic migration.  
 **Phase 2** — Experiment runs, deterministic mock evaluation, run summaries, seed script.  
 **Phase 3** — Streamlit console MVP for specs, cases, runs, and results.  
-**Phase 4+** — Langfuse, quality gates (see plan).
+**Phase 4** — Optional Langfuse adapter, health endpoint, local compose overlay.  
+**Phase 5+** — score push, trace import, quality gates (see plan).

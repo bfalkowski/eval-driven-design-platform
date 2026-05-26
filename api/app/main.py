@@ -16,12 +16,14 @@ from app.api.evaluation_results import router as evaluation_results_router
 from app.api.experiment_runs import router as experiment_runs_router
 from app.api.health import legacy_router as legacy_health_router
 from app.api.health import router as health_router
+from app.api.langfuse_integrations import router as langfuse_integrations_router
 from app.api.metrics import router as metrics_router
 from app.core.config import get_settings
 from app.core.errors import AppError, app_error_handler, unhandled_error_handler
 from app.core.logging import configure_logging, new_request_id, request_id_var
 from app.core.metrics import record_http_request
 from app.core.tracing import configure_tracing
+from app.integrations.langfuse_client import LangfuseClientAdapter
 from app.storage.factory import build_repository
 
 logger = logging.getLogger(__name__)
@@ -61,6 +63,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     configure_logging(settings.log_level)
     repository = await build_repository(settings)
     app.state.repository = repository
+    app.state.langfuse_adapter = LangfuseClientAdapter(settings)
     logger.info("service started", extra={"environment": settings.environment})
     try:
         yield
@@ -95,6 +98,7 @@ def create_app() -> FastAPI:
     app.include_router(eval_cases_router)
     app.include_router(experiment_runs_router)
     app.include_router(evaluation_results_router)
+    app.include_router(langfuse_integrations_router)
     configure_tracing(
         app,
         settings.service_name,

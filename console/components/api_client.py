@@ -149,6 +149,9 @@ class ServiceClient:
             params["experiment_run_id"] = experiment_run_id
         return self._request("GET", "/v1/evaluation-results", params=params)
 
+    def get_langfuse_health(self) -> dict[str, Any]:
+        return self._request("GET", "/v1/integrations/langfuse/health")
+
     def _tenant_params(self, tenant_id: str | None) -> dict[str, str]:
         if self._bearer_token or tenant_id is None:
             return {}

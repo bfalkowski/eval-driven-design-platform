@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     auth_demo_secret: str = "local-demo-secret"
     langfuse_enabled: bool = False
     langfuse_host: str = "http://localhost:3001"
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+    langfuse_project_name: str = "local-demo"
 
 
 def get_settings() -> Settings:

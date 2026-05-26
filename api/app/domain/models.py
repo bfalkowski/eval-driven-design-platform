@@ -165,3 +165,16 @@ class EvaluationResultResponse(EvaluationResult):
 class EvaluationResultListResponse(BaseModel):
     evaluation_results: list[EvaluationResult]
     request_id: str
+
+
+class LangfuseHealthResponse(BaseModel):
+    enabled: bool
+    configured: bool
+    status: str
+    host: str
+    reachable: bool
+    authenticated: bool | None = None
+    project_count: int | None = None
+    project_name: str | None = None
+    message: str
+    request_id: str
