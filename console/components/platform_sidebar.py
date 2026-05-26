@@ -3,9 +3,13 @@ from __future__ import annotations
 import streamlit as st
 
 from components.api_client import ServiceClient, get_api_base_url
+from components.layout import load_css, sidebar_brand
 
 
 def render_platform_sidebar() -> tuple[ServiceClient, str, str | None]:
+    load_css()
+    sidebar_brand()
+    st.sidebar.markdown("---")
     api_base_url = st.sidebar.text_input("API base URL", value=get_api_base_url())
     bearer_token = st.sidebar.text_input("Bearer token", value="", type="password")
     tenant_id: str | None = None

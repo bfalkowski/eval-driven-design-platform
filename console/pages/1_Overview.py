@@ -1,24 +1,14 @@
 import streamlit as st
 
+from components.layout import integration_card, metric_card, run_card, workflow_loop
 from components.platform_sidebar import render_platform_sidebar
-from components.ui import render_page_header, show_api_error
+from components.ui import render_overview_header, show_api_error
 
 client, auth_mode, tenant_id = render_platform_sidebar()
-render_page_header("Overview", client_base_url=client.base_url, auth_mode=auth_mode)
+render_overview_header(client_base_url=client.base_url, auth_mode=auth_mode)
+workflow_loop()
 
-st.markdown(
-    """
-    **Eval Driven Design loop**
-
-    1. **Observe** — capture issues from traces and telemetry  
-    2. **Create case** — turn observations into reusable eval cases  
-    3. **Run candidates** — prompts/models/workflows with deterministic scaffold  
-    4. **Evaluate** — score against EvalSpec and rubric  
-    5. **Decide** — compare runs and enforce quality gates  
-    """
-)
-
-health_col, ready_col, specs_col, cases_col, runs_col = st.columns(5)
+metric_cols = st.columns(4)
 try:
     health = client.health()
     ready = client.ready()
@@ -26,25 +16,61 @@ try:
     cases = client.list_eval_cases(tenant_id=tenant_id)
     runs = client.list_experiment_runs(tenant_id=tenant_id)
 
-    health_col.metric("API health", health.get("status", "unknown"))
-    ready_col.metric("API ready", ready.get("status", "unknown"))
-    specs_col.metric("Eval specs", len(specs.get("eval_specs", [])))
-    cases_col.metric("Eval cases", len(cases.get("eval_cases", [])))
-    runs_col.metric("Experiment runs", len(runs.get("experiment_runs", [])))
+    spec_count = len(specs.get("eval_specs", []))
+    case_count = len(cases.get("eval_cases", []))
+    run_list = runs.get("experiment_runs", [])
 
-    latest_run = runs.get("experiment_runs", [{}])[0] if runs.get("experiment_runs") else None
-    if latest_run:
-        summary = client.get_experiment_run_summary(
+    api_status = "Healthy" if health.get("status") == "ok" else "Unknown"
+
+    latest_pass_rate = "-"
+    latest_candidate = "No runs yet"
+    if run_list:
+        latest_summary = client.get_experiment_run_summary(
             tenant_id=tenant_id,
-            experiment_run_id=latest_run["experiment_run_id"],
+            experiment_run_id=run_list[0]["experiment_run_id"],
         )
-        st.subheader("Latest run summary")
-        summary_cols = st.columns(4)
-        summary_cols[0].metric("Candidate", summary.get("candidate_version", "-"))
-        summary_cols[1].metric("Pass rate", f"{summary.get('pass_rate', 0) * 100:.0f}%")
-        summary_cols[2].metric("Avg score", f"{summary.get('average_score', 0):.1f}")
-        summary_cols[3].metric("Results", summary.get("result_count", 0))
+        latest_pass_rate = f"{latest_summary.get('pass_rate', 0) * 100:.0f}%"
+        latest_candidate = latest_summary.get("candidate_version", "-")
+
+    with metric_cols[0]:
+        metric_card("Eval Specs", str(spec_count), "Definitions of success")
+    with metric_cols[1]:
+        metric_card("Eval Cases", str(case_count), "Reusable regression cases")
+    with metric_cols[2]:
+        metric_card("Latest Pass Rate", latest_pass_rate, latest_candidate)
+    with metric_cols[3]:
+        metric_card("API", api_status, ready.get("status", "unknown"))
+
+    st.markdown("## Recent Experiment Runs")
+    if not run_list:
+        st.info("No experiment runs yet. Create a spec and case, then run a candidate on the Runs page.")
+    else:
+        for run in run_list[:3]:
+            summary = client.get_experiment_run_summary(
+                tenant_id=tenant_id,
+                experiment_run_id=run["experiment_run_id"],
+            )
+            failed_count = summary.get("failed_count", 0)
+            status_label = "Passed" if failed_count == 0 else "Failed"
+            status = "green" if failed_count == 0 else "red"
+            subtitle = (
+                f"{summary.get('result_count', 0)} cases · "
+                f"{summary.get('pass_rate', 0) * 100:.0f}% pass rate · "
+                f"avg score {summary.get('average_score', 0):.1f}"
+            )
+            run_card(
+                f"{summary.get('candidate_version', '-')} · {run['experiment_run_id'][:8]}",
+                subtitle,
+                status_label,
+                status,
+            )
+
+    st.markdown("## Integrations")
+    integration_card(
+        "Langfuse",
+        "Trace inspection and score push arrive in Phase 4.",
+        "Not connected",
+        "yellow",
+    )
 except RuntimeError as exc:
     show_api_error(exc)
-
-st.info("Use the sidebar pages to create specs, cases, and runs without curl.")

@@ -8,6 +8,8 @@ WORKDIR /app
 COPY pyproject.toml ./
 COPY components ./components
 COPY pages ./pages
+COPY styles ./styles
+COPY .streamlit ./.streamlit
 COPY streamlit_app.py ./
 
 RUN pip install --no-cache-dir --upgrade pip \
