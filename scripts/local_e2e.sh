@@ -204,10 +204,13 @@ start_api() {
 }
 
 start_console() {
+  local token="${1:-}"
   cd "${REPO_ROOT}/console"
   : >"${CONSOLE_LOG}"
   echo "Starting console on ${CONSOLE_URL}"
   EDD_API_BASE_URL="${BASE_URL}" \
+    EDD_BEARER_TOKEN="${token}" \
+    EDD_TOKEN_FILE="${TOKEN_FILE}" \
     PYTHONPATH="${REPO_ROOT}/console" \
     nohup uv run streamlit run streamlit_app.py \
       --server.headless true \
@@ -236,9 +239,9 @@ print_urls() {
   echo "API docs: ${BASE_URL}/docs"
   echo "Metrics: ${BASE_URL}/metrics"
   echo
-  echo "Demo bearer token (paste into console sidebar):"
+  echo "Demo bearer token (auto-loaded by console, or paste + Apply credentials):"
   echo "${token}"
-  echo "(saved to ${TOKEN_FILE})"
+  echo "(saved to ${TOKEN_FILE}; console reads EDD_TOKEN_FILE on startup)"
   if [[ "${USE_POSTGRES}" == "true" ]]; then
     echo "Storage: Postgres on localhost:5433"
   else
@@ -299,7 +302,7 @@ token="$(create_demo_token)"
 printf '%s\n' "${token}" >"${TOKEN_FILE}"
 
 if [[ "${START_CONSOLE}" == "true" ]]; then
-  start_console
+  start_console "${token}"
 fi
 
 if [[ "${RUN_SMOKE}" == "true" ]]; then

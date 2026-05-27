@@ -1,6 +1,6 @@
 import streamlit as st
 
-from components.layout import integration_card, metric_card, status_pill
+from components.layout import integration_card, metric_card
 from components.platform_sidebar import render_platform_sidebar
 from components.ui import render_page_header, show_api_error
 
@@ -9,8 +9,8 @@ render_page_header("Langfuse", client_base_url=client.base_url, auth_mode=auth_m
 
 st.markdown(
     """
-    Langfuse is the observability data plane. EDD connects optionally for trace inspection,
-    score push, and trace-to-case import in later phases.
+    Langfuse is the observability data plane. When Langfuse is enabled, each experiment run
+    creates a trace and pushes a score. You can also import an existing trace as an EvalCase.
     """
 )
 
@@ -46,14 +46,36 @@ try:
         pill_status,
     )
 
-    st.markdown("### Planned next steps")
-    st.markdown(
-        f"""
-        - Phase 5: push evaluation scores after experiment runs {status_pill("Planned", "blue")}
-        - Phase 6: import Langfuse traces as EvalCases {status_pill("Planned", "blue")}
-        """
-        ,
-        unsafe_allow_html=True,
-    )
+    st.markdown("### Trace import")
+    trace_id = st.text_input("Langfuse trace ID", value="", placeholder="trace_...")
+    preview_clicked = st.button("Preview trace")
+
+    if preview_clicked and trace_id.strip():
+        preview = client.get_langfuse_trace(trace_id=trace_id.strip()).get("trace", {})
+        st.success("Trace loaded.")
+        st.json(preview)
+
+    if trace_id.strip():
+        specs = client.list_eval_specs(tenant_id=_tenant_id).get("eval_specs", [])
+        if specs:
+            spec_options = {
+                f"{spec['name']} ({spec['version']}) · {spec['eval_spec_id'][:8]}": spec["eval_spec_id"]
+                for spec in specs
+            }
+            selected_spec_label = st.selectbox("EvalSpec", options=list(spec_options.keys()))
+            selected_spec_id = spec_options[selected_spec_label]
+            case_name = st.text_input("Case name (optional)", value="")
+            notes = st.text_area("Notes (optional)", value="")
+            if st.button("Import trace as EvalCase", type="primary"):
+                created = client.import_langfuse_trace_case(
+                    tenant_id=_tenant_id,
+                    eval_spec_id=selected_spec_id,
+                    trace_id=trace_id.strip(),
+                    name=case_name.strip() or None,
+                    notes=notes.strip() or None,
+                )
+                st.success(f"Created EvalCase {created['eval_case_id']}")
+        else:
+            st.info("Create an EvalSpec first to import a trace as an EvalCase.")
 except RuntimeError as exc:
     show_api_error(exc)

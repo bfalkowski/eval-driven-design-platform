@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import httpx
 
@@ -37,6 +37,22 @@ class LangfuseScorePushResult:
     success: bool
     trace_id: str | None
     score_id: str | None
+    message: str
+
+
+@dataclass(frozen=True, slots=True)
+class LangfuseTraceFetchResult:
+    success: bool
+    trace_id: str
+    trace: dict[str, Any] | None
+    message: str
+
+
+@dataclass(frozen=True, slots=True)
+class LangfuseTraceCreateResult:
+    attempted: bool
+    success: bool
+    trace_id: str | None
     message: str
 
 
@@ -157,6 +173,79 @@ class LangfuseClientAdapter:
                 message=f"Unable to reach Langfuse at {host}.",
             )
 
+    async def create_trace(
+        self,
+        *,
+        name: str,
+        input_payload: dict[str, Any] | None = None,
+        output_payload: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> LangfuseTraceCreateResult:
+        host = self._settings.langfuse_host.rstrip("/")
+        if not self.enabled:
+            return LangfuseTraceCreateResult(
+                attempted=False,
+                success=False,
+                trace_id=None,
+                message="Langfuse integration is disabled.",
+            )
+        if not self.configured:
+            return LangfuseTraceCreateResult(
+                attempted=False,
+                success=False,
+                trace_id=None,
+                message="Langfuse is enabled but not configured.",
+            )
+
+        body: dict[str, Any] = {"name": name}
+        if input_payload is not None:
+            body["input"] = input_payload
+        if output_payload is not None:
+            body["output"] = output_payload
+        if metadata:
+            body["metadata"] = metadata
+
+        try:
+            async with self._client(host) as client:
+                response = await client.post(
+                    "/api/public/traces",
+                    auth=self._basic_auth(),
+                    json=body,
+                )
+                if response.status_code >= 400:
+                    logger.warning(
+                        "langfuse trace create failed",
+                        extra={"status_code": response.status_code},
+                    )
+                    return LangfuseTraceCreateResult(
+                        attempted=True,
+                        success=False,
+                        trace_id=None,
+                        message=f"Langfuse trace create failed with status {response.status_code}.",
+                    )
+                trace_id = self._created_trace_id(response.json())
+                if not trace_id:
+                    return LangfuseTraceCreateResult(
+                        attempted=True,
+                        success=False,
+                        trace_id=None,
+                        message="Langfuse trace create returned no trace id.",
+                    )
+                return LangfuseTraceCreateResult(
+                    attempted=True,
+                    success=True,
+                    trace_id=trace_id,
+                    message="Langfuse trace created.",
+                )
+        except httpx.HTTPError:
+            logger.warning("langfuse trace create unreachable", extra={"host": host})
+            return LangfuseTraceCreateResult(
+                attempted=True,
+                success=False,
+                trace_id=None,
+                message=f"Unable to reach Langfuse at {host}.",
+            )
+
     async def push_score(
         self,
         *,
@@ -238,6 +327,58 @@ class LangfuseClientAdapter:
                 message=f"Unable to reach Langfuse at {host}.",
             )
 
+    async def get_trace(self, *, trace_id: str) -> LangfuseTraceFetchResult:
+        host = self._settings.langfuse_host.rstrip("/")
+        if not self.enabled:
+            return LangfuseTraceFetchResult(
+                success=False,
+                trace_id=trace_id,
+                trace=None,
+                message="Langfuse integration is disabled.",
+            )
+        if not self.configured:
+            return LangfuseTraceFetchResult(
+                success=False,
+                trace_id=trace_id,
+                trace=None,
+                message="Langfuse is enabled but not configured.",
+            )
+        try:
+            async with self._client(host) as client:
+                response = await client.get(
+                    f"/api/public/traces/{trace_id}",
+                    auth=self._basic_auth(),
+                )
+                if response.status_code >= 400:
+                    return LangfuseTraceFetchResult(
+                        success=False,
+                        trace_id=trace_id,
+                        trace=None,
+                        message=f"Langfuse trace lookup failed with status {response.status_code}.",
+                    )
+                payload = response.json()
+                trace = self._extract_trace(payload)
+                if trace is None:
+                    return LangfuseTraceFetchResult(
+                        success=False,
+                        trace_id=trace_id,
+                        trace=None,
+                        message="Langfuse returned an unexpected trace payload.",
+                    )
+                return LangfuseTraceFetchResult(
+                    success=True,
+                    trace_id=trace_id,
+                    trace=trace,
+                    message="Langfuse trace retrieved.",
+                )
+        except httpx.HTTPError:
+            return LangfuseTraceFetchResult(
+                success=False,
+                trace_id=trace_id,
+                trace=None,
+                message=f"Unable to reach Langfuse at {host}.",
+            )
+
     def _client(self, host: str) -> httpx.AsyncClient:
         return httpx.AsyncClient(
             base_url=host,
@@ -262,6 +403,14 @@ class LangfuseClientAdapter:
         return None
 
     @staticmethod
+    def _created_trace_id(payload: Any) -> str | None:
+        if isinstance(payload, dict):
+            trace_id = payload.get("id")
+            if isinstance(trace_id, str) and trace_id:
+                return trace_id
+        return None
+
+    @staticmethod
     def _score_id(payload: Any) -> str | None:
         if isinstance(payload, dict):
             data = payload.get("data")
@@ -272,4 +421,13 @@ class LangfuseClientAdapter:
             score_id = payload.get("id") or payload.get("scoreId")
             if isinstance(score_id, str) and score_id:
                 return score_id
+        return None
+
+    @staticmethod
+    def _extract_trace(payload: Any) -> dict[str, Any] | None:
+        if isinstance(payload, dict):
+            data = payload.get("data")
+            if isinstance(data, dict):
+                return cast(dict[str, Any], data)
+            return cast(dict[str, Any], payload)
         return None

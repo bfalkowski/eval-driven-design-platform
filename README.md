@@ -13,7 +13,7 @@ The platform shows how teams can define success criteria, turn observed failures
 - **ExperimentRun** — compare candidates (`prompt_v3` vs `prompt_v4`)
 - **Quality gates** — CI-style pass/fail on thresholds
 - **Streamlit console** — Observe → Case → Run → Evaluate → Decide
-- **Langfuse adapter** — optional link, score push, trace import (later phases)
+- **Langfuse adapter** — optional link, health checks, and score push
 
 ## Repo layout
 
@@ -39,7 +39,7 @@ cp .env.example .env
 ./scripts/local_e2e.sh --postgres --langfuse
 ```
 
-- Console: http://localhost:8501 — paste the **Bearer token** printed by the script  
+- Console: http://localhost:8501 — paste the **Bearer token** printed by the script (now persists across pages)  
 - API: http://localhost:8000/docs  
 - Langfuse (with `--langfuse`): http://localhost:3001 — `admin@local.dev` / `local-demo-password`  
 
@@ -65,6 +65,17 @@ make test
 cd api && uv run pytest -q
 ```
 
+## CI
+
+GitHub Actions now runs broader monorepo checks:
+
+- API + console tests and Ruff
+- API mypy + OpenAPI drift check
+- Dependency audits (`pip-audit`) and Dockerfile policy checks
+- Package builds for `api`, `console`, and `worker`
+- Container image builds for all components (publish on `main`)
+- Helm lint + rendered manifest validation (`kubeconform`)
+
 ## Plan
 
 Implementation is phased in **`EVAL_DRIVEN_DESIGN_PLAN.md`**. Build incrementally; do not skip validation gates.
@@ -77,4 +88,5 @@ Implementation is phased in **`EVAL_DRIVEN_DESIGN_PLAN.md`**. Build incrementall
 **Phase 2** — Experiment runs, deterministic mock evaluation, run summaries, seed script.  
 **Phase 3** — Streamlit console MVP for specs, cases, runs, and results.  
 **Phase 4** — Optional Langfuse adapter, health endpoint, local compose overlay.  
-**Phase 5+** — score push, trace import, quality gates (see plan).
+**Phase 5** — push evaluation scores to Langfuse (when `langfuse_trace_id` is present), store Langfuse refs on results, and show trace links in Results Explorer.  
+**Phase 6+** — trace import and quality gates (see plan).

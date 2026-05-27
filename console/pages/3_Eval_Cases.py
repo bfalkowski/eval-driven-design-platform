@@ -63,6 +63,7 @@ with right:
                 {
                     "name": case["name"],
                     "source": case["source"],
+                    "langfuse_trace_id": case.get("langfuse_trace_id"),
                     "task": case["input_payload"].get("task", ""),
                     "eval_case_id": case["eval_case_id"],
                 }

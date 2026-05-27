@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID
 
 from app.core.errors import BadRequestError
-from app.core.metrics import record_langfuse_score_push
+from app.core.metrics import record_langfuse_score_push, record_langfuse_trace_create
 from app.domain.models import (
+    EvalCase,
+    EvalSpec,
     EvaluationResult,
     ExperimentRun,
     ExperimentRunStatus,
@@ -68,8 +71,18 @@ class ExperimentService:
                 case=case,
                 scaffold_output=scaffold_output,
             )
+            trace_id = await self._resolve_langfuse_trace_id(
+                tenant_id=tenant_id,
+                run=run,
+                spec=spec,
+                case=case,
+                candidate_version=candidate_version,
+                scaffold_output=scaffold_output,
+                score=score,
+                passed=passed,
+            )
             push_result = await self._langfuse_adapter.push_score(
-                trace_id=case.langfuse_trace_id,
+                trace_id=trace_id,
                 name="edd.mock.score",
                 value=score,
                 comment=f"candidate={candidate_version}",
@@ -83,7 +96,7 @@ class ExperimentService:
                 candidate_version=candidate_version,
                 score=score,
                 passed=passed,
-                langfuse_trace_id=push_result.trace_id,
+                langfuse_trace_id=trace_id,
                 langfuse_score_id=push_result.score_id,
                 scaffold_output=scaffold_output,
                 judge_breakdown=breakdown,
@@ -91,6 +104,48 @@ class ExperimentService:
             results.append(result)
 
         return run, results
+
+    async def _resolve_langfuse_trace_id(
+        self,
+        *,
+        tenant_id: str,
+        run: ExperimentRun,
+        spec: EvalSpec,
+        case: EvalCase,
+        candidate_version: str,
+        scaffold_output: dict[str, Any],
+        score: float,
+        passed: bool,
+    ) -> str | None:
+        if case.langfuse_trace_id:
+            return case.langfuse_trace_id
+        if not self._langfuse_adapter.configured:
+            return None
+
+        create_result = await self._langfuse_adapter.create_trace(
+            name=f"edd.experiment.{case.name}",
+            input_payload={
+                "eval_case_id": str(case.eval_case_id),
+                "eval_spec_id": str(spec.eval_spec_id),
+                "candidate_version": candidate_version,
+                "input": case.input_payload,
+            },
+            output_payload={
+                "score": score,
+                "passed": passed,
+                "scaffold": scaffold_output,
+            },
+            metadata={
+                "tenant_id": tenant_id,
+                "experiment_run_id": str(run.experiment_run_id),
+                "source": "edd_experiment_run",
+            },
+        )
+        if create_result.attempted:
+            record_langfuse_trace_create(
+                outcome="success" if create_result.success else "failure",
+            )
+        return create_result.trace_id
 
     async def get_summary(
         self,

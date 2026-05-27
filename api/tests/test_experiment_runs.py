@@ -118,6 +118,35 @@ def test_experiment_run_tenant_isolation(client: TestClient) -> None:
     assert cross_tenant.status_code == 404
 
 
+def test_experiment_run_stores_case_trace_when_langfuse_disabled(client: TestClient) -> None:
+    spec = create_spec(client, name="Trace-backed workflow")
+    case = create_case(client, tenant_id="tenant-a", eval_spec_id=str(spec["eval_spec_id"]))
+    client.patch(
+        f"/v1/eval-cases/{case['eval_case_id']}",
+        params={"tenant_id": "tenant-a"},
+        json={"langfuse_trace_id": "trace-disabled-path"},
+    )
+    run = client.post(
+        "/v1/experiment-runs",
+        json={
+            "tenant_id": "tenant-a",
+            "eval_spec_id": spec["eval_spec_id"],
+            "candidate_version": "prompt_v4",
+            "eval_case_ids": [case["eval_case_id"]],
+        },
+    )
+    assert run.status_code == 201
+
+    results = client.get(
+        "/v1/evaluation-results",
+        params={"tenant_id": "tenant-a", "experiment_run_id": run.json()["experiment_run_id"]},
+    )
+    assert results.status_code == 200
+    result = results.json()["evaluation_results"][0]
+    assert result["langfuse_trace_id"] == "trace-disabled-path"
+    assert result["langfuse_score_id"] is None
+
+
 @pytest.fixture
 def langfuse_score_client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setenv("APP_STORAGE_BACKEND", "memory")
@@ -139,6 +168,8 @@ def test_experiment_run_pushes_langfuse_score(langfuse_score_client: TestClient)
         if request.url.path == "/api/public/scores":
             score_calls.append(cast(dict[str, object], json.loads(request.read().decode())))
             return httpx.Response(200, json={"id": "score-123"})
+        if request.url.path == "/api/public/traces":
+            return httpx.Response(404)
         return httpx.Response(404)
 
     settings = Settings(
@@ -185,3 +216,58 @@ def test_experiment_run_pushes_langfuse_score(langfuse_score_client: TestClient)
     assert result["langfuse_score_id"] == "score-123"
     assert len(score_calls) == 1
     assert score_calls[0]["traceId"] == "trace-abc"
+
+
+def test_experiment_run_creates_langfuse_trace_when_case_has_none(
+    langfuse_score_client: TestClient,
+) -> None:
+    trace_creates: list[dict[str, object]] = []
+    score_calls: list[dict[str, object]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/api/public/traces" and request.method == "POST":
+            trace_creates.append(cast(dict[str, object], json.loads(request.read().decode())))
+            return httpx.Response(200, json={"id": "trace-new-456"})
+        if request.url.path == "/api/public/scores":
+            score_calls.append(cast(dict[str, object], json.loads(request.read().decode())))
+            return httpx.Response(200, json={"id": "score-456"})
+        return httpx.Response(404)
+
+    settings = Settings(
+        langfuse_enabled=True,
+        langfuse_public_key="pk-test",
+        langfuse_secret_key="sk-test",
+        langfuse_host="http://langfuse.test",
+    )
+    langfuse_score_client.app.state.langfuse_adapter = LangfuseClientAdapter(
+        settings,
+        transport=httpx.MockTransport(handler),
+    )
+
+    spec = create_spec(langfuse_score_client, name="Auto trace workflow")
+    case = create_case(
+        langfuse_score_client,
+        tenant_id="tenant-a",
+        eval_spec_id=str(spec["eval_spec_id"]),
+    )
+    run = langfuse_score_client.post(
+        "/v1/experiment-runs",
+        json={
+            "tenant_id": "tenant-a",
+            "eval_spec_id": spec["eval_spec_id"],
+            "candidate_version": "prompt_v6",
+            "eval_case_ids": [case["eval_case_id"]],
+        },
+    )
+    assert run.status_code == 201
+
+    results = langfuse_score_client.get(
+        "/v1/evaluation-results",
+        params={"tenant_id": "tenant-a", "experiment_run_id": run.json()["experiment_run_id"]},
+    )
+    result = results.json()["evaluation_results"][0]
+    assert len(trace_creates) == 1
+    assert trace_creates[0]["name"] == "edd.experiment.Refund escalation"
+    assert result["langfuse_trace_id"] == "trace-new-456"
+    assert result["langfuse_score_id"] == "score-456"
+    assert score_calls[0]["traceId"] == "trace-new-456"

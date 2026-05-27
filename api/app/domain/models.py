@@ -180,3 +180,24 @@ class LangfuseHealthResponse(BaseModel):
     project_name: str | None = None
     message: str
     request_id: str
+
+
+class LangfuseTracePreview(BaseModel):
+    trace_id: str
+    name: str | None = None
+    timestamp: str | None = None
+    input_preview: str | None = None
+    has_observations: bool
+
+
+class LangfuseTraceResponse(BaseModel):
+    trace: LangfuseTracePreview
+    request_id: str
+
+
+class ImportLangfuseTraceRequest(BaseModel):
+    tenant_id: str | None = Field(default=None, min_length=1, max_length=128)
+    eval_spec_id: UUID
+    trace_id: str = Field(min_length=1, max_length=256)
+    name: str | None = Field(default=None, min_length=1, max_length=256)
+    notes: str | None = Field(default=None, max_length=5000)

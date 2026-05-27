@@ -152,6 +152,29 @@ class ServiceClient:
     def get_langfuse_health(self) -> dict[str, Any]:
         return self._request("GET", "/v1/integrations/langfuse/health")
 
+    def get_langfuse_trace(self, *, trace_id: str) -> dict[str, Any]:
+        return self._request("GET", f"/v1/integrations/langfuse/traces/{trace_id}")
+
+    def import_langfuse_trace_case(
+        self,
+        *,
+        tenant_id: str | None,
+        eval_spec_id: str,
+        trace_id: str,
+        name: str | None = None,
+        notes: str | None = None,
+    ) -> dict[str, Any]:
+        payload = self._tenant_body(
+            {
+                "eval_spec_id": eval_spec_id,
+                "trace_id": trace_id,
+                "name": name,
+                "notes": notes,
+            },
+            tenant_id,
+        )
+        return self._request("POST", "/v1/integrations/langfuse/import-case", json=payload)
+
     def _tenant_params(self, tenant_id: str | None) -> dict[str, str]:
         if self._bearer_token or tenant_id is None:
             return {}

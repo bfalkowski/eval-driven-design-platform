@@ -45,23 +45,31 @@ try:
     if not results:
         st.info("No evaluation results for this run.")
     else:
-        rows = [
-            {
-                "eval_case_id": result["eval_case_id"],
-                "score": result["score"],
-                "passed": result["passed"],
-                "langfuse_trace_id": result.get("langfuse_trace_id"),
-                "langfuse_score_id": result.get("langfuse_score_id"),
-                "rubric_overlap": result["judge_breakdown"].get("rubric_overlap"),
-                "task_overlap": result["judge_breakdown"].get("task_overlap"),
-            }
-            for result in results
-        ]
+        rows = []
+        for result in results:
+            trace_id = result.get("langfuse_trace_id")
+            rows.append(
+                {
+                    "eval_case_id": result["eval_case_id"],
+                    "score": result["score"],
+                    "passed": result["passed"],
+                    "langfuse_trace_id": trace_id,
+                    "langfuse_score_id": result.get("langfuse_score_id"),
+                    "rubric_overlap": result["judge_breakdown"].get("rubric_overlap"),
+                    "task_overlap": result["judge_breakdown"].get("task_overlap"),
+                }
+            )
         st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        if not any(row.get("langfuse_trace_id") for row in rows):
+            st.info(
+                "No Langfuse trace IDs on these results. Start the stack with "
+                "`./scripts/local_e2e.sh --postgres --langfuse`, then run a **new** experiment. "
+                "Older runs created before trace emission will stay empty."
+            )
         if langfuse_host and project_name:
             trace_links = []
-            for result in results:
-                trace_id = result.get("langfuse_trace_id")
+            for row in rows:
+                trace_id = row.get("langfuse_trace_id")
                 if not trace_id:
                     continue
                 trace_links.append(

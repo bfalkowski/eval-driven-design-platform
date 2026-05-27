@@ -25,6 +25,10 @@ class MetricsRegistry:
                 "counter",
                 "Langfuse score push attempts by outcome.",
             ),
+            "langfuse_trace_create_total": (
+                "counter",
+                "Langfuse trace create attempts by outcome.",
+            ),
         }
         self._lock = threading.Lock()
 
@@ -92,3 +96,7 @@ def record_http_request(
 
 def record_langfuse_score_push(*, outcome: str) -> None:
     metrics.increment("langfuse_score_push_total", {"outcome": outcome})
+
+
+def record_langfuse_trace_create(*, outcome: str) -> None:
+    metrics.increment("langfuse_trace_create_total", {"outcome": outcome})

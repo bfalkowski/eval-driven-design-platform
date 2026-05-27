@@ -962,6 +962,65 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "ImportLangfuseTraceRequest": {
+        "properties": {
+          "eval_spec_id": {
+            "format": "uuid",
+            "title": "Eval Spec Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "tenant_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tenant Id"
+          },
+          "trace_id": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Trace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "eval_spec_id",
+          "trace_id"
+        ],
+        "title": "ImportLangfuseTraceRequest",
+        "type": "object"
+      },
       "JudgeConfig": {
         "properties": {
           "judge_id": {
@@ -1068,6 +1127,74 @@
           "request_id"
         ],
         "title": "LangfuseHealthResponse",
+        "type": "object"
+      },
+      "LangfuseTracePreview": {
+        "properties": {
+          "has_observations": {
+            "title": "Has Observations",
+            "type": "boolean"
+          },
+          "input_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Preview"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          },
+          "trace_id": {
+            "title": "Trace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id",
+          "has_observations"
+        ],
+        "title": "LangfuseTracePreview",
+        "type": "object"
+      },
+      "LangfuseTraceResponse": {
+        "properties": {
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "trace": {
+            "$ref": "#/components/schemas/LangfuseTracePreview"
+          }
+        },
+        "required": [
+          "trace",
+          "request_id"
+        ],
+        "title": "LangfuseTraceResponse",
         "type": "object"
       },
       "UpdateEvalCaseRequest": {
@@ -2581,6 +2708,107 @@
           }
         },
         "summary": "Langfuse Health",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/v1/integrations/langfuse/import-case": {
+      "post": {
+        "operationId": "import_langfuse_trace_case_v1_integrations_langfuse_import_case_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportLangfuseTraceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvalCaseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Langfuse Trace Case",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/v1/integrations/langfuse/traces/{trace_id}": {
+      "get": {
+        "operationId": "langfuse_trace_v1_integrations_langfuse_traces__trace_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "trace_id",
+            "required": true,
+            "schema": {
+              "title": "Trace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LangfuseTraceResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Langfuse Trace",
         "tags": [
           "integrations"
         ]
