@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from fastapi import APIRouter, Request
 
 from app.domain.models import LangfuseHealthResponse
@@ -9,7 +11,7 @@ router = APIRouter(prefix="/v1/integrations/langfuse", tags=["integrations"])
 
 
 def get_langfuse_adapter(request: Request) -> LangfuseClientAdapter:
-    return request.app.state.langfuse_adapter
+    return cast(LangfuseClientAdapter, request.app.state.langfuse_adapter)
 
 
 @router.get("/health", response_model=LangfuseHealthResponse)
