@@ -118,6 +118,8 @@ jobs:
       - name: Audit worker dependencies
         working-directory: worker
         run: |
+          python -m venv .venv-audit
+          . .venv-audit/bin/activate
           python -m pip install --upgrade pip
           python -m pip install .
           python -m pip install pip-audit
