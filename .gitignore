@@ -11,3 +11,4 @@ build/
 !.env.example
 .DS_Store
 .local/
+docs/PRODUCT_VISION.md
