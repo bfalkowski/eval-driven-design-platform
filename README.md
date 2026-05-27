@@ -10,6 +10,12 @@ Langfuse, and enforce quality gates before shipping AI changes.
 
 You can run the stack locally to walk through the operator loop end to end, with optional Langfuse integration.
 
+## Console
+
+Streamlit operator UI — Observe → Case → Run → Evaluate → Decide:
+
+![Eval Driven Design Platform console — Overview](docs/images/console-overview.jpg)
+
 ## Why this exists
 
 AI teams often discover failures through traces, logs, support escalations, or manual testing, but those failures do not automatically become reusable engineering assets.
