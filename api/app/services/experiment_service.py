@@ -4,20 +4,23 @@ from datetime import UTC, datetime
 from uuid import UUID
 
 from app.core.errors import BadRequestError
+from app.core.metrics import record_langfuse_score_push
 from app.domain.models import (
     EvaluationResult,
     ExperimentRun,
     ExperimentRunStatus,
     ExperimentRunSummary,
 )
+from app.integrations.langfuse_client import LangfuseClientAdapter
 from app.services.mock_evaluator import evaluate_mock
 from app.services.scaffold_runner import run_scaffold
 from app.storage.base import EddRepository
 
 
 class ExperimentService:
-    def __init__(self, repository: EddRepository) -> None:
+    def __init__(self, repository: EddRepository, langfuse_adapter: LangfuseClientAdapter) -> None:
         self._repository = repository
+        self._langfuse_adapter = langfuse_adapter
 
     async def create_run(
         self,
@@ -65,6 +68,14 @@ class ExperimentService:
                 case=case,
                 scaffold_output=scaffold_output,
             )
+            push_result = await self._langfuse_adapter.push_score(
+                trace_id=case.langfuse_trace_id,
+                name="edd.mock.score",
+                value=score,
+                comment=f"candidate={candidate_version}",
+            )
+            if push_result.attempted:
+                record_langfuse_score_push(outcome="success" if push_result.success else "failure")
             result = await self._repository.create_evaluation_result(
                 tenant_id=tenant_id,
                 experiment_run_id=run.experiment_run_id,
@@ -72,6 +83,8 @@ class ExperimentService:
                 candidate_version=candidate_version,
                 score=score,
                 passed=passed,
+                langfuse_trace_id=push_result.trace_id,
+                langfuse_score_id=push_result.score_id,
                 scaffold_output=scaffold_output,
                 judge_breakdown=breakdown,
             )

@@ -31,6 +31,15 @@ class LangfuseHealthResult:
     message: str
 
 
+@dataclass(frozen=True, slots=True)
+class LangfuseScorePushResult:
+    attempted: bool
+    success: bool
+    trace_id: str | None
+    score_id: str | None
+    message: str
+
+
 class LangfuseClientAdapter:
     """Single integration point for Langfuse HTTP API calls."""
 
@@ -148,6 +157,87 @@ class LangfuseClientAdapter:
                 message=f"Unable to reach Langfuse at {host}.",
             )
 
+    async def push_score(
+        self,
+        *,
+        trace_id: str | None,
+        name: str,
+        value: float,
+        comment: str | None = None,
+    ) -> LangfuseScorePushResult:
+        host = self._settings.langfuse_host.rstrip("/")
+        if not self.enabled:
+            return LangfuseScorePushResult(
+                attempted=False,
+                success=False,
+                trace_id=trace_id,
+                score_id=None,
+                message="Langfuse integration is disabled.",
+            )
+        if not self.configured:
+            return LangfuseScorePushResult(
+                attempted=False,
+                success=False,
+                trace_id=trace_id,
+                score_id=None,
+                message="Langfuse is enabled but not configured.",
+            )
+        if not trace_id:
+            return LangfuseScorePushResult(
+                attempted=False,
+                success=False,
+                trace_id=None,
+                score_id=None,
+                message="No trace id available for score push.",
+            )
+
+        payload: dict[str, Any] = {
+            "traceId": trace_id,
+            "name": name,
+            "value": value,
+        }
+        if comment:
+            payload["comment"] = comment
+        try:
+            async with self._client(host) as client:
+                response = await client.post(
+                    "/api/public/scores",
+                    auth=self._basic_auth(),
+                    json=payload,
+                )
+                if response.status_code >= 400:
+                    logger.warning(
+                        "langfuse score push failed",
+                        extra={"status_code": response.status_code, "trace_id": trace_id},
+                    )
+                    return LangfuseScorePushResult(
+                        attempted=True,
+                        success=False,
+                        trace_id=trace_id,
+                        score_id=None,
+                        message=f"Langfuse score push failed with status {response.status_code}.",
+                    )
+                score_id = self._score_id(response.json())
+                return LangfuseScorePushResult(
+                    attempted=True,
+                    success=True,
+                    trace_id=trace_id,
+                    score_id=score_id,
+                    message="Langfuse score push succeeded.",
+                )
+        except httpx.HTTPError:
+            logger.warning(
+                "langfuse score push unreachable",
+                extra={"trace_id": trace_id, "host": host},
+            )
+            return LangfuseScorePushResult(
+                attempted=True,
+                success=False,
+                trace_id=trace_id,
+                score_id=None,
+                message=f"Unable to reach Langfuse at {host}.",
+            )
+
     def _client(self, host: str) -> httpx.AsyncClient:
         return httpx.AsyncClient(
             base_url=host,
@@ -169,4 +259,17 @@ class LangfuseClientAdapter:
             projects = payload.get("data") or payload.get("projects")
             if isinstance(projects, list):
                 return len(projects)
+        return None
+
+    @staticmethod
+    def _score_id(payload: Any) -> str | None:
+        if isinstance(payload, dict):
+            data = payload.get("data")
+            if isinstance(data, dict):
+                score_id = data.get("id")
+                if isinstance(score_id, str) and score_id:
+                    return score_id
+            score_id = payload.get("id") or payload.get("scoreId")
+            if isinstance(score_id, str) and score_id:
+                return score_id
         return None

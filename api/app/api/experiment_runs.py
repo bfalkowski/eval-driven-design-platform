@@ -13,6 +13,7 @@ from app.domain.models import (
     ExperimentRunResponse,
     ExperimentRunSummaryResponse,
 )
+from app.integrations.langfuse_client import LangfuseClientAdapter
 from app.services.experiment_service import ExperimentService
 from app.storage.base import EddRepository
 
@@ -21,7 +22,8 @@ router = APIRouter(prefix="/v1/experiment-runs", tags=["experiment-runs"])
 
 def get_experiment_service(request: Request) -> ExperimentService:
     repository = cast(EddRepository, request.app.state.repository)
-    return ExperimentService(repository)
+    langfuse_adapter = cast(LangfuseClientAdapter, request.app.state.langfuse_adapter)
+    return ExperimentService(repository, langfuse_adapter)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=ExperimentRunResponse)

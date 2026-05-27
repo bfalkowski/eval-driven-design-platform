@@ -554,6 +554,28 @@
             "title": "Judge Breakdown",
             "type": "object"
           },
+          "langfuse_score_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Langfuse Score Id"
+          },
+          "langfuse_trace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Langfuse Trace Id"
+          },
           "passed": {
             "title": "Passed",
             "type": "boolean"
@@ -640,6 +662,28 @@
             "additionalProperties": true,
             "title": "Judge Breakdown",
             "type": "object"
+          },
+          "langfuse_score_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Langfuse Score Id"
+          },
+          "langfuse_trace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Langfuse Trace Id"
           },
           "passed": {
             "title": "Passed",

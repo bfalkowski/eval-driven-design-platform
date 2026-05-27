@@ -39,6 +39,9 @@ try:
         tenant_id=tenant_id,
         experiment_run_id=selected_run_id,
     ).get("evaluation_results", [])
+    langfuse_health = client.get_langfuse_health()
+    langfuse_host = str(langfuse_health.get("host", "")).rstrip("/")
+    project_name = langfuse_health.get("project_name")
     if not results:
         st.info("No evaluation results for this run.")
     else:
@@ -47,11 +50,25 @@ try:
                 "eval_case_id": result["eval_case_id"],
                 "score": result["score"],
                 "passed": result["passed"],
+                "langfuse_trace_id": result.get("langfuse_trace_id"),
+                "langfuse_score_id": result.get("langfuse_score_id"),
                 "rubric_overlap": result["judge_breakdown"].get("rubric_overlap"),
                 "task_overlap": result["judge_breakdown"].get("task_overlap"),
             }
             for result in results
         ]
         st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        if langfuse_host and project_name:
+            trace_links = []
+            for result in results:
+                trace_id = result.get("langfuse_trace_id")
+                if not trace_id:
+                    continue
+                trace_links.append(
+                    f"- [{trace_id}]({langfuse_host}/project/{project_name}/traces/{trace_id})"
+                )
+            if trace_links:
+                st.markdown("#### Langfuse trace links")
+                st.markdown("\n".join(trace_links))
 except RuntimeError as exc:
     show_api_error(exc)

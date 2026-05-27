@@ -21,6 +21,10 @@ class MetricsRegistry:
                 "counter",
                 "Total observed HTTP request duration in seconds.",
             ),
+            "langfuse_score_push_total": (
+                "counter",
+                "Langfuse score push attempts by outcome.",
+            ),
         }
         self._lock = threading.Lock()
 
@@ -84,3 +88,7 @@ def record_http_request(
     labels = {"method": method, "route": route, "status_code": str(status_code)}
     metrics.increment("http_requests_total", labels)
     metrics.observe_duration("http_request_duration_seconds", duration_seconds, labels)
+
+
+def record_langfuse_score_push(*, outcome: str) -> None:
+    metrics.increment("langfuse_score_push_total", {"outcome": outcome})

@@ -153,6 +153,8 @@ class EvaluationResult(BaseModel):
     candidate_version: str
     score: float = Field(ge=0, le=100)
     passed: bool
+    langfuse_trace_id: str | None = None
+    langfuse_score_id: str | None = None
     scaffold_output: dict[str, Any]
     judge_breakdown: dict[str, Any]
     created_at: datetime

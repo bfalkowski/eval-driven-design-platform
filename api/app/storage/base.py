@@ -105,6 +105,8 @@ class EddRepository(Protocol):
         candidate_version: str,
         score: float,
         passed: bool,
+        langfuse_trace_id: str | None,
+        langfuse_score_id: str | None,
         scaffold_output: dict[str, Any],
         judge_breakdown: dict[str, Any],
     ) -> EvaluationResult: ...

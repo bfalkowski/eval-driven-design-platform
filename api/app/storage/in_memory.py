@@ -239,6 +239,8 @@ class InMemoryEddRepository:
         candidate_version: str,
         score: float,
         passed: bool,
+        langfuse_trace_id: str | None,
+        langfuse_score_id: str | None,
         scaffold_output: dict[str, Any],
         judge_breakdown: dict[str, Any],
     ) -> EvaluationResult:
@@ -250,6 +252,8 @@ class InMemoryEddRepository:
             candidate_version=candidate_version,
             score=score,
             passed=passed,
+            langfuse_trace_id=langfuse_trace_id,
+            langfuse_score_id=langfuse_score_id,
             scaffold_output=scaffold_output,
             judge_breakdown=judge_breakdown,
             created_at=datetime.now(UTC),

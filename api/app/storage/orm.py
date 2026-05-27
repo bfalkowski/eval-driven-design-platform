@@ -87,6 +87,8 @@ class EvaluationResultRow(Base):
     candidate_version: Mapped[str] = mapped_column(String(128), nullable=False)
     score: Mapped[float] = mapped_column(Float, nullable=False)
     passed: Mapped[bool] = mapped_column(nullable=False)
+    langfuse_trace_id: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    langfuse_score_id: Mapped[str | None] = mapped_column(String(256), nullable=True)
     scaffold_output: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
     judge_breakdown: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
