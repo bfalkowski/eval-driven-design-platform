@@ -16,6 +16,7 @@ from app.api.evaluation_results import router as evaluation_results_router
 from app.api.experiment_runs import router as experiment_runs_router
 from app.api.health import legacy_router as legacy_health_router
 from app.api.health import router as health_router
+from app.api.lab_integrations import router as lab_integrations_router
 from app.api.langfuse_integrations import router as langfuse_integrations_router
 from app.api.metrics import router as metrics_router
 from app.core.config import get_settings
@@ -99,6 +100,7 @@ def create_app() -> FastAPI:
     app.include_router(experiment_runs_router)
     app.include_router(evaluation_results_router)
     app.include_router(langfuse_integrations_router)
+    app.include_router(lab_integrations_router)
     configure_tracing(
         app,
         settings.service_name,

@@ -41,7 +41,7 @@ def error_response(request_id: str, status_code: int, code: str, message: str) -
 
 async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
     request_id = getattr(request.state, "request_id", "unknown")
-    return error_response(request_id, exc.status_code, exc.code, exc.public_message)
+    return error_response(request_id, exc.status_code, exc.code, exc.message)
 
 
 async def unhandled_error_handler(request: Request, exc: Exception) -> JSONResponse:

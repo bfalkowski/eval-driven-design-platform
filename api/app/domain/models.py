@@ -201,3 +201,31 @@ class ImportLangfuseTraceRequest(BaseModel):
     trace_id: str = Field(min_length=1, max_length=256)
     name: str | None = Field(default=None, min_length=1, max_length=256)
     notes: str | None = Field(default=None, max_length=5000)
+
+
+class LabPublishEnvelope(BaseModel):
+    schema_version: str = Field(min_length=1, max_length=16)
+    source: str = Field(min_length=1, max_length=64)
+    run_id: str = Field(min_length=1, max_length=128)
+    agent: str = Field(min_length=1, max_length=128)
+    agent_version: str = Field(min_length=1, max_length=128)
+    suite: str = Field(min_length=1, max_length=128)
+    tenant_id: str | None = Field(default=None, min_length=1, max_length=128)
+    eval_spec_id: UUID | None = None
+    scenario_ids: list[str] = Field(default_factory=list)
+    started_at: str | None = Field(default=None, max_length=64)
+    completed_at: str | None = Field(default=None, max_length=64)
+    outputs: dict[str, Any] = Field(default_factory=dict)
+    eval_summary: dict[str, Any] | None = None
+    failure_packet: dict[str, Any] | None = None
+    artifact_paths: dict[str, Any] = Field(default_factory=dict)
+
+
+class LabPublishResponse(BaseModel):
+    platform_run_id: UUID
+    experiment_run_id: UUID
+    lab_run_id: str
+    gate_status: str
+    gate_explanation: str
+    experiment_run: ExperimentRun
+    request_id: str | None = None

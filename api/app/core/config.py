@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Literal
 
+from uuid import UUID
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,6 +29,7 @@ class Settings(BaseSettings):
     langfuse_public_key: str = ""
     langfuse_secret_key: str = ""
     langfuse_project_name: str = "local-demo"
+    lab_default_eval_spec_id: UUID | None = None
 
 
 def get_settings() -> Settings:
