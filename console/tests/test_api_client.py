@@ -74,3 +74,48 @@ def test_import_langfuse_trace_case_sends_expected_payload() -> None:
     assert captured["body"]["tenant_id"] == "tenant-a"
     assert captured["body"]["eval_spec_id"] == "spec-1"
     assert captured["body"]["trace_id"] == "trace-1"
+
+
+def test_get_experiment_run_gate_uses_tenant_query() -> None:
+    captured: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["path"] = request.url.path
+        captured["params"] = dict(request.url.params)
+        return httpx.Response(
+            200,
+            json={
+                "experiment_run_id": "run-1",
+                "eval_spec_id": "spec-1",
+                "candidate_version": "prompt_v4",
+                "gate_status": "pass",
+                "gate_explanation": "ok",
+                "evaluation_source": "experiment_results",
+                "pass_threshold": 75.0,
+            },
+        )
+
+    client = ServiceClient(
+        base_url="http://testserver",
+        transport=httpx.MockTransport(handler),
+    )
+    client.get_experiment_run_gate(tenant_id="tenant-a", experiment_run_id="run-1")
+
+    assert captured["path"] == "/v1/experiment-runs/run-1/gate"
+    assert captured["params"] == {"tenant_id": "tenant-a"}
+
+
+def test_list_experiment_runs_passes_ingest_source_filter() -> None:
+    captured: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["params"] = dict(request.url.params)
+        return httpx.Response(200, json={"experiment_runs": []})
+
+    client = ServiceClient(
+        base_url="http://testserver",
+        transport=httpx.MockTransport(handler),
+    )
+    client.list_experiment_runs(tenant_id="tenant-a", ingest_source="edd-agent-lab")
+
+    assert captured["params"]["ingest_source"] == "edd-agent-lab"

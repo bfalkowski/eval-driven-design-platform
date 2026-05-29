@@ -169,32 +169,43 @@ make test
 
 ---
 
-### Phase 5 — Push scores to Langfuse
+### Phase 5 — Push scores to Langfuse ✅ (target)
 
-- Score on result creation; store Langfuse refs
-- Metrics: push success/failure
-- Console link to trace
-
----
-
-### Phase 6 — Import trace as EvalCase
-
-- `GET trace`, `POST import-case`
-- Console: paste trace id → preview → save
+- [x] Score on result creation; store Langfuse refs
+- [x] Metrics: push success/failure
+- [x] Console link to trace (Results Explorer)
 
 ---
 
-### Phase 7 — Quality gates
+### Phase 6 — Import trace as EvalCase ✅ (target)
 
-- Threshold evaluation from EvalSpec
-- `scripts/run_quality_gate.sh` exit non-zero on fail
-- GitHub Actions example
+- [x] `GET trace`, `POST import-case`
+- [x] Console: paste trace id → preview → save
 
 ---
 
-### Phase 8 — Polish + demo
+### Phase 7 — Quality gates ✅ (target)
 
-- Seed data, architecture diagram, DEMO_SCRIPT.md, Helm chart skeleton
+- [x] Threshold evaluation from EvalSpec (`GET /v1/experiment-runs/{id}/gate`)
+- [x] Ingested runs reuse publish-time gate metadata
+- [x] `scripts/run_quality_gate.sh` exit non-zero on fail
+- [x] Console Quality Gates page
+- [x] CI example in `docs/QUALITY_GATE_CI.md`
+
+**Extension (lab integration):**
+
+- [x] Generic external run ingest: `POST /v1/integrations/runs/publish`
+- [x] Legacy alias: `POST /v1/integrations/lab/publish`
+- [x] Persisted `ExperimentRun.ingest` provenance + `ingest_source` list filter
+
+---
+
+### Phase 8 — Polish + demo (in progress)
+
+- [x] `docs/DEMO_SCRIPT.md`
+- [x] Alembic migration for `experiment_runs.ingest`
+- [ ] Architecture diagram refresh in README
+- [ ] Helm chart skeleton polish
 
 ## MVP definition of done
 

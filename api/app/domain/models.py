@@ -100,6 +100,20 @@ class EvalCaseListResponse(BaseModel):
     request_id: str
 
 
+class ExperimentRunIngest(BaseModel):
+    source: str
+    external_run_id: str
+    subject_id: str | None = None
+    suite_id: str | None = None
+    gate_status: str | None = None
+    gate_explanation: str | None = None
+    scenario_ids: list[str] = Field(default_factory=list)
+    eval_summary: dict[str, Any] | None = None
+    failure_packet: dict[str, Any] | None = None
+    outputs: dict[str, Any] = Field(default_factory=dict)
+    artifact_paths: dict[str, Any] = Field(default_factory=dict)
+
+
 class ExperimentRun(BaseModel):
     experiment_run_id: UUID
     tenant_id: str
@@ -110,6 +124,7 @@ class ExperimentRun(BaseModel):
     created_at: datetime
     updated_at: datetime
     completed_at: datetime | None = None
+    ingest: ExperimentRunIngest | None = None
 
 
 class CreateExperimentRunRequest(BaseModel):
@@ -142,6 +157,23 @@ class ExperimentRunSummary(BaseModel):
 
 
 class ExperimentRunSummaryResponse(ExperimentRunSummary):
+    request_id: str
+
+
+class QualityGateEvaluation(BaseModel):
+    experiment_run_id: UUID
+    eval_spec_id: UUID
+    candidate_version: str
+    gate_status: str
+    gate_explanation: str
+    evaluation_source: str
+    pass_threshold: float
+    average_score: float | None = None
+    ingest_source: str | None = None
+    external_run_id: str | None = None
+
+
+class QualityGateResponse(QualityGateEvaluation):
     request_id: str
 
 
@@ -203,13 +235,16 @@ class ImportLangfuseTraceRequest(BaseModel):
     notes: str | None = Field(default=None, max_length=5000)
 
 
-class LabPublishEnvelope(BaseModel):
+class RunIngestEnvelope(BaseModel):
     schema_version: str = Field(min_length=1, max_length=16)
     source: str = Field(min_length=1, max_length=64)
     run_id: str = Field(min_length=1, max_length=128)
-    agent: str = Field(min_length=1, max_length=128)
-    agent_version: str = Field(min_length=1, max_length=128)
-    suite: str = Field(min_length=1, max_length=128)
+    candidate_version: str | None = Field(default=None, min_length=1, max_length=128)
+    agent_version: str | None = Field(default=None, min_length=1, max_length=128)
+    subject_id: str | None = Field(default=None, min_length=1, max_length=128)
+    agent: str | None = Field(default=None, min_length=1, max_length=128)
+    suite_id: str | None = Field(default=None, min_length=1, max_length=128)
+    suite: str | None = Field(default=None, min_length=1, max_length=128)
     tenant_id: str | None = Field(default=None, min_length=1, max_length=128)
     eval_spec_id: UUID | None = None
     scenario_ids: list[str] = Field(default_factory=list)
@@ -221,11 +256,16 @@ class LabPublishEnvelope(BaseModel):
     artifact_paths: dict[str, Any] = Field(default_factory=dict)
 
 
-class LabPublishResponse(BaseModel):
+class RunIngestResponse(BaseModel):
     platform_run_id: UUID
     experiment_run_id: UUID
-    lab_run_id: str
+    external_run_id: str
     gate_status: str
     gate_explanation: str
     experiment_run: ExperimentRun
     request_id: str | None = None
+    lab_run_id: str | None = None
+
+
+LabPublishEnvelope = RunIngestEnvelope
+LabPublishResponse = RunIngestResponse

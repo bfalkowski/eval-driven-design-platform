@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     langfuse_secret_key: str = ""
     langfuse_project_name: str = "local-demo"
     lab_default_eval_spec_id: UUID | None = None
+    ingest_default_eval_spec_id: UUID | None = None
+    ingest_allowed_sources: list[str] = []
 
 
 def get_settings() -> Settings:

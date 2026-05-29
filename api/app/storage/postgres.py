@@ -14,6 +14,7 @@ from app.domain.models import (
     EvalSpec,
     EvaluationResult,
     ExperimentRun,
+    ExperimentRunIngest,
     ExperimentRunStatus,
     JudgeConfig,
 )
@@ -240,6 +241,7 @@ class PostgresEddRepository:
         status: str,
         result_count: int,
         completed_at: datetime | None,
+        ingest: ExperimentRunIngest | None = None,
     ) -> ExperimentRun:
         now = datetime.now(UTC)
         row = ExperimentRunRow(
@@ -252,6 +254,7 @@ class PostgresEddRepository:
             created_at=now,
             updated_at=now,
             completed_at=completed_at,
+            ingest=ingest.model_dump(mode="json") if ingest is not None else None,
         )
         async with self._sessionmaker() as session:
             session.add(row)
@@ -264,11 +267,16 @@ class PostgresEddRepository:
         *,
         tenant_id: str,
         eval_spec_id: UUID | None = None,
+        ingest_source: str | None = None,
         limit: int = 100,
     ) -> list[ExperimentRun]:
         statement = select(ExperimentRunRow).where(ExperimentRunRow.tenant_id == tenant_id)
         if eval_spec_id is not None:
             statement = statement.where(ExperimentRunRow.eval_spec_id == eval_spec_id)
+        if ingest_source is not None:
+            statement = statement.where(
+                ExperimentRunRow.ingest["source"].as_string() == ingest_source,
+            )
         statement = statement.order_by(ExperimentRunRow.created_at.desc()).limit(limit)
         async with self._sessionmaker() as session:
             rows = (await session.scalars(statement)).all()
@@ -389,6 +397,7 @@ def _case_to_domain(row: EvalCaseRow) -> EvalCase:
 
 
 def _run_to_domain(row: ExperimentRunRow) -> ExperimentRun:
+    ingest = ExperimentRunIngest.model_validate(row.ingest) if row.ingest else None
     return ExperimentRun(
         experiment_run_id=row.experiment_run_id,
         tenant_id=row.tenant_id,
@@ -399,6 +408,7 @@ def _run_to_domain(row: ExperimentRunRow) -> ExperimentRun:
         created_at=row.created_at,
         updated_at=row.updated_at,
         completed_at=row.completed_at,
+        ingest=ingest,
     )
 
 

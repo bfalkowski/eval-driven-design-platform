@@ -758,6 +758,16 @@
             "title": "Experiment Run Id",
             "type": "string"
           },
+          "ingest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExperimentRunIngest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "result_count": {
             "title": "Result Count",
             "type": "integer"
@@ -786,6 +796,109 @@
           "updated_at"
         ],
         "title": "ExperimentRun",
+        "type": "object"
+      },
+      "ExperimentRunIngest": {
+        "properties": {
+          "artifact_paths": {
+            "additionalProperties": true,
+            "title": "Artifact Paths",
+            "type": "object"
+          },
+          "eval_summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eval Summary"
+          },
+          "external_run_id": {
+            "title": "External Run Id",
+            "type": "string"
+          },
+          "failure_packet": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Packet"
+          },
+          "gate_explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gate Explanation"
+          },
+          "gate_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gate Status"
+          },
+          "outputs": {
+            "additionalProperties": true,
+            "title": "Outputs",
+            "type": "object"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "subject_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Id"
+          },
+          "suite_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suite Id"
+          }
+        },
+        "required": [
+          "source",
+          "external_run_id"
+        ],
+        "title": "ExperimentRunIngest",
         "type": "object"
       },
       "ExperimentRunListResponse": {
@@ -841,6 +954,16 @@
             "format": "uuid",
             "title": "Experiment Run Id",
             "type": "string"
+          },
+          "ingest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExperimentRunIngest"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "request_id": {
             "title": "Request Id",
@@ -1195,6 +1318,347 @@
           "request_id"
         ],
         "title": "LangfuseTraceResponse",
+        "type": "object"
+      },
+      "QualityGateResponse": {
+        "properties": {
+          "average_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Score"
+          },
+          "candidate_version": {
+            "title": "Candidate Version",
+            "type": "string"
+          },
+          "eval_spec_id": {
+            "format": "uuid",
+            "title": "Eval Spec Id",
+            "type": "string"
+          },
+          "evaluation_source": {
+            "title": "Evaluation Source",
+            "type": "string"
+          },
+          "experiment_run_id": {
+            "format": "uuid",
+            "title": "Experiment Run Id",
+            "type": "string"
+          },
+          "external_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Run Id"
+          },
+          "gate_explanation": {
+            "title": "Gate Explanation",
+            "type": "string"
+          },
+          "gate_status": {
+            "title": "Gate Status",
+            "type": "string"
+          },
+          "ingest_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ingest Source"
+          },
+          "pass_threshold": {
+            "title": "Pass Threshold",
+            "type": "number"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "experiment_run_id",
+          "eval_spec_id",
+          "candidate_version",
+          "gate_status",
+          "gate_explanation",
+          "evaluation_source",
+          "pass_threshold",
+          "request_id"
+        ],
+        "title": "QualityGateResponse",
+        "type": "object"
+      },
+      "RunIngestEnvelope": {
+        "properties": {
+          "agent": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent"
+          },
+          "agent_version": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Version"
+          },
+          "artifact_paths": {
+            "additionalProperties": true,
+            "title": "Artifact Paths",
+            "type": "object"
+          },
+          "candidate_version": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Version"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "eval_spec_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eval Spec Id"
+          },
+          "eval_summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eval Summary"
+          },
+          "failure_packet": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Packet"
+          },
+          "outputs": {
+            "additionalProperties": true,
+            "title": "Outputs",
+            "type": "object"
+          },
+          "run_id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scenario Ids",
+            "type": "array"
+          },
+          "schema_version": {
+            "maxLength": 16,
+            "minLength": 1,
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "subject_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Id"
+          },
+          "suite": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suite"
+          },
+          "suite_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suite Id"
+          },
+          "tenant_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tenant Id"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source",
+          "run_id"
+        ],
+        "title": "RunIngestEnvelope",
+        "type": "object"
+      },
+      "RunIngestResponse": {
+        "properties": {
+          "experiment_run": {
+            "$ref": "#/components/schemas/ExperimentRun"
+          },
+          "experiment_run_id": {
+            "format": "uuid",
+            "title": "Experiment Run Id",
+            "type": "string"
+          },
+          "external_run_id": {
+            "title": "External Run Id",
+            "type": "string"
+          },
+          "gate_explanation": {
+            "title": "Gate Explanation",
+            "type": "string"
+          },
+          "gate_status": {
+            "title": "Gate Status",
+            "type": "string"
+          },
+          "lab_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lab Run Id"
+          },
+          "platform_run_id": {
+            "format": "uuid",
+            "title": "Platform Run Id",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          }
+        },
+        "required": [
+          "platform_run_id",
+          "experiment_run_id",
+          "external_run_id",
+          "gate_status",
+          "gate_explanation",
+          "experiment_run"
+        ],
+        "title": "RunIngestResponse",
         "type": "object"
       },
       "UpdateEvalCaseRequest": {
@@ -2383,6 +2847,24 @@
           },
           {
             "in": "query",
+            "name": "ingest_source",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ingest Source"
+            }
+          },
+          {
+            "in": "query",
             "name": "limit",
             "required": false,
             "schema": {
@@ -2590,6 +3072,83 @@
         ]
       }
     },
+    "/v1/experiment-runs/{experiment_run_id}/gate": {
+      "get": {
+        "operationId": "get_experiment_run_gate_v1_experiment_runs__experiment_run_id__gate_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "experiment_run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Experiment Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tenant_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QualityGateResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Experiment Run Gate",
+        "tags": [
+          "experiment-runs"
+        ]
+      }
+    },
     "/v1/experiment-runs/{experiment_run_id}/summary": {
       "get": {
         "operationId": "get_experiment_run_summary_v1_experiment_runs__experiment_run_id__summary_get",
@@ -2689,6 +3248,67 @@
         "summary": "Health",
         "tags": [
           "health"
+        ]
+      }
+    },
+    "/v1/integrations/lab/publish": {
+      "post": {
+        "deprecated": true,
+        "description": "Deprecated: use POST /v1/integrations/runs/publish. Accepts the same envelope.",
+        "operationId": "publish_lab_run_v1_integrations_lab_publish_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunIngestEnvelope"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunIngestResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Publish lab run (legacy alias)",
+        "tags": [
+          "integrations"
         ]
       }
     },
@@ -2809,6 +3429,65 @@
           }
         },
         "summary": "Langfuse Trace",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/v1/integrations/runs/publish": {
+      "post": {
+        "operationId": "publish_external_run_v1_integrations_runs_publish_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunIngestEnvelope"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunIngestResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Publish External Run",
         "tags": [
           "integrations"
         ]

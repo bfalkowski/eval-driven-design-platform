@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Protocol
 from uuid import UUID
 
-from app.domain.models import EvalCase, EvalSpec, EvaluationResult, ExperimentRun, JudgeConfig
+from app.domain.models import EvalCase, EvalSpec, EvaluationResult, ExperimentRun, ExperimentRunIngest, JudgeConfig
 
 
 class EddRepository(Protocol):
@@ -79,6 +79,7 @@ class EddRepository(Protocol):
         status: str,
         result_count: int,
         completed_at: datetime | None,
+        ingest: ExperimentRunIngest | None = None,
     ) -> ExperimentRun: ...
 
     async def list_experiment_runs(
@@ -86,6 +87,7 @@ class EddRepository(Protocol):
         *,
         tenant_id: str,
         eval_spec_id: UUID | None = None,
+        ingest_source: str | None = None,
         limit: int = 100,
     ) -> list[ExperimentRun]: ...
 

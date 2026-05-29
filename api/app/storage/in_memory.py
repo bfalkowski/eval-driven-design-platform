@@ -11,6 +11,7 @@ from app.domain.models import (
     EvalSpec,
     EvaluationResult,
     ExperimentRun,
+    ExperimentRunIngest,
     ExperimentRunStatus,
     JudgeConfig,
 )
@@ -187,6 +188,7 @@ class InMemoryEddRepository:
         status: str,
         result_count: int,
         completed_at: datetime | None,
+        ingest: ExperimentRunIngest | None = None,
     ) -> ExperimentRun:
         now = datetime.now(UTC)
         run = ExperimentRun(
@@ -199,6 +201,7 @@ class InMemoryEddRepository:
             created_at=now,
             updated_at=now,
             completed_at=completed_at,
+            ingest=ingest,
         )
         async with self._lock:
             self._runs[run.experiment_run_id] = run
@@ -209,12 +212,19 @@ class InMemoryEddRepository:
         *,
         tenant_id: str,
         eval_spec_id: UUID | None = None,
+        ingest_source: str | None = None,
         limit: int = 100,
     ) -> list[ExperimentRun]:
         async with self._lock:
             rows = [run for run in self._runs.values() if run.tenant_id == tenant_id]
         if eval_spec_id is not None:
             rows = [run for run in rows if run.eval_spec_id == eval_spec_id]
+        if ingest_source is not None:
+            rows = [
+                run
+                for run in rows
+                if run.ingest is not None and run.ingest.source == ingest_source
+            ]
         rows.sort(key=lambda run: run.created_at, reverse=True)
         return rows[:limit]
 

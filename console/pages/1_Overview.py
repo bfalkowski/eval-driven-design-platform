@@ -8,6 +8,16 @@ client, auth_mode, tenant_id = render_platform_sidebar()
 render_overview_header(client_base_url=client.base_url, auth_mode=auth_mode)
 workflow_loop()
 
+
+def _gate_pill(gate_status: str) -> tuple[str, str]:
+    mapping = {
+        "pass": ("Pass", "green"),
+        "fail": ("Fail", "red"),
+        "insufficient_evidence": ("Insufficient", "yellow"),
+    }
+    return mapping.get(gate_status, (gate_status.title(), "blue"))
+
+
 metric_cols = st.columns(4)
 try:
     health = client.health()
@@ -22,22 +32,28 @@ try:
 
     api_status = "Healthy" if health.get("status") == "ok" else "Unknown"
 
-    latest_pass_rate = "-"
+    latest_gate = "-"
     latest_candidate = "No runs yet"
     if run_list:
-        latest_summary = client.get_experiment_run_summary(
+        latest_run = run_list[0]
+        latest_gate_info = client.get_experiment_run_gate(
             tenant_id=tenant_id,
-            experiment_run_id=run_list[0]["experiment_run_id"],
+            experiment_run_id=latest_run["experiment_run_id"],
         )
-        latest_pass_rate = f"{latest_summary.get('pass_rate', 0) * 100:.0f}%"
-        latest_candidate = latest_summary.get("candidate_version", "-")
+        latest_gate = latest_gate_info.get("gate_status", "-")
+        source = (
+            latest_gate_info.get("ingest_source")
+            or (latest_run.get("ingest") or {}).get("source")
+            or "platform"
+        )
+        latest_candidate = f"{latest_gate_info.get('candidate_version', '-')} · {source}"
 
     with metric_cols[0]:
         metric_card("Eval Specs", str(spec_count), "Definitions of success")
     with metric_cols[1]:
         metric_card("Eval Cases", str(case_count), "Reusable regression cases")
     with metric_cols[2]:
-        metric_card("Latest Pass Rate", latest_pass_rate, latest_candidate)
+        metric_card("Latest Gate", latest_gate, latest_candidate)
     with metric_cols[3]:
         metric_card("API", api_status, ready.get("status", "unknown"))
 
@@ -46,20 +62,19 @@ try:
         st.info("No experiment runs yet. Create a spec and case, then run a candidate on the Runs page.")
     else:
         for run in run_list[:3]:
-            summary = client.get_experiment_run_summary(
+            gate = client.get_experiment_run_gate(
                 tenant_id=tenant_id,
                 experiment_run_id=run["experiment_run_id"],
             )
-            failed_count = summary.get("failed_count", 0)
-            status_label = "Passed" if failed_count == 0 else "Failed"
-            status = "green" if failed_count == 0 else "red"
+            ingest = run.get("ingest") or {}
+            source = gate.get("ingest_source") or ingest.get("source") or "platform"
+            status_label, status = _gate_pill(gate.get("gate_status", "unknown"))
             subtitle = (
-                f"{summary.get('result_count', 0)} cases · "
-                f"{summary.get('pass_rate', 0) * 100:.0f}% pass rate · "
-                f"avg score {summary.get('average_score', 0):.1f}"
+                f"{source} · {gate.get('evaluation_source', 'unknown')} · "
+                f"{gate.get('gate_explanation', '')[:80]}"
             )
             run_card(
-                f"{summary.get('candidate_version', '-')} · {run['experiment_run_id'][:8]}",
+                f"{gate.get('candidate_version', '-')} · {run['experiment_run_id'][:8]}",
                 subtitle,
                 status_label,
                 status,
@@ -81,6 +96,14 @@ try:
         langfuse.get("message", "Langfuse integration status unavailable."),
         langfuse_label,
         langfuse_pill,
+    )
+    ingest_count = sum(1 for run in run_list if run.get("ingest"))
+    integration_card(
+        "External run ingest",
+        f"{ingest_count} of {len(run_list)} recent run(s) include ingest provenance. "
+        "Publish via POST /v1/integrations/runs/publish.",
+        "Active" if ingest_count else "Ready",
+        "green" if ingest_count else "blue",
     )
 except RuntimeError as exc:
     show_api_error(exc)

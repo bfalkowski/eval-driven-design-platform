@@ -12,9 +12,11 @@ from app.domain.models import (
     ExperimentRunListResponse,
     ExperimentRunResponse,
     ExperimentRunSummaryResponse,
+    QualityGateResponse,
 )
 from app.integrations.langfuse_client import LangfuseClientAdapter
 from app.services.experiment_service import ExperimentService
+from app.services.quality_gate_service import QualityGateService
 from app.storage.base import EddRepository
 
 router = APIRouter(prefix="/v1/experiment-runs", tags=["experiment-runs"])
@@ -24,6 +26,11 @@ def get_experiment_service(request: Request) -> ExperimentService:
     repository = cast(EddRepository, request.app.state.repository)
     langfuse_adapter = cast(LangfuseClientAdapter, request.app.state.langfuse_adapter)
     return ExperimentService(repository, langfuse_adapter)
+
+
+def get_quality_gate_service(request: Request) -> QualityGateService:
+    repository = cast(EddRepository, request.app.state.repository)
+    return QualityGateService(repository)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=ExperimentRunResponse)
@@ -48,12 +55,14 @@ async def list_experiment_runs(
     request: Request,
     tenant_id: Annotated[str, Depends(tenant_query)],
     eval_spec_id: Annotated[UUID | None, Query()] = None,
+    ingest_source: Annotated[str | None, Query(min_length=1, max_length=64)] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     repository: EddRepository = Depends(get_repository),
 ) -> ExperimentRunListResponse:
     runs = await repository.list_experiment_runs(
         tenant_id=tenant_id,
         eval_spec_id=eval_spec_id,
+        ingest_source=ingest_source,
         limit=limit,
     )
     return ExperimentRunListResponse(
@@ -88,3 +97,17 @@ async def get_experiment_run_summary(
         experiment_run_id=experiment_run_id,
     )
     return ExperimentRunSummaryResponse(**summary.model_dump(), request_id=request.state.request_id)
+
+
+@router.get("/{experiment_run_id}/gate", response_model=QualityGateResponse)
+async def get_experiment_run_gate(
+    experiment_run_id: UUID,
+    request: Request,
+    tenant_id: Annotated[str, Depends(tenant_query)],
+    service: QualityGateService = Depends(get_quality_gate_service),
+) -> QualityGateResponse:
+    evaluation = await service.evaluate(
+        tenant_id=tenant_id,
+        experiment_run_id=experiment_run_id,
+    )
+    return QualityGateResponse(**evaluation.model_dump(), request_id=request.state.request_id)

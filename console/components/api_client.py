@@ -100,11 +100,14 @@ class ServiceClient:
         *,
         tenant_id: str | None,
         eval_spec_id: str | None = None,
+        ingest_source: str | None = None,
         limit: int = 50,
     ) -> dict[str, Any]:
         params: dict[str, Any] = {"limit": limit, **self._tenant_params(tenant_id)}
         if eval_spec_id:
             params["eval_spec_id"] = eval_spec_id
+        if ingest_source:
+            params["ingest_source"] = ingest_source
         return self._request("GET", "/v1/experiment-runs", params=params)
 
     def create_experiment_run(
@@ -134,6 +137,18 @@ class ServiceClient:
         return self._request(
             "GET",
             f"/v1/experiment-runs/{experiment_run_id}/summary",
+            params=self._tenant_params(tenant_id),
+        )
+
+    def get_experiment_run_gate(
+        self,
+        *,
+        tenant_id: str | None,
+        experiment_run_id: str,
+    ) -> dict[str, Any]:
+        return self._request(
+            "GET",
+            f"/v1/experiment-runs/{experiment_run_id}/gate",
             params=self._tenant_params(tenant_id),
         )
 

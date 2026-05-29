@@ -59,16 +59,19 @@ Langfuse adapter is invoked from the API when integration is enabled.
 3. **Run an ExperimentRun** — against a candidate version (e.g. `prompt_v4`).
 4. **Review results** — scores, justifications, and Langfuse trace links in the console.
 5. **Iterate** — adjust the candidate or cases and re-run.
-6. **Quality gate** *(planned)* — CI-style pass/fail on thresholds before shipping a change.
+6. **Quality gate** — `./scripts/run_quality_gate.sh` or **Quality Gates** page in the console.
 
 With Langfuse enabled (`./scripts/local_e2e.sh --postgres --langfuse`), runs can create traces and push scores when integration is configured.
+
+External producers (e.g. `edd-agent-lab`) publish runs via `POST /v1/integrations/runs/publish`; gate and provenance are stored on the experiment run.
 
 ## What you get (target MVP)
 
 - **EvalSpec** — what “good” means (rubric, thresholds, judge config)
 - **EvalCase** — reusable cases (manual or imported from Langfuse traces)
 - **ExperimentRun** — compare candidates (`prompt_v3` vs `prompt_v4`)
-- **Quality gates** — CI-style pass/fail on thresholds *(planned — Phase 7)*
+- **Quality gates** — unified gate API, console page, and CI script
+- **External run ingest** — generic publish endpoint with provenance on runs
 - **Streamlit console** — Observe → Case → Run → Evaluate → Decide
 - **Langfuse adapter** — health, trace fetch, import case, score push, trace create on run
 
@@ -80,22 +83,25 @@ With Langfuse enabled (`./scripts/local_e2e.sh --postgres --langfuse`), runs can
 - FastAPI control plane: health, ready, metrics, demo JWT auth, tenant-scoped APIs
 - **EvalSpec** and **EvalCase** CRUD (Postgres and in-memory storage)
 - **ExperimentRun** API with deterministic mock scaffold and mock evaluator
-- Run summaries and **evaluation results** listing
-- Streamlit console: Overview, Eval Specs, Cases, Runs, Results Explorer, Langfuse, Operations
+- Run summaries, **evaluation results**, and **quality gate** evaluation
+- **External run ingest** (`POST /v1/integrations/runs/publish`) with persisted provenance
+- Streamlit console: Overview, Eval Specs, Cases, Runs, Results Explorer, Quality Gates, Langfuse, Operations
 - Optional **Langfuse**: health, get trace, import case, push scores, create trace on run
 - Local dev: `local_e2e.sh`, seed script, Docker images, Helm skeleton
 - CI: tests, Ruff, mypy, OpenAPI drift, pip-audit, Dockerfile policy, image builds, kubeconform
 
 ### Remaining
 
-See **`EVAL_DRIVEN_DESIGN_PLAN.md`** for Phases 7–8 (quality gates, demo polish).
+See **`EVAL_DRIVEN_DESIGN_PLAN.md`** for Phase 8 polish (diagram refresh, Helm tweaks).
 
 | Phase | Scope | Status |
 |-------|--------|--------|
 | 0–4 | Skeleton, platform spine, CRUD, Langfuse adapter | Done |
 | 5–6 | Score push, trace links, trace import | Done |
-| 7 | Quality gates | Planned |
-| 8 | Demo script and baseline polish | Planned |
+| 7 | Quality gates + external run ingest | Done |
+| 8 | Demo script and baseline polish | In progress |
+
+**Demo walkthrough:** `docs/DEMO_SCRIPT.md` · **CI gate:** `docs/QUALITY_GATE_CI.md`
 
 ## Repo layout
 
@@ -104,7 +110,8 @@ api/       FastAPI control plane (edd-api)
 console/   Streamlit operator UI (edd-console)
 worker/    Platform shell (OTel/logging; async eval jobs later)
 deploy/    docker-compose, Helm
-scripts/   local_e2e.sh, build_images.sh, seed_demo_data.py
+scripts/   local_e2e.sh, build_images.sh, seed_demo_data.py, run_quality_gate.sh
+docs/      DEMO_SCRIPT.md, QUALITY_GATE_CI.md, PRODUCT_VISION.md
 ```
 
 ## Quick start
