@@ -1,5 +1,7 @@
 # Eval Driven Design Platform
 
+**Repo:** [github.com/bfalkowski/eval-driven-design-platform](https://github.com/bfalkowski/eval-driven-design-platform) · **Lab:** [github.com/bfalkowski/edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab)
+
 A clean-room **control plane for eval-driven AI development** on top of [Langfuse](https://langfuse.com).
 
 The platform shows how teams can define success criteria, turn observed failures into
@@ -16,7 +18,7 @@ Streamlit operator UI on **`:8501`** — Design → Build → Evaluate → Promo
 
 ![Eval Driven Design Platform console — Overview](docs/images/console-overview.jpg)
 
-**Lab workbench** (compare v0/v1, publish runs) lives in [edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab) on **`:8502`** — see [12-lab-console-design.md](https://github.com/bfalkowski/edd-agent-lab/blob/main/docs/12-lab-console-design.md).
+**Lab workbench** (compare v0/v1, publish runs) lives in **[edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab)** on **`:8502`** — [lab console design](https://github.com/bfalkowski/edd-agent-lab/blob/main/docs/12-lab-console-design.md).
 
 ## Why this exists
 
@@ -65,9 +67,9 @@ Langfuse adapter is invoked from the API when integration is enabled.
 
 With Langfuse enabled (`./scripts/local_e2e.sh --postgres --langfuse`), runs can create traces and push scores when integration is configured.
 
-External producers (e.g. `edd-agent-lab`) publish runs via `POST /v1/integrations/runs/publish`; gate and provenance are stored on the experiment run.
+External producers publish from **[edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab)** via `POST /v1/integrations/runs/publish`; gate and provenance are stored on the experiment run.
 
-**Reference demo:** `edd-lab demo-escalation` and `./scripts/demo_customer_escalation_triage.sh` in [edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab) — see [HLD-005](docs/hld/HLD-005-reference-scenario-customer-escalation-triage.md).
+**Reference demo:** [`edd-lab demo-escalation`](https://github.com/bfalkowski/edd-agent-lab) and [`scripts/demo_customer_escalation_triage.sh`](https://github.com/bfalkowski/edd-agent-lab/blob/main/scripts/demo_customer_escalation_triage.sh) — see [HLD-005](docs/hld/HLD-005-reference-scenario-customer-escalation-triage.md).
 
 ## What you get (target MVP)
 
@@ -113,7 +115,12 @@ Canonical plan: **`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`**
 
 ## High-level design (HLD)
 
-Architecture and MVP implementation for the **EDD stack** (**eval-driven-design-platform** + **edd-agent-lab**):
+Architecture and MVP implementation for the **EDD stack**:
+
+| Repo | Role |
+|---|---|
+| **[eval-driven-design-platform](https://github.com/bfalkowski/eval-driven-design-platform)** | Control plane — API, console (`:8501`), gates, promotion |
+| **[edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab)** | Agent workshop — LangGraph agents, local evals, workbench (`:8502`) |
 
 - [HLD index](docs/hld/README.md)
 - [HLD-001: Product intent and system boundaries](docs/hld/HLD-001-product-intent-and-system-boundaries.md)
@@ -155,7 +162,7 @@ cp .env.example .env
 - API: http://localhost:8000/docs
 - Langfuse: http://localhost:3001 when using `--langfuse` (`admin@local.dev` / `local-demo-password`)
 
-Lab workbench (separate repo): `edd-lab console` → http://localhost:8502
+Lab workbench: clone [edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab), then `edd-lab console` → http://localhost:8502
 
 Stop: `./scripts/local_e2e.sh --stop`
 
