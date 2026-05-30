@@ -94,6 +94,11 @@ jobs:
         working-directory: api
         run: uv sync --extra dev
 
+      - name: Verify publish fixtures match lab copies
+        run: ./scripts/check_publish_fixtures_sync.sh
+        env:
+          EDD_LAB_ROOT: ${{ github.workspace }}/edd-agent-lab
+
       - name: Start API and run lab publish smoke
         env:
           APP_STORAGE_BACKEND: memory
