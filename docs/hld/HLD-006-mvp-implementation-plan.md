@@ -370,6 +370,8 @@ fetch_customer_context_from_scenario
 
 Lab publishes run artifacts to the platform with enough structure to tell the reference story.
 
+**Canonical contract:** [HLD-007: Platform API and integration](HLD-007-platform-api-and-integration.md) (envelope v2, readiness response, idempotency, validation).
+
 ### Repos
 
 **eval-driven-design-platform** + **edd-agent-lab**
@@ -423,7 +425,7 @@ Extend today’s publish envelope. Target shape:
 }
 ```
 
-**Today:** v1 envelope with `eval_summary`, `failure_packet`, ingest metadata — see edd-agent-lab `docs/05-platform-integration.md`.
+**Today:** v1 envelope with `eval_summary`, `failure_packet`, ingest metadata — see [HLD-007](HLD-007-platform-api-and-integration.md) and edd-agent-lab `docs/05-platform-integration.md`.
 
 ### Target response payload
 
@@ -703,6 +705,7 @@ If the Customer Escalation Triage Agent works end to end, the foundation is soun
 |---|---|---|
 | [HLD index](README.md) | eval-driven-design-platform | HLD series |
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | eval-driven-design-platform | Golden payloads |
+| [HLD-007](HLD-007-platform-api-and-integration.md) | eval-driven-design-platform | Publish API contract |
 | [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) | eval-driven-design-platform | Phases 9–14 mapping |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Current platform demo |
 | `docs/05-platform-integration.md` | edd-agent-lab | Publish seam today |

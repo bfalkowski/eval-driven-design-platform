@@ -12,3 +12,4 @@ These HLDs define intent and constraints. Platform delivery phases are in [`EVAL
 | [HLD-004](HLD-004-tool-requirements-and-feasibility.md) | Tool Requirements and Feasibility | Draft |
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | Reference Scenario — Customer Escalation Triage | Draft |
 | [HLD-006](HLD-006-mvp-implementation-plan.md) | MVP Implementation Plan | Draft |
+| [HLD-007](HLD-007-platform-api-and-integration.md) | Platform API and Integration | Draft |

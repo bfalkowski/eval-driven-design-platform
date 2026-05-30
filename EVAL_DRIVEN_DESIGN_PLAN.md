@@ -247,7 +247,7 @@ Build **after** Phase 8 validation. Follow [HLD-006](docs/hld/HLD-006-mvp-implem
 - [ ] Lab tests: `publish.py` envelope matches fixtures
 - [ ] Cross-repo CI: platform up → `test_platform_publish.sh` (auth-aware)
 
-**Exit:** Lab publish seam protected in CI. See [HLD-006 Milestone 4](docs/hld/HLD-006-mvp-implementation-plan.md) and envelope v2 in HLD-004.
+**Exit:** Lab publish seam protected in CI. See [HLD-007](docs/hld/HLD-007-platform-api-and-integration.md) (publish contract) and [HLD-006 Milestone 4](docs/hld/HLD-006-mvp-implementation-plan.md).
 
 ### Phase 10 — Design intent on platform
 
