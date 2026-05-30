@@ -7,14 +7,17 @@ from fastapi import APIRouter, Depends, Query, Request, status
 
 from app.api.deps import get_repository, tenant_from_context_or_request, tenant_query
 from app.core.auth import RequestContext, get_request_context
+from app.core.errors import NotFoundError
 from app.domain.models import (
     CreateExperimentRunRequest,
     ExperimentRunListResponse,
     ExperimentRunResponse,
     ExperimentRunSummaryResponse,
     QualityGateResponse,
+    RunEvidenceResponse,
 )
 from app.integrations.langfuse_client import LangfuseClientAdapter
+from app.services.evidence_normalization import normalize_run_evidence
 from app.services.experiment_service import ExperimentService
 from app.services.quality_gate_service import QualityGateService
 from app.storage.base import EddRepository
@@ -111,3 +114,54 @@ async def get_experiment_run_gate(
         experiment_run_id=experiment_run_id,
     )
     return QualityGateResponse(**evaluation.model_dump(), request_id=request.state.request_id)
+
+
+@router.get("/{experiment_run_id}/evidence", response_model=RunEvidenceResponse)
+async def get_experiment_run_evidence(
+    experiment_run_id: UUID,
+    request: Request,
+    tenant_id: Annotated[str, Depends(tenant_query)],
+    repository: EddRepository = Depends(get_repository),
+) -> RunEvidenceResponse:
+    run = await repository.get_experiment_run(
+        tenant_id=tenant_id,
+        experiment_run_id=experiment_run_id,
+    )
+    ingest = run.ingest
+    if ingest is None:
+        raise NotFoundError("Experiment run has no ingest evidence.")
+
+    evidence = ingest.evidence
+    if evidence is None:
+        evidence = normalize_run_evidence(
+            experiment_run_id=run.experiment_run_id,
+            agent_version_id=run.candidate_version,
+            failure_packet=ingest.failure_packet,
+            fix_plan=ingest.fix_plan,
+            comparison=ingest.comparison,
+            gate_result=ingest.gate_result,
+        )
+    elif evidence.failure_packet is not None and not evidence.failure_packet.experiment_run_id:
+        evidence = evidence.model_copy(
+            update={
+                "failure_packet": evidence.failure_packet.model_copy(
+                    update={"experiment_run_id": str(run.experiment_run_id)}
+                )
+            }
+        )
+
+    if not any(
+        (
+            evidence.failure_packet,
+            evidence.fix_plan,
+            evidence.comparison,
+            evidence.gate_result,
+        )
+    ):
+        raise NotFoundError("No structured evidence is available for this experiment run.")
+
+    return RunEvidenceResponse(
+        **evidence.model_dump(),
+        experiment_run_id=run.experiment_run_id,
+        request_id=request.state.request_id,
+    )

@@ -1,0 +1,38 @@
+comparison:
+  id: compare-v0-v1-escalation-triage
+  baseline_version_id: v0-baseline
+  candidate_version_id: v1-evidence-triage-graph
+  target_id: customer-escalation-triage-target-v1
+  eval_contract_id: customer-escalation-triage-eval-contract-v1
+  scenario_set_id: escalation-core-scenarios
+  score_delta:
+    diagnostic_grounding:
+      v0: 2
+      v1: 5
+      delta: 3
+    change_correlation_quality:
+      v0: 3
+      v1: 4
+      delta: 1
+    impact_assessment_quality:
+      v0: 2
+      v1: 4
+      delta: 2
+    action_plan_quality:
+      v0: 3
+      v1: 4
+      delta: 1
+    customer_communication_quality:
+      v0: 2
+      v1: 5
+      delta: 3
+  resolved_failures:
+    - fp-v0-unsupported-root-cause
+  new_failures: []
+  regression_warnings:
+    - v1 has higher latency and token usage because it performs evidence normalization.
+  summary: >
+    v1 improves because it no longer claims a confirmed root cause. It separates
+    facts, hypotheses, and unknowns, considers multiple evidence sources, and
+    drafts a safer customer update. Production readiness remains blocked because
+    several required tools are mock/local only.

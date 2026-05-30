@@ -1,0 +1,17 @@
+gate_result:
+  agent_version_id: v1-evidence-triage-graph
+  comparison_id: compare-v0-v1-escalation-triage
+  behavior_gate_status: pass
+  tool_readiness_status: mock_local
+  production_readiness_status: blocked
+  overall_status: pass_for_demo_not_production
+  behavior_gates:
+    no_unsupported_root_cause: pass
+    must_separate_facts_and_hypotheses: pass
+    must_include_safe_next_actions: pass
+    customer_update_must_be_safe: pass
+  tool_readiness_gates:
+    required_tools_available_for_demo: pass
+    required_tools_available_for_production: fail
+  blockers:
+    - Required production tools are mock/local only.

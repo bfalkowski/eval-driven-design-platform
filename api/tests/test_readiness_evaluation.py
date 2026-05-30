@@ -48,6 +48,19 @@ def test_evaluate_readiness_infers_tool_mode_from_bindings() -> None:
     assert evaluation.overall_status == "pass_for_demo_not_production"
 
 
+def test_evaluate_readiness_structured_failure_includes_rule_id() -> None:
+    evaluation = evaluate_readiness(
+        pass_threshold=70.0,
+        overall_score=95.0,
+        failure_packet={
+            "id": "fp-v0-unsupported-root-cause",
+            "failed_rule": "separate_facts_from_hypotheses",
+        },
+    )
+    assert evaluation.behavior_status == "fail"
+    assert "separate_facts_from_hypotheses" in evaluation.gate_explanation
+
+
 def test_evaluate_readiness_failure_packet_fails_all_dimensions() -> None:
     evaluation = evaluate_readiness(
         pass_threshold=70.0,

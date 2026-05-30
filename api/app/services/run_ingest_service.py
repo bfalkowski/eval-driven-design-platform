@@ -13,6 +13,7 @@ from app.domain.models import (
     RunIngestEnvelope,
     RunIngestResponse,
 )
+from app.services.evidence_normalization import normalize_run_evidence
 from app.services.readiness_evaluation import compute_gate as _compute_gate
 from app.services.readiness_evaluation import evaluate_readiness
 from app.storage.base import EddRepository
@@ -84,6 +85,21 @@ class RunIngestService:
             production_ready=normalized.production_ready,
             tool_bindings=normalized.tool_bindings,
         )
+        evidence = normalize_run_evidence(
+            agent_version_id=candidate_version,
+            failure_packet=normalized.failure_packet,
+            fix_plan=normalized.fix_plan,
+            comparison=normalized.comparison,
+            gate_result=normalized.gate_result,
+        )
+        has_evidence = any(
+            (
+                evidence.failure_packet,
+                evidence.fix_plan,
+                evidence.comparison,
+                evidence.gate_result,
+            )
+        )
 
         ingest = ExperimentRunIngest(
             source=normalized.source,
@@ -106,6 +122,10 @@ class RunIngestService:
             scenario_ids=list(normalized.scenario_ids),
             eval_summary=normalized.eval_summary,
             failure_packet=normalized.failure_packet,
+            fix_plan=normalized.fix_plan,
+            comparison=normalized.comparison,
+            gate_result=normalized.gate_result,
+            evidence=evidence if has_evidence else None,
             outputs=dict(normalized.outputs),
             artifact_paths=dict(normalized.artifact_paths),
         )

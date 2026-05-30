@@ -107,6 +107,14 @@ def _evaluate_behavior(
     failure_packet: dict[str, Any] | None,
 ) -> tuple[str, str]:
     if failure_packet:
+        failed_rule = failure_packet.get("failed_behavior_rule_id") or failure_packet.get(
+            "failed_rule"
+        )
+        if failed_rule:
+            return (
+                _BEHAVIOR_FAIL,
+                f"Ingest reported failure for behavior rule `{failed_rule}`.",
+            )
         failure_type = failure_packet.get("failure_type") or failure_packet.get("summary")
         detail = f" ({failure_type})" if failure_type else ""
         return _BEHAVIOR_FAIL, f"Ingest reported a failure packet{detail}."

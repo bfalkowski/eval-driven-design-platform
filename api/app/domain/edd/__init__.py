@@ -3,6 +3,13 @@
 from app.domain.edd.agent import Agent, AgentTarget
 from app.domain.edd.artifacts import load_yaml_document
 from app.domain.edd.eval_contract import EvalContract, EvalContractGate, EvalMetric
+from app.domain.edd.evidence import (
+    Comparison,
+    FailurePacket,
+    FixPlan,
+    RunEvidence,
+    VersionGateSummary,
+)
 from app.domain.edd.graph_design import GraphDesign, GraphNode
 from app.domain.edd.readiness import ReadinessEvaluation
 from app.domain.edd.requirements import (
@@ -20,8 +27,13 @@ __all__ = [
     "EvalContract",
     "EvalContractGate",
     "EvalMetric",
+    "Comparison",
+    "FailurePacket",
+    "FixPlan",
     "GraphDesign",
     "GraphNode",
+    "RunEvidence",
+    "VersionGateSummary",
     "InformationRequirement",
     "ReadinessEvaluation",
     "ToolBinding",

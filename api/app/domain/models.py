@@ -7,6 +7,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.domain.edd.evidence import RunEvidence
+
 
 class ExperimentRunStatus(StrEnum):
     COMPLETED = "completed"
@@ -121,6 +123,10 @@ class ExperimentRunIngest(BaseModel):
     scenario_ids: list[str] = Field(default_factory=list)
     eval_summary: dict[str, Any] | None = None
     failure_packet: dict[str, Any] | None = None
+    fix_plan: dict[str, Any] | None = None
+    comparison: dict[str, Any] | None = None
+    gate_result: dict[str, Any] | None = None
+    evidence: RunEvidence | None = None
     outputs: dict[str, Any] = Field(default_factory=dict)
     artifact_paths: dict[str, Any] = Field(default_factory=dict)
 
@@ -190,6 +196,11 @@ class QualityGateEvaluation(BaseModel):
 
 
 class QualityGateResponse(QualityGateEvaluation):
+    request_id: str
+
+
+class RunEvidenceResponse(RunEvidence):
+    experiment_run_id: UUID
     request_id: str
 
 
@@ -270,6 +281,9 @@ class RunIngestEnvelope(BaseModel):
     outputs: dict[str, Any] = Field(default_factory=dict)
     eval_summary: dict[str, Any] | None = None
     failure_packet: dict[str, Any] | None = None
+    fix_plan: dict[str, Any] | None = None
+    comparison: dict[str, Any] | None = None
+    gate_result: dict[str, Any] | None = None
     artifact_paths: dict[str, Any] = Field(default_factory=dict)
     tool_mode_summary: str | None = Field(default=None, max_length=64)
     production_ready: bool | None = None

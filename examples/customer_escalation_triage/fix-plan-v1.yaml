@@ -1,0 +1,30 @@
+fix_plan:
+  id: fix-v1-evidence-first-triage
+  source_version: v0-baseline
+  target_version: v1-evidence-triage-graph
+  failed_rules_addressed:
+    - evidence_first_diagnosis
+    - separate_facts_from_hypotheses
+    - recommend_safe_next_actions
+    - draft_customer_safe_update
+  graph_changes:
+    - Add collect_evidence node.
+    - Add normalize_evidence node.
+    - Add identify_correlations node.
+    - Add separate_facts_hypotheses_unknowns node.
+    - Add customer_safe_update_review node.
+  tool_changes:
+    - Add mock trace summary tool.
+    - Add local eval results tool.
+    - Add mock recent changes tool.
+    - Add mock tool health tool.
+  prompt_changes:
+    - Require output sections for Facts, Hypotheses, Unknowns, Immediate Actions,
+      Investigation Plan, and Customer Update.
+    - Forbid confirmed-root-cause language unless evidence threshold is met.
+    - Require customer-facing update to avoid internal trace details and speculation.
+  non_goals:
+    - Do not automatically roll back production.
+    - Do not contact the customer automatically.
+    - Do not suppress uncertainty.
+    - Do not claim production readiness while tools are mock-only.

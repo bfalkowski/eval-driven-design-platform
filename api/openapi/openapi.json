@@ -1,6 +1,177 @@
 {
   "components": {
     "schemas": {
+      "Comparison": {
+        "properties": {
+          "baseline_version_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Version Id"
+          },
+          "candidate_version_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Version Id"
+          },
+          "eval_contract_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eval Contract Id"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "new_failure_packet_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "New Failure Packet Ids",
+            "type": "array"
+          },
+          "regression_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Regression Warnings",
+            "type": "array"
+          },
+          "resolved_failure_packet_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Resolved Failure Packet Ids",
+            "type": "array"
+          },
+          "scenario_set_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Set Id"
+          },
+          "score_deltas": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ComparisonMetricDelta"
+                },
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                }
+              ]
+            },
+            "title": "Score Deltas",
+            "type": "object"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "target_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Id"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Comparison",
+        "type": "object"
+      },
+      "ComparisonMetricDelta": {
+        "properties": {
+          "baseline": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline"
+          },
+          "candidate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta"
+          }
+        },
+        "title": "ComparisonMetricDelta",
+        "type": "object"
+      },
       "CreateEvalCaseRequest": {
         "properties": {
           "eval_spec_id": {
@@ -816,6 +987,18 @@
             ],
             "title": "Behavior Status"
           },
+          "comparison": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison"
+          },
           "eval_contract_ref_id": {
             "anyOf": [
               {
@@ -839,6 +1022,16 @@
             ],
             "title": "Eval Summary"
           },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunEvidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "external_run_id": {
             "title": "External Run Id",
             "type": "string"
@@ -855,6 +1048,18 @@
             ],
             "title": "Failure Packet"
           },
+          "fix_plan": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fix Plan"
+          },
           "gate_explanation": {
             "anyOf": [
               {
@@ -865,6 +1070,18 @@
               }
             ],
             "title": "Gate Explanation"
+          },
+          "gate_result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gate Result"
           },
           "gate_status": {
             "anyOf": [
@@ -1194,6 +1411,260 @@
         "title": "ExperimentRunSummaryResponse",
         "type": "object"
       },
+      "FailurePacket": {
+        "properties": {
+          "agent_version_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Version Id"
+          },
+          "expected_behavior": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Behavior"
+          },
+          "experiment_run_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Run Id"
+          },
+          "failed_behavior_rule_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failed Behavior Rule Id"
+          },
+          "failure_type": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Type"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "observed_behavior": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed Behavior"
+          },
+          "recommended_fix": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommended Fix"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "status": {
+            "default": "open",
+            "maxLength": 64,
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "suspected_cause": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suspected Cause"
+          },
+          "trace_link_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Trace Link Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "FailurePacket",
+        "type": "object"
+      },
+      "FixPlan": {
+        "properties": {
+          "behavior_rule_ids_addressed": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Behavior Rule Ids Addressed",
+            "type": "array"
+          },
+          "failure_packet_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Failure Packet Ids",
+            "type": "array"
+          },
+          "graph_changes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Graph Changes",
+            "type": "array"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "non_goals": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Non Goals",
+            "type": "array"
+          },
+          "prompt_changes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prompt Changes",
+            "type": "array"
+          },
+          "regression_risks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Regression Risks",
+            "type": "array"
+          },
+          "source_version_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Version Id"
+          },
+          "status": {
+            "default": "draft",
+            "maxLength": 64,
+            "title": "Status",
+            "type": "string"
+          },
+          "target_version_label": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version Label"
+          },
+          "tool_changes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tool Changes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "FixPlan",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1494,6 +1965,18 @@
             ],
             "title": "Candidate Version"
           },
+          "comparison": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison"
+          },
           "completed_at": {
             "anyOf": [
               {
@@ -1553,6 +2036,30 @@
               }
             ],
             "title": "Failure Packet"
+          },
+          "fix_plan": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fix Plan"
+          },
+          "gate_result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gate Result"
           },
           "idempotency_key": {
             "anyOf": [
@@ -1921,6 +2428,111 @@
         "title": "QualityGateResponse",
         "type": "object"
       },
+      "RunEvidence": {
+        "properties": {
+          "comparison": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Comparison"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "failure_packet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FailurePacket"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fix_plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FixPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "gate_result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VersionGateSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "RunEvidence",
+        "type": "object"
+      },
+      "RunEvidenceResponse": {
+        "properties": {
+          "comparison": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Comparison"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "experiment_run_id": {
+            "format": "uuid",
+            "title": "Experiment Run Id",
+            "type": "string"
+          },
+          "failure_packet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FailurePacket"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fix_plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FixPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "gate_result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VersionGateSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "experiment_run_id",
+          "request_id"
+        ],
+        "title": "RunEvidenceResponse",
+        "type": "object"
+      },
       "RunIngestEnvelope": {
         "properties": {
           "agent": {
@@ -1966,6 +2578,18 @@
               }
             ],
             "title": "Candidate Version"
+          },
+          "comparison": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison"
           },
           "completed_at": {
             "anyOf": [
@@ -2026,6 +2650,30 @@
               }
             ],
             "title": "Failure Packet"
+          },
+          "fix_plan": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fix Plan"
+          },
+          "gate_result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gate Result"
           },
           "idempotency_key": {
             "anyOf": [
@@ -2507,6 +3155,106 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VersionGateSummary": {
+        "description": "Aggregate gate summary from a publish envelope (HLD-005 gate_result block).",
+        "properties": {
+          "agent_version_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Version Id"
+          },
+          "behavior_gate_status": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Behavior Gate Status"
+          },
+          "behavior_gates": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Behavior Gates",
+            "type": "object"
+          },
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
+          "comparison_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison Id"
+          },
+          "overall_status": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overall Status"
+          },
+          "production_readiness_status": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Readiness Status"
+          },
+          "tool_readiness_gates": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Tool Readiness Gates",
+            "type": "object"
+          },
+          "tool_readiness_status": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Readiness Status"
+          }
+        },
+        "title": "VersionGateSummary",
         "type": "object"
       }
     }
@@ -3727,6 +4475,83 @@
           }
         },
         "summary": "Get Experiment Run",
+        "tags": [
+          "experiment-runs"
+        ]
+      }
+    },
+    "/v1/experiment-runs/{experiment_run_id}/evidence": {
+      "get": {
+        "operationId": "get_experiment_run_evidence_v1_experiment_runs__experiment_run_id__evidence_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "experiment_run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Experiment Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tenant_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunEvidenceResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Experiment Run Evidence",
         "tags": [
           "experiment-runs"
         ]
