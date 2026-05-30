@@ -557,6 +557,8 @@ Why is production blocked?
 What promotion decision was made?
 ```
 
+See [HLD-011: Console information architecture](HLD-011-console-information-architecture.md) for screen-level IA and MVP scope.
+
 ---
 
 ## 12. Suggested File / Artifact Flow
@@ -681,4 +683,5 @@ The diagrams in this document should help coding agents and reviewers keep those
 | [HLD-007](HLD-007-platform-api-and-integration.md) | eval-driven-design-platform | Publish API flow |
 | [HLD-008](HLD-008-langfuse-integration.md) | eval-driven-design-platform | Trace evidence flow |
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design detail |
+| [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Console IA spec |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Operator walkthrough |

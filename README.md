@@ -117,6 +117,7 @@ Architecture and MVP implementation for the **EDD stack** (**eval-driven-design-
 - [HLD-008: Langfuse integration](docs/hld/HLD-008-langfuse-integration.md)
 - [HLD-009: Architecture and flow diagrams](docs/hld/HLD-009-architecture-and-flow-diagrams.md)
 - [HLD-010: Graph design and rule mapping](docs/hld/HLD-010-graph-design-and-rule-mapping.md)
+- [HLD-011: Console information architecture](docs/hld/HLD-011-console-information-architecture.md)
 
 Phased platform delivery: **`EVAL_DRIVEN_DESIGN_PLAN.md`** (MVP Phases 0–8 done; post-MVP aligns with HLD-006 milestones M2–M6).
 

@@ -793,3 +793,4 @@ That is the relationship this HLD exists to preserve.
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | eval-driven-design-platform | Reference graph payloads |
 | [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | M2 artifacts, M3 lab agent |
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Target-to-graph diagram |
+| [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Graph Design screen |

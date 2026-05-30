@@ -1091,5 +1091,6 @@ The API must preserve that distinction.
 | [HLD-008](HLD-008-langfuse-integration.md) | eval-driven-design-platform | Trace links and metadata |
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Architecture diagrams |
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design and rule mapping |
+| [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Console information architecture |
 | `docs/05-platform-integration.md` | edd-agent-lab | Publish seam today |
 | `scripts/test_platform_publish.sh` | edd-agent-lab | Auth-aware smoke test |

@@ -275,7 +275,7 @@ Build **after** Phase 8 validation. Follow [HLD-006](docs/hld/HLD-006-mvp-implem
 
 ### Phase 13 — Console lifecycle + lab reference scenario
 
-- [ ] Console nav: Design / Build / Evaluate / Promote (MVP subset of doc 11 in edd-agent-lab)
+- [ ] Console nav: Design / Build / Evaluate / Promote — see [HLD-011](docs/hld/HLD-011-console-information-architecture.md) (MVP subset)
 - [ ] Lab: Customer Escalation Triage agent + mock data per HLD-005 *(or migrate from customer-solution)*
 
 **Exit:** End-to-end demo matches HLD-005 acceptance criteria.
