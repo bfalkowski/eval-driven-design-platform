@@ -262,12 +262,18 @@ jobs:
           - component: api
             image_name: edd-api
             description: FastAPI control plane for the Eval Driven Design Platform
+            build_context: api
+            dockerfile: api/Dockerfile
           - component: console
             image_name: edd-console
             description: Streamlit operator console for the Eval Driven Design Platform
+            build_context: .
+            dockerfile: console/Dockerfile
           - component: worker
             image_name: edd-worker
             description: Background worker for Eval Driven Design Platform experiment runs
+            build_context: worker
+            dockerfile: worker/Dockerfile
 
     steps:
       - uses: actions/checkout@v5
@@ -297,7 +303,8 @@ jobs:
       - name: Build and optionally publish Docker image
         uses: docker/build-push-action@v7
         with:
-          context: ${{ matrix.component }}
+          context: ${{ matrix.build_context }}
+          file: ${{ matrix.dockerfile }}
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}

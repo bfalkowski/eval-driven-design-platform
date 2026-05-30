@@ -1,19 +1,23 @@
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/opt/edd-api \
+    EDD_REFERENCE_SCENARIO_DIR=/app/examples/customer_escalation_triage
 
 WORKDIR /app
 
 RUN groupadd --gid 10001 app \
     && useradd --uid 10001 --gid app --home-dir /app --shell /usr/sbin/nologin app
 
-COPY --chown=app:app pyproject.toml ./
-COPY --chown=app:app components ./components
-COPY --chown=app:app pages ./pages
-COPY --chown=app:app styles ./styles
-COPY --chown=app:app .streamlit ./.streamlit
-COPY --chown=app:app streamlit_app.py ./
+COPY console/pyproject.toml ./
+COPY console/components ./components
+COPY console/pages ./pages
+COPY console/styles ./styles
+COPY console/.streamlit ./.streamlit
+COPY console/streamlit_app.py ./
+COPY api/app /opt/edd-api/app
+COPY examples/customer_escalation_triage ./examples/customer_escalation_triage
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .

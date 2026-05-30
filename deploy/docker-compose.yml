@@ -54,8 +54,8 @@ services:
     image: edd-console:local
     pull_policy: build
     build:
-      context: ../console
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: console/Dockerfile
     environment:
       EDD_API_BASE_URL: http://edd-api:8000
     ports:
