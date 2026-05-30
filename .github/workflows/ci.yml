@@ -62,6 +62,12 @@ jobs:
           APP_OTEL_EXPORTER: none
         run: |
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          API_PID=$!
+          cleanup_api() {
+            kill "${API_PID}" 2>/dev/null || true
+            wait "${API_PID}" 2>/dev/null || true
+          }
+          trap cleanup_api EXIT
           for i in $(seq 1 40); do
             curl -sf http://127.0.0.1:8000/v1/ready && break
             sleep 0.25
@@ -70,6 +76,8 @@ jobs:
           TOKEN="$(uv run python ../scripts/create_demo_jwt.py --tenant-id tenant-a --subject demo-loop-ci)"
           cd ..
           EDD_API_KEY="${TOKEN}" EDD_API_BASE_URL=http://127.0.0.1:8000 ./scripts/run_demo_loop.sh
+          cleanup_api
+          trap - EXIT
         working-directory: api
 
   integration-lab-smoke:
@@ -106,6 +114,12 @@ jobs:
           APP_OTEL_EXPORTER: none
         run: |
           uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          API_PID=$!
+          cleanup_api() {
+            kill "${API_PID}" 2>/dev/null || true
+            wait "${API_PID}" 2>/dev/null || true
+          }
+          trap cleanup_api EXIT
           for i in $(seq 1 40); do
             curl -sf http://127.0.0.1:8000/v1/ready && break
             sleep 0.25
@@ -115,6 +129,8 @@ jobs:
           EDD_PLATFORM_ROOT="${GITHUB_WORKSPACE}" \
             EDD_API_BASE_URL=http://127.0.0.1:8000 \
             ./scripts/test_platform_publish.sh
+          cleanup_api
+          trap - EXIT
         working-directory: api
 
   console-tests:
