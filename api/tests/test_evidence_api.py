@@ -124,3 +124,47 @@ def test_publish_with_fix_plan_and_comparison(client: TestClient) -> None:
     assert evidence["fix_plan"]["id"] == "fix-v1-evidence-first-triage"
     assert evidence["comparison"]["id"] == "compare-v0-v1-escalation-triage"
     assert evidence["gate_result"]["overall_status"] == "pass_for_demo_not_production"
+
+
+def test_publish_with_trace_links_sets_evidence(client: TestClient) -> None:
+    spec = create_spec(client, name="Evidence trace links")
+    trace_doc = load_yaml_document(SCENARIO_DIR / "trace-link-v0.yaml")
+    envelope = {
+        "schema_version": "2",
+        "source": "edd-agent-lab",
+        "tenant_id": "tenant-a",
+        "run_id": f"evidence-trace-{uuid.uuid4().hex[:8]}",
+        "producer": {
+            "name": "edd-agent-lab",
+            "environment": "local_demo",
+            "run_mode": "mock_local",
+        },
+        "agent": {"id": "customer-escalation-triage-agent"},
+        "agent_version": {"version_label": "v0-baseline"},
+        "suite": "escalation_triage",
+        "eval_spec_id": str(spec["eval_spec_id"]),
+        "tool_context": {
+            "tool_mode_summary": "mock_local",
+            "production_ready": False,
+        },
+        "eval_summary": {"overall_score": 0.91},
+        "trace_links": trace_doc["trace_links"],
+        "outputs": {},
+        "artifact_paths": {},
+    }
+
+    publish = client.post("/v1/integrations/runs/publish", json=envelope)
+    assert publish.status_code == 201
+    body = publish.json()
+    assert body["trace_link_ids"] == ["trace-link-v0-001"]
+
+    run_id = body["platform_run_id"]
+    response = client.get(
+        f"/v1/experiment-runs/{run_id}/evidence",
+        params={"tenant_id": "tenant-a"},
+    )
+    assert response.status_code == 200
+    evidence = response.json()
+    assert len(evidence["trace_links"]) == 1
+    assert evidence["trace_links"][0]["external_trace_id"] == "trace_v0_abc123"
+    assert evidence["trace_links"][0]["experiment_run_id"] == str(run_id)

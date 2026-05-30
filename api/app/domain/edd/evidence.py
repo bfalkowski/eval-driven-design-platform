@@ -4,6 +4,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from app.domain.edd.trace_link import TraceLink
+
 
 class FailurePacket(BaseModel):
     id: str = Field(min_length=1, max_length=128)
@@ -75,3 +77,4 @@ class RunEvidence(BaseModel):
     fix_plan: FixPlan | None = None
     comparison: Comparison | None = None
     gate_result: VersionGateSummary | None = None
+    trace_links: list[TraceLink] = Field(default_factory=list)

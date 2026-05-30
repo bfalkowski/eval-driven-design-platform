@@ -59,6 +59,8 @@ def test_normalize_v2_envelope_extracts_tool_context() -> None:
     assert normalized.eval_contract_ref_id == "customer-escalation-triage-eval-contract-v1"
     assert normalized.candidate_version == "v1-evidence-triage-graph"
     assert len(normalized.tool_bindings or []) == 2
+    assert len(normalized.trace_links or []) == 1
+    assert normalized.trace_links[0]["external_trace_id"] == "trace_v1_def456"
 
 
 @pytest.mark.parametrize(
@@ -91,6 +93,10 @@ def test_publish_v2_contract_fixture_round_trip(
     assert ingest is not None
     assert ingest["schema_version"] == "2"
     assert ingest["overall_status"] == expected["overall_status"]
+    if fixture_name == "envelope-pass-demo-not-production.json":
+        assert ingest["evidence"] is not None
+        assert len(ingest["evidence"]["trace_links"]) == 1
+        assert body["trace_link_ids"] == ["trace-link-v1-001"]
 
 
 def test_publish_v2_idempotency_key_returns_existing_run(client: TestClient) -> None:

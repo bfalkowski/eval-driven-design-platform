@@ -11,6 +11,7 @@ from app.domain.edd.evidence import (
     RunEvidence,
     VersionGateSummary,
 )
+from app.domain.edd.trace_link import TraceLink
 
 
 def normalize_run_evidence(
@@ -21,8 +22,14 @@ def normalize_run_evidence(
     fix_plan: dict[str, Any] | None = None,
     comparison: dict[str, Any] | None = None,
     gate_result: dict[str, Any] | None = None,
+    trace_links: list[dict[str, Any]] | None = None,
 ) -> RunEvidence:
     run_id = str(experiment_run_id) if experiment_run_id is not None else None
+    normalized_trace_links = normalize_trace_links(
+        trace_links,
+        experiment_run_id=run_id,
+        agent_version_id=agent_version_id,
+    )
     return RunEvidence(
         failure_packet=normalize_failure_packet(
             failure_packet,
@@ -34,6 +41,7 @@ def normalize_run_evidence(
         fix_plan=normalize_fix_plan(fix_plan) if fix_plan else None,
         comparison=normalize_comparison(comparison) if comparison else None,
         gate_result=normalize_gate_result(gate_result) if gate_result else None,
+        trace_links=normalized_trace_links,
     )
 
 
@@ -185,6 +193,64 @@ def normalize_gate_result(payload: dict[str, Any]) -> VersionGateSummary | None:
             if str(value).strip()
         },
         blockers=[str(item) for item in payload.get("blockers") or [] if str(item).strip()],
+    )
+
+
+def normalize_trace_links(
+    payload: list[dict[str, Any]] | None,
+    *,
+    experiment_run_id: str | None = None,
+    agent_version_id: str | None = None,
+) -> list[TraceLink]:
+    if not payload:
+        return []
+
+    links: list[TraceLink] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        link = normalize_trace_link(
+            item,
+            experiment_run_id=experiment_run_id,
+            agent_version_id=agent_version_id,
+        )
+        if link is not None:
+            links.append(link)
+    return links
+
+
+def normalize_trace_link(
+    payload: dict[str, Any],
+    *,
+    experiment_run_id: str | None = None,
+    agent_version_id: str | None = None,
+) -> TraceLink | None:
+    external_trace_id = _string(
+        payload.get("external_trace_id")
+        or payload.get("trace_id")
+        or payload.get("langfuse_trace_id")
+    )
+    if not external_trace_id:
+        return None
+
+    link_id = _string(payload.get("id"))
+    if not link_id:
+        link_id = f"trace-link-{external_trace_id}"
+
+    metadata = payload.get("metadata") or {}
+    if not isinstance(metadata, dict):
+        metadata = {}
+
+    return TraceLink(
+        id=link_id,
+        provider=_string(payload.get("provider")) or "langfuse",
+        external_trace_id=external_trace_id,
+        external_url=_string(payload.get("external_url") or payload.get("url")),
+        experiment_run_id=experiment_run_id or _string(payload.get("experiment_run_id")),
+        operational_run_id=_string(payload.get("operational_run_id")),
+        scenario_id=_string(payload.get("scenario_id")),
+        agent_version_id=agent_version_id or _string(payload.get("agent_version_id")),
+        metadata=dict(metadata),
     )
 
 

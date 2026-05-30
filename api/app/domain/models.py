@@ -284,6 +284,7 @@ class RunIngestEnvelope(BaseModel):
     fix_plan: dict[str, Any] | None = None
     comparison: dict[str, Any] | None = None
     gate_result: dict[str, Any] | None = None
+    trace_links: list[dict[str, Any]] | None = None
     artifact_paths: dict[str, Any] = Field(default_factory=dict)
     tool_mode_summary: str | None = Field(default=None, max_length=64)
     production_ready: bool | None = None
@@ -307,6 +308,7 @@ class RunIngestResponse(BaseModel):
     experiment_run: ExperimentRun
     request_id: str | None = None
     lab_run_id: str | None = None
+    trace_link_ids: list[str] | None = None
 
 
 LabPublishEnvelope = RunIngestEnvelope

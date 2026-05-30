@@ -150,12 +150,27 @@ async def get_experiment_run_evidence(
             }
         )
 
+    if evidence.trace_links:
+        evidence = evidence.model_copy(
+            update={
+                "trace_links": [
+                    link.model_copy(
+                        update={"experiment_run_id": str(run.experiment_run_id)}
+                    )
+                    if not link.experiment_run_id
+                    else link
+                    for link in evidence.trace_links
+                ]
+            }
+        )
+
     if not any(
         (
             evidence.failure_packet,
             evidence.fix_plan,
             evidence.comparison,
             evidence.gate_result,
+            evidence.trace_links,
         )
     ):
         raise NotFoundError("No structured evidence is available for this experiment run.")

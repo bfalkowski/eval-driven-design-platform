@@ -19,6 +19,7 @@ from app.domain.edd.requirements import (
     ToolRequirement,
 )
 from app.domain.edd.rules import BehaviorRule
+from app.domain.edd.trace_link import TraceLink
 
 __all__ = [
     "Agent",
@@ -39,5 +40,6 @@ __all__ = [
     "ToolBinding",
     "ToolFeasibilityReview",
     "ToolRequirement",
+    "TraceLink",
     "load_yaml_document",
 ]

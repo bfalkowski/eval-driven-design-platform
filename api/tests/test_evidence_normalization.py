@@ -11,6 +11,8 @@ from app.services.evidence_normalization import (
     normalize_failure_packet,
     normalize_fix_plan,
     normalize_run_evidence,
+    normalize_trace_link,
+    normalize_trace_links,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -92,3 +94,21 @@ def test_normalize_run_evidence_from_reference_docs() -> None:
     assert evidence.comparison is not None
     assert evidence.gate_result is not None
     assert evidence.failure_packet.experiment_run_id == "00000000-0000-0000-0000-000000000001"
+
+
+def test_normalize_trace_link_from_reference_yaml() -> None:
+    trace_doc = load_yaml_document(SCENARIO_DIR / "trace-link-v0.yaml")
+    links = normalize_trace_links(
+        trace_doc["trace_links"],
+        agent_version_id="v0-baseline",
+    )
+    assert len(links) == 1
+    assert links[0].id == "trace-link-v0-001"
+    assert links[0].external_trace_id == "trace_v0_abc123"
+    assert links[0].provider == "langfuse"
+
+
+def test_normalize_trace_link_generates_id_from_external_trace_id() -> None:
+    link = normalize_trace_link({"external_trace_id": "trace_v0_abc123"})
+    assert link is not None
+    assert link.id == "trace-link-trace_v0_abc123"

@@ -2282,6 +2282,21 @@
               }
             ],
             "title": "Tool Mode Summary"
+          },
+          "trace_links": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Links"
           }
         },
         "required": [
@@ -2469,6 +2484,13 @@
                 "type": "null"
               }
             ]
+          },
+          "trace_links": {
+            "items": {
+              "$ref": "#/components/schemas/TraceLink"
+            },
+            "title": "Trace Links",
+            "type": "array"
           }
         },
         "title": "RunEvidence",
@@ -2524,6 +2546,13 @@
           "request_id": {
             "title": "Request Id",
             "type": "string"
+          },
+          "trace_links": {
+            "items": {
+              "$ref": "#/components/schemas/TraceLink"
+            },
+            "title": "Trace Links",
+            "type": "array"
           }
         },
         "required": [
@@ -2843,6 +2872,21 @@
               }
             ],
             "title": "Tool Mode Summary"
+          },
+          "trace_links": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Links"
           }
         },
         "required": [
@@ -2956,6 +3000,20 @@
               }
             ],
             "title": "Tool Status"
+          },
+          "trace_link_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace Link Ids"
           }
         },
         "required": [
@@ -2967,6 +3025,99 @@
           "experiment_run"
         ],
         "title": "RunIngestResponse",
+        "type": "object"
+      },
+      "TraceLink": {
+        "properties": {
+          "agent_version_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Version Id"
+          },
+          "experiment_run_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Run Id"
+          },
+          "external_trace_id": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "External Trace Id",
+            "type": "string"
+          },
+          "external_url": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Url"
+          },
+          "id": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "operational_run_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operational Run Id"
+          },
+          "provider": {
+            "default": "langfuse",
+            "maxLength": 64,
+            "title": "Provider",
+            "type": "string"
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          }
+        },
+        "required": [
+          "id",
+          "external_trace_id"
+        ],
+        "title": "TraceLink",
         "type": "object"
       },
       "UpdateEvalCaseRequest": {

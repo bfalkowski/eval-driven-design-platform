@@ -35,6 +35,7 @@ class ParsePublishEnvelope(BaseModel):
     fix_plan: dict[str, Any] | None = None
     comparison: dict[str, Any] | None = None
     gate_result: dict[str, Any] | None = None
+    trace_links: list[dict[str, Any]] | None = None
     artifact_paths: dict[str, Any] = Field(default_factory=dict)
     tool_mode_summary: str | None = Field(default=None, max_length=64)
     production_ready: bool | None = None
@@ -91,6 +92,7 @@ def _normalize_v1(payload: ParsePublishEnvelope) -> RunIngestEnvelope:
         fix_plan=payload.fix_plan,
         comparison=payload.comparison,
         gate_result=payload.gate_result,
+        trace_links=payload.trace_links,
         tool_mode_summary=payload.tool_mode_summary,
         production_ready=payload.production_ready,
         tool_bindings=payload.tool_bindings,
@@ -171,6 +173,7 @@ def _normalize_v2(payload: ParsePublishEnvelope) -> RunIngestEnvelope:
         fix_plan=payload.fix_plan,
         comparison=payload.comparison,
         gate_result=payload.gate_result,
+        trace_links=payload.trace_links,
         tool_mode_summary=str(tool_mode_summary).strip() if tool_mode_summary else None,
         production_ready=production_ready,
         tool_bindings=tool_bindings,

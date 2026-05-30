@@ -91,6 +91,7 @@ class RunIngestService:
             fix_plan=normalized.fix_plan,
             comparison=normalized.comparison,
             gate_result=normalized.gate_result,
+            trace_links=normalized.trace_links,
         )
         has_evidence = any(
             (
@@ -98,6 +99,7 @@ class RunIngestService:
                 evidence.fix_plan,
                 evidence.comparison,
                 evidence.gate_result,
+                evidence.trace_links,
             )
         )
 
@@ -151,6 +153,7 @@ class RunIngestService:
             production_status=readiness.production_status,
             overall_status=readiness.overall_status,
             readiness_explanation=readiness.readiness_explanation,
+            trace_link_ids=[link.id for link in evidence.trace_links] or None,
             experiment_run=run,
         )
 
@@ -298,6 +301,11 @@ def _response_from_existing_run(run: ExperimentRun) -> RunIngestResponse:
         production_status=ingest.production_status,
         overall_status=ingest.overall_status,
         readiness_explanation=ingest.readiness_explanation,
+        trace_link_ids=(
+            [link.id for link in ingest.evidence.trace_links]
+            if ingest.evidence and ingest.evidence.trace_links
+            else None
+        ),
         experiment_run=run,
     )
 

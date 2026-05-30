@@ -1,8 +1,9 @@
+import pandas as pd
 import streamlit as st
 
 from components.design_context import render_design_context
 from components.edd_reference import load_reference_scenario
-from components.edd_views import failure_packet_summary
+from components.edd_views import failure_packet_summary, trace_link_rows
 from components.layout import status_pill
 from components.platform_sidebar import render_platform_sidebar
 from components.ui import render_page_header, show_api_error
@@ -50,6 +51,23 @@ if summary["recommended_fix"]:
     st.markdown(summary["recommended_fix"].strip())
 
 if packet.trace_link_ids:
-    st.markdown("**Trace links**")
+    st.markdown("**Referenced trace IDs**")
     for trace_id in packet.trace_link_ids:
         st.markdown(f"- `{trace_id}`")
+
+trace_rows = trace_link_rows(scenario)
+if trace_rows:
+    st.markdown("**Trace links (Langfuse references)**")
+    st.dataframe(
+        pd.DataFrame(trace_rows),
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "id": st.column_config.TextColumn("Trace link ID", width="medium"),
+            "provider": st.column_config.TextColumn("Provider", width="small"),
+            "external_trace_id": st.column_config.TextColumn("External trace", width="medium"),
+            "external_url": st.column_config.LinkColumn("URL", width="large"),
+            "agent_version_id": st.column_config.TextColumn("Version", width="small"),
+            "scenario_id": st.column_config.TextColumn("Scenario", width="medium"),
+        },
+    )

@@ -24,6 +24,7 @@ from app.domain.edd.agent import Agent, AgentTarget  # noqa: E402
 from app.domain.edd.artifacts import load_graph_design_bundle, load_yaml_document  # noqa: E402
 from app.domain.edd.eval_contract import EvalContract  # noqa: E402
 from app.domain.edd.evidence import Comparison, FailurePacket, FixPlan, VersionGateSummary  # noqa: E402
+from app.domain.edd.trace_link import TraceLink  # noqa: E402
 from app.domain.edd.graph_design import GraphDesign, GraphNode  # noqa: E402
 from app.domain.edd.requirements import (  # noqa: E402
     InformationRequirement,
@@ -36,6 +37,7 @@ from app.services.evidence_normalization import (  # noqa: E402
     normalize_failure_packet,
     normalize_fix_plan,
     normalize_gate_result,
+    normalize_trace_links,
 )
 
 
@@ -79,6 +81,8 @@ class ReferenceScenario:
     fix_plan_v1: FixPlan
     comparison_v0_v1: Comparison
     gate_result_v1: VersionGateSummary
+    trace_link_v0: TraceLink
+    trace_link_v1: TraceLink
     graph_design_v0: GraphDesignBundle
     graph_design_v1: GraphDesignBundle
 
@@ -123,15 +127,24 @@ def load_reference_scenario(
     fix_plan_doc = load_yaml_document(root / "fix-plan-v1.yaml")
     comparison_doc = load_yaml_document(root / "comparison-v0-v1.yaml")
     gate_doc = load_yaml_document(root / "gate-result-v1.yaml")
+    trace_v0_doc = load_yaml_document(root / "trace-link-v0.yaml")
+    trace_v1_doc = load_yaml_document(root / "trace-link-v1.yaml")
 
     failure_packet_v0 = normalize_failure_packet(failure_doc["failure_packet"])
     fix_plan_v1 = normalize_fix_plan(fix_plan_doc["fix_plan"])
     comparison_v0_v1 = normalize_comparison(comparison_doc["comparison"])
     gate_result_v1 = normalize_gate_result(gate_doc["gate_result"])
+    trace_links_v0 = normalize_trace_links(trace_v0_doc["trace_links"], agent_version_id="v0-baseline")
+    trace_links_v1 = normalize_trace_links(
+        trace_v1_doc["trace_links"],
+        agent_version_id="v1-evidence-triage-graph",
+    )
     assert failure_packet_v0 is not None
     assert fix_plan_v1 is not None
     assert comparison_v0_v1 is not None
     assert gate_result_v1 is not None
+    assert trace_links_v0
+    assert trace_links_v1
 
     return ReferenceScenario(
         scenario_dir=root,
@@ -146,6 +159,8 @@ def load_reference_scenario(
         fix_plan_v1=fix_plan_v1,
         comparison_v0_v1=comparison_v0_v1,
         gate_result_v1=gate_result_v1,
+        trace_link_v0=trace_links_v0[0],
+        trace_link_v1=trace_links_v1[0],
         graph_design_v0=load_graph_design("v0", root),
         graph_design_v1=load_graph_design("v1", root),
     )

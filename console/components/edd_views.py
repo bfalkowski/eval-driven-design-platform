@@ -273,3 +273,20 @@ def compare_versions_story(scenario: ReferenceScenario) -> list[str]:
             "Production readiness remains blocked because required tools are mock/local."
         )
     return lines
+
+
+def trace_link_rows(scenario: ReferenceScenario) -> list[dict[str, str]]:
+    links = [scenario.trace_link_v0, scenario.trace_link_v1]
+    rows: list[dict[str, str]] = []
+    for link in links:
+        rows.append(
+            {
+                "id": link.id,
+                "provider": link.provider,
+                "external_trace_id": link.external_trace_id,
+                "external_url": link.external_url or "",
+                "agent_version_id": link.agent_version_id or "",
+                "scenario_id": link.scenario_id or "",
+            }
+        )
+    return rows

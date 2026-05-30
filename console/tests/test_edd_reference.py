@@ -21,6 +21,7 @@ from components.edd_views import (
     target_detail_sections,
     tool_feasibility_rows,
     tool_requirements_rows,
+    trace_link_rows,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -50,6 +51,8 @@ def test_load_reference_scenario(reference_scenario: ReferenceScenario) -> None:
     assert reference_scenario.fix_plan_v1.id == "fix-v1-evidence-first-triage"
     assert reference_scenario.comparison_v0_v1.id == "compare-v0-v1-escalation-triage"
     assert reference_scenario.gate_result_v1.overall_status == "pass_for_demo_not_production"
+    assert reference_scenario.trace_link_v0.external_trace_id == "trace_v0_abc123"
+    assert reference_scenario.trace_link_v1.external_trace_id == "trace_v1_def456"
 
 
 def test_design_context_rows(reference_scenario: ReferenceScenario) -> None:
@@ -138,3 +141,10 @@ def test_compare_versions_story(reference_scenario: ReferenceScenario) -> None:
     story = compare_versions_story(reference_scenario)
     assert any("fp-v0-unsupported-root-cause" in line for line in story)
     assert any("mock/local" in line.lower() for line in story)
+
+
+def test_trace_link_rows(reference_scenario: ReferenceScenario) -> None:
+    rows = trace_link_rows(reference_scenario)
+    assert len(rows) == 2
+    assert rows[0]["provider"] == "langfuse"
+    assert rows[0]["external_trace_id"] == "trace_v0_abc123"
