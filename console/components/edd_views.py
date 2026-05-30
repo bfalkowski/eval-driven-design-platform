@@ -16,6 +16,31 @@ def design_context_rows(scenario: ReferenceScenario) -> list[tuple[str, str]]:
     ]
 
 
+def lifecycle_context_rows(scenario: ReferenceScenario) -> list[tuple[str, str]]:
+    gate = scenario.gate_result_v1
+    return [
+        ("Reference scenario", scenario.agent.name),
+        ("Target", scenario.agent_target.id),
+        ("Eval contract", scenario.eval_contract.id),
+        ("Demo gate", gate.overall_status.replace("_", " ")),
+    ]
+
+
+def lifecycle_story_lines(scenario: ReferenceScenario) -> list[str]:
+    comparison = scenario.comparison_v0_v1
+    gate = scenario.gate_result_v1
+    return [
+        "Design the agent target, behavior rules, eval contract, and tool requirements.",
+        "Build graph versions and bind mock or production tools.",
+        (
+            f"Evaluate v0 vs v1 — {comparison.baseline_version_id} fails "
+            f"{scenario.failure_packet_v0.id}; "
+            f"{comparison.candidate_version_id} resolves it with structured evidence."
+        ),
+        f"Promote when gates pass — reference outcome: {gate.overall_status.replace('_', ' ')}.",
+    ]
+
+
 def target_detail_sections(scenario: ReferenceScenario) -> dict[str, list[str]]:
     target = scenario.agent_target
     return {

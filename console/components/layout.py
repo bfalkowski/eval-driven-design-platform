@@ -54,6 +54,36 @@ def sidebar_brand() -> None:
     )
 
 
+def edd_lifecycle_strip() -> None:
+    st.markdown(
+        """
+        <div class="edd-loop">
+          <div class="edd-loop-step">
+            <div class="edd-loop-number">1</div>
+            <div class="edd-loop-title">Design</div>
+            <div class="edd-loop-text">Target, rules, eval contract, and tool requirements.</div>
+          </div>
+          <div class="edd-loop-step">
+            <div class="edd-loop-number">2</div>
+            <div class="edd-loop-title">Build</div>
+            <div class="edd-loop-text">Graph versions, tool bindings, and mock or live integrations.</div>
+          </div>
+          <div class="edd-loop-step">
+            <div class="edd-loop-number">3</div>
+            <div class="edd-loop-title">Evaluate</div>
+            <div class="edd-loop-text">Run scenarios, capture failure packets, and compare versions.</div>
+          </div>
+          <div class="edd-loop-step">
+            <div class="edd-loop-number">4</div>
+            <div class="edd-loop-title">Promote</div>
+            <div class="edd-loop-text">Gate on behavior, tool readiness, and production blockers.</div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def workflow_loop() -> None:
     st.markdown(
         """

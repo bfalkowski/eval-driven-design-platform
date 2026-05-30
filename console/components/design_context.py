@@ -10,4 +10,4 @@ def render_design_context(scenario: ReferenceScenario) -> None:
     st.markdown("#### Design context")
     for label, value in design_context_rows(scenario):
         st.markdown(f"**{label}:** `{value}`")
-    st.caption("Read-only reference scenario (HLD-005). File-backed until publish v2 lands.")
+    st.caption("Read-only reference scenario (HLD-005). Loaded from examples/customer_escalation_triage.")

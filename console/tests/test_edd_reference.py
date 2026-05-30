@@ -17,6 +17,8 @@ from components.edd_views import (
     graph_design_diff,
     graph_node_rows,
     information_requirements_rows,
+    lifecycle_context_rows,
+    lifecycle_story_lines,
     production_readiness_blocked,
     target_detail_sections,
     tool_feasibility_rows,
@@ -60,6 +62,18 @@ def test_design_context_rows(reference_scenario: ReferenceScenario) -> None:
     assert rows["Agent"] == "Customer Escalation Triage Agent"
     assert rows["Target"] == "customer-escalation-triage-target-v1"
     assert rows["Eval Contract"] == "customer-escalation-triage-eval-contract-v1"
+
+
+def test_lifecycle_context_rows(reference_scenario: ReferenceScenario) -> None:
+    rows = dict(lifecycle_context_rows(reference_scenario))
+    assert rows["Reference scenario"] == "Customer Escalation Triage Agent"
+    assert rows["Demo gate"] == "pass for demo not production"
+
+
+def test_lifecycle_story_lines(reference_scenario: ReferenceScenario) -> None:
+    lines = lifecycle_story_lines(reference_scenario)
+    assert len(lines) == 4
+    assert any("fp-v0-unsupported-root-cause" in line for line in lines)
 
 
 def test_target_detail_sections(reference_scenario: ReferenceScenario) -> None:

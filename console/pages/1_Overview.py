@@ -1,12 +1,27 @@
 import streamlit as st
 
-from components.layout import integration_card, metric_card, run_card, workflow_loop
+from components.edd_reference import load_reference_scenario
+from components.edd_views import lifecycle_context_rows, lifecycle_story_lines
+from components.layout import edd_lifecycle_strip, integration_card, metric_card, run_card, workflow_loop
 from components.platform_sidebar import render_platform_sidebar
 from components.ui import render_overview_header, show_api_error
 
 client, auth_mode, tenant_id = render_platform_sidebar()
 render_overview_header(client_base_url=client.base_url, auth_mode=auth_mode)
-workflow_loop()
+
+try:
+    reference_scenario = load_reference_scenario()
+    context_cols = st.columns(len(lifecycle_context_rows(reference_scenario)))
+    for column, (label, value) in zip(context_cols, lifecycle_context_rows(reference_scenario), strict=True):
+        with column:
+            metric_card(label, value)
+    st.markdown("## EDD lifecycle")
+    edd_lifecycle_strip()
+    with st.expander("Reference scenario story", expanded=False):
+        for line in lifecycle_story_lines(reference_scenario):
+            st.markdown(f"- {line}")
+except FileNotFoundError:
+    workflow_loop()
 
 
 def _gate_pill(gate_status: str) -> tuple[str, str]:
