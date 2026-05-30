@@ -238,7 +238,7 @@ make test
 
 ## Post-MVP roadmap (HLD-aligned)
 
-Build **after** Phase 8 validation. Follow [HLD-003](docs/hld/HLD-003-evaluation-driven-design-workflow.md) phase order. Do not skip contract tests.
+Build **after** Phase 8 validation. Follow [HLD-006](docs/hld/HLD-006-mvp-implementation-plan.md) milestones M2–M6 and [HLD-003](docs/hld/HLD-003-evaluation-driven-design-workflow.md) phase order.
 
 ### Phase 9 — Integration contract + CI harness
 
@@ -247,7 +247,7 @@ Build **after** Phase 8 validation. Follow [HLD-003](docs/hld/HLD-003-evaluation
 - [ ] Lab tests: `publish.py` envelope matches fixtures
 - [ ] Cross-repo CI: platform up → `test_platform_publish.sh` (auth-aware)
 
-**Exit:** Lab publish seam protected in CI. See future HLD-006 (publish contract) when written.
+**Exit:** Lab publish seam protected in CI. See [HLD-006 Milestone 4](docs/hld/HLD-006-mvp-implementation-plan.md) and envelope v2 in HLD-004.
 
 ### Phase 10 — Design intent on platform
 

@@ -980,6 +980,7 @@ If a feature does not support this loop, it should be treated as secondary.
 | [HLD-002](HLD-002-domain-object-model.md) | eval-driven-design-platform | Domain object model |
 | [HLD-004](HLD-004-tool-requirements-and-feasibility.md) | eval-driven-design-platform | Tool requirements and feasibility |
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | eval-driven-design-platform | Canonical reference scenario |
+| [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | MVP implementation plan |
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
 | `docs/10-ideal-developer-experience.md` | edd-agent-lab | Target EDD lifecycle (narrative) |
 | `docs/11-ideal-console-design.md` | edd-agent-lab | Console workspaces per phase |

@@ -749,5 +749,6 @@ That honesty is central to the design.
 | [HLD-002](HLD-002-domain-object-model.md) | eval-driven-design-platform | Tool-related domain objects |
 | [HLD-003](HLD-003-evaluation-driven-design-workflow.md) | eval-driven-design-platform | Phase 3 (Feasibility) |
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | eval-driven-design-platform | Canonical reference scenario |
+| [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | MVP implementation plan |
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
 | `docs/11-ideal-console-design.md` | edd-agent-lab | Tool UI workspaces |

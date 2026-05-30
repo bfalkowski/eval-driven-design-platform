@@ -1403,6 +1403,7 @@ If the implementation can represent that story cleanly, the domain model is doin
 | [HLD-003](HLD-003-evaluation-driven-design-workflow.md) | eval-driven-design-platform | Canonical EDD workflow |
 | [HLD-004](HLD-004-tool-requirements-and-feasibility.md) | eval-driven-design-platform | Tool requirements and feasibility |
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | eval-driven-design-platform | Canonical reference scenario |
+| [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | MVP implementation plan |
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
 | `EVAL_DRIVEN_DESIGN_PLAN.md` | eval-driven-design-platform | Phased build plan |
 | `docs/10-ideal-developer-experience.md` | edd-agent-lab | Target EDD lifecycle |

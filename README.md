@@ -100,7 +100,21 @@ See **`EVAL_DRIVEN_DESIGN_PLAN.md`** — Phase 8 complete except README diagram 
 | 8 | Demo docs, HLD series, ingest migration | Done *(diagram/Helm polish open)* |
 | 9+ | Contract CI, HLD domain, tool feasibility, console lifecycle | Planned |
 
-**Demo walkthrough:** `docs/DEMO_SCRIPT.md` · **CI gate:** `docs/QUALITY_GATE_CI.md` · **HLD:** `docs/hld/HLD-001-product-intent-and-system-boundaries.md`
+**Demo walkthrough:** `docs/DEMO_SCRIPT.md` · **CI gate:** `docs/QUALITY_GATE_CI.md`
+
+## High-level design (HLD)
+
+Architecture and MVP implementation for the **EDD stack** (**eval-driven-design-platform** + **edd-agent-lab**):
+
+- [HLD index](docs/hld/README.md)
+- [HLD-001: Product intent and system boundaries](docs/hld/HLD-001-product-intent-and-system-boundaries.md)
+- [HLD-002: Domain object model](docs/hld/HLD-002-domain-object-model.md)
+- [HLD-003: Evaluation-driven design workflow](docs/hld/HLD-003-evaluation-driven-design-workflow.md)
+- [HLD-004: Tool requirements and feasibility](docs/hld/HLD-004-tool-requirements-and-feasibility.md)
+- [HLD-005: Reference scenario — Customer Escalation Triage](docs/hld/HLD-005-reference-scenario-customer-escalation-triage.md)
+- [HLD-006: MVP implementation plan](docs/hld/HLD-006-mvp-implementation-plan.md)
+
+Phased platform delivery: **`EVAL_DRIVEN_DESIGN_PLAN.md`** (MVP Phases 0–8 done; post-MVP aligns with HLD-006 milestones M2–M6).
 
 ## Repo layout
 
