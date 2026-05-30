@@ -17,9 +17,9 @@ from app.api.experiment_runs import router as experiment_runs_router
 from app.api.health import legacy_router as legacy_health_router
 from app.api.health import router as health_router
 from app.api.lab_integrations import router as lab_integrations_router
-from app.api.run_integrations import router as run_integrations_router
 from app.api.langfuse_integrations import router as langfuse_integrations_router
 from app.api.metrics import router as metrics_router
+from app.api.run_integrations import router as run_integrations_router
 from app.core.config import get_settings
 from app.core.errors import AppError, app_error_handler, unhandled_error_handler
 from app.core.logging import configure_logging, new_request_id, request_id_var

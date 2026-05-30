@@ -55,7 +55,8 @@ class RunIngestService:
         eval_spec_id = normalized.eval_spec_id or self._default_eval_spec_id
         if eval_spec_id is None:
             raise BadRequestError(
-                "eval_spec_id is required (set on the envelope or APP_INGEST_DEFAULT_EVAL_SPEC_ID).",
+                "eval_spec_id is required "
+                "(set on the envelope or APP_INGEST_DEFAULT_EVAL_SPEC_ID).",
             )
 
         try:

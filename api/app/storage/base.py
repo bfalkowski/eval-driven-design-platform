@@ -4,7 +4,14 @@ from datetime import datetime
 from typing import Any, Protocol
 from uuid import UUID
 
-from app.domain.models import EvalCase, EvalSpec, EvaluationResult, ExperimentRun, ExperimentRunIngest, JudgeConfig
+from app.domain.models import (
+    EvalCase,
+    EvalSpec,
+    EvaluationResult,
+    ExperimentRun,
+    ExperimentRunIngest,
+    JudgeConfig,
+)
 
 
 class EddRepository(Protocol):

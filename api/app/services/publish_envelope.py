@@ -130,7 +130,9 @@ def _normalize_v2(payload: ParsePublishEnvelope) -> RunIngestEnvelope:
 
     candidate_version = payload.candidate_version or agent_version
     if not candidate_version:
-        raise BadRequestError("agent_version or candidate_version is required for schema_version '2'.")
+        raise BadRequestError(
+            "agent_version or candidate_version is required for schema_version '2'."
+        )
 
     target_id = _reference_id(payload.target)
     eval_contract_id = _reference_id(payload.eval_contract)
