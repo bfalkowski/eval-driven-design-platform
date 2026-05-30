@@ -205,3 +205,71 @@ def production_readiness_blocked(scenario: ReferenceScenario) -> bool:
         ):
             return True
     return False
+
+
+def failure_packet_summary(scenario: ReferenceScenario) -> dict[str, str]:
+    packet = scenario.failure_packet_v0
+    return {
+        "id": packet.id,
+        "failed_rule": packet.failed_behavior_rule_id or "",
+        "severity": packet.severity or "",
+        "version": packet.agent_version_id or "v0-baseline",
+        "observed_behavior": packet.observed_behavior or "",
+        "expected_behavior": packet.expected_behavior or "",
+        "recommended_fix": packet.recommended_fix or "",
+    }
+
+
+def fix_plan_sections(scenario: ReferenceScenario) -> dict[str, list[str]]:
+    plan = scenario.fix_plan_v1
+    return {
+        "Rules addressed": plan.behavior_rule_ids_addressed,
+        "Graph changes": plan.graph_changes,
+        "Tool changes": plan.tool_changes,
+        "Prompt changes": plan.prompt_changes,
+        "Non-goals": plan.non_goals,
+        "Regression risks": plan.regression_risks,
+    }
+
+
+def comparison_metric_rows(scenario: ReferenceScenario) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for metric_id, delta in scenario.comparison_v0_v1.score_deltas.items():
+        if hasattr(delta, "baseline"):
+            rows.append(
+                {
+                    "metric": metric_id,
+                    "baseline": delta.baseline,
+                    "candidate": delta.candidate,
+                    "delta": delta.delta,
+                }
+            )
+        else:
+            rows.append({"metric": metric_id, "baseline": delta, "candidate": "", "delta": ""})
+    return rows
+
+
+def compare_versions_story(scenario: ReferenceScenario) -> list[str]:
+    comparison = scenario.comparison_v0_v1
+    gate = scenario.gate_result_v1
+    lines = [
+        f"{comparison.baseline_version_id} guessed the root cause.",
+        (
+            f"{comparison.candidate_version_id} separated facts, hypotheses, and unknowns."
+        ),
+    ]
+    for row in comparison_metric_rows(scenario):
+        if row.get("delta") not in (None, ""):
+            lines.append(
+                f"{row['metric'].replace('_', ' ').title()} improved from "
+                f"{row['baseline']} to {row['candidate']} (Δ {row['delta']})."
+            )
+    if comparison.resolved_failure_packet_ids:
+        lines.append(
+            "Resolved failures: " + ", ".join(comparison.resolved_failure_packet_ids) + "."
+        )
+    if gate.overall_status == "pass_for_demo_not_production":
+        lines.append(
+            "Production readiness remains blocked because required tools are mock/local."
+        )
+    return lines

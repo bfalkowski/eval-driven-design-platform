@@ -7,9 +7,13 @@ import pytest
 from components.edd_reference import ReferenceScenario, load_reference_scenario, resolve_reference_scenario_dir
 from components.edd_views import (
     behavior_rules_rows,
+    compare_versions_story,
+    comparison_metric_rows,
     design_context_rows,
     eval_gates_rows,
     eval_metrics_rows,
+    failure_packet_summary,
+    fix_plan_sections,
     graph_design_diff,
     graph_node_rows,
     information_requirements_rows,
@@ -42,6 +46,10 @@ def test_load_reference_scenario(reference_scenario: ReferenceScenario) -> None:
     assert reference_scenario.eval_contract.id == "customer-escalation-triage-eval-contract-v1"
     assert len(reference_scenario.eval_contract.metrics) == 5
     assert len(reference_scenario.eval_contract.gates) == 5
+    assert reference_scenario.failure_packet_v0.id == "fp-v0-unsupported-root-cause"
+    assert reference_scenario.fix_plan_v1.id == "fix-v1-evidence-first-triage"
+    assert reference_scenario.comparison_v0_v1.id == "compare-v0-v1-escalation-triage"
+    assert reference_scenario.gate_result_v1.overall_status == "pass_for_demo_not_production"
 
 
 def test_design_context_rows(reference_scenario: ReferenceScenario) -> None:
@@ -108,3 +116,25 @@ def test_tool_feasibility_rows(reference_scenario: ReferenceScenario) -> None:
     assert trace_row["production_ready"] is False
     assert trace_row["blocker"] == "langfuse_api_connector"
     assert production_readiness_blocked(reference_scenario) is True
+
+
+def test_failure_packet_summary(reference_scenario: ReferenceScenario) -> None:
+    summary = failure_packet_summary(reference_scenario)
+    assert summary["id"] == "fp-v0-unsupported-root-cause"
+    assert summary["failed_rule"] == "separate_facts_from_hypotheses"
+    assert summary["severity"] == "critical"
+    assert "prompt change" in summary["observed_behavior"].lower()
+
+
+def test_fix_plan_sections(reference_scenario: ReferenceScenario) -> None:
+    sections = fix_plan_sections(reference_scenario)
+    assert "separate_facts_from_hypotheses" in sections["Rules addressed"]
+    assert any("normalize_evidence" in item for item in sections["Graph changes"])
+
+
+def test_compare_versions_story(reference_scenario: ReferenceScenario) -> None:
+    rows = comparison_metric_rows(reference_scenario)
+    assert any(row["metric"] == "diagnostic_grounding" for row in rows)
+    story = compare_versions_story(reference_scenario)
+    assert any("fp-v0-unsupported-root-cause" in line for line in story)
+    assert any("mock/local" in line.lower() for line in story)

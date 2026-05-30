@@ -23,6 +23,7 @@ _ensure_api_import_path()
 from app.domain.edd.agent import Agent, AgentTarget  # noqa: E402
 from app.domain.edd.artifacts import load_graph_design_bundle, load_yaml_document  # noqa: E402
 from app.domain.edd.eval_contract import EvalContract  # noqa: E402
+from app.domain.edd.evidence import Comparison, FailurePacket, FixPlan, VersionGateSummary  # noqa: E402
 from app.domain.edd.graph_design import GraphDesign, GraphNode  # noqa: E402
 from app.domain.edd.requirements import (  # noqa: E402
     InformationRequirement,
@@ -30,6 +31,12 @@ from app.domain.edd.requirements import (  # noqa: E402
     ToolRequirement,
 )
 from app.domain.edd.rules import BehaviorRule  # noqa: E402
+from app.services.evidence_normalization import (  # noqa: E402
+    normalize_comparison,
+    normalize_failure_packet,
+    normalize_fix_plan,
+    normalize_gate_result,
+)
 
 
 def resolve_reference_scenario_dir() -> Path:
@@ -68,6 +75,10 @@ class ReferenceScenario:
     information_requirements: list[InformationRequirement]
     tool_requirements: list[ToolRequirement]
     tool_feasibility: list[ToolFeasibilityReview]
+    failure_packet_v0: FailurePacket
+    fix_plan_v1: FixPlan
+    comparison_v0_v1: Comparison
+    gate_result_v1: VersionGateSummary
     graph_design_v0: GraphDesignBundle
     graph_design_v1: GraphDesignBundle
 
@@ -108,6 +119,19 @@ def load_reference_scenario(
         ToolFeasibilityReview.model_validate(item)
         for item in tool_feasibility_doc["tool_feasibility"]
     ]
+    failure_doc = load_yaml_document(root / "failure-packet-v0.yaml")
+    fix_plan_doc = load_yaml_document(root / "fix-plan-v1.yaml")
+    comparison_doc = load_yaml_document(root / "comparison-v0-v1.yaml")
+    gate_doc = load_yaml_document(root / "gate-result-v1.yaml")
+
+    failure_packet_v0 = normalize_failure_packet(failure_doc["failure_packet"])
+    fix_plan_v1 = normalize_fix_plan(fix_plan_doc["fix_plan"])
+    comparison_v0_v1 = normalize_comparison(comparison_doc["comparison"])
+    gate_result_v1 = normalize_gate_result(gate_doc["gate_result"])
+    assert failure_packet_v0 is not None
+    assert fix_plan_v1 is not None
+    assert comparison_v0_v1 is not None
+    assert gate_result_v1 is not None
 
     return ReferenceScenario(
         scenario_dir=root,
@@ -118,6 +142,10 @@ def load_reference_scenario(
         information_requirements=information_requirements,
         tool_requirements=tool_requirements,
         tool_feasibility=tool_feasibility,
+        failure_packet_v0=failure_packet_v0,
+        fix_plan_v1=fix_plan_v1,
+        comparison_v0_v1=comparison_v0_v1,
+        gate_result_v1=gate_result_v1,
         graph_design_v0=load_graph_design("v0", root),
         graph_design_v1=load_graph_design("v1", root),
     )
