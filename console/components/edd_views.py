@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from components.edd_reference import ReferenceScenario
+from components.edd_reference import GraphDesignBundle, ReferenceScenario
 
 
 def design_context_rows(scenario: ReferenceScenario) -> list[tuple[str, str]]:
@@ -66,3 +66,49 @@ def eval_gates_rows(scenario: ReferenceScenario) -> list[dict[str, str]]:
         }
         for gate in scenario.eval_contract.gates
     ]
+
+
+def graph_node_rows(bundle: GraphDesignBundle) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for node in bundle.nodes:
+        rows.append(
+            {
+                "id": node.id,
+                "purpose": node.purpose.strip(),
+                "behavior_rules": ", ".join(node.behavior_rule_ids),
+                "information_requirements": ", ".join(node.information_requirement_ids),
+                "tool_requirements": ", ".join(node.tool_requirement_ids),
+                "tool_mode": node.tool_mode or "",
+                "active_tool_binding": node.active_tool_binding or "",
+                "production_blocker": node.production_blocker is True,
+                "failure_packets": ", ".join(node.failure_packets_addressed),
+            }
+        )
+    return rows
+
+
+def graph_design_summary(bundle: GraphDesignBundle) -> dict[str, str]:
+    design = bundle.design
+    return {
+        "id": design.id,
+        "version": design.version,
+        "name": design.name,
+        "description": design.description.strip(),
+        "source_version": design.source_version or "",
+        "fix_plan_id": design.fix_plan_id or "",
+        "status": design.status,
+        "node_count": str(len(bundle.nodes)),
+    }
+
+
+def graph_design_diff(
+    baseline: GraphDesignBundle,
+    candidate: GraphDesignBundle,
+) -> dict[str, list[str]]:
+    baseline_ids = {node.id for node in baseline.nodes}
+    candidate_ids = {node.id for node in candidate.nodes}
+    return {
+        "added_nodes": sorted(candidate_ids - baseline_ids),
+        "removed_nodes": sorted(baseline_ids - candidate_ids),
+        "shared_nodes": sorted(baseline_ids & candidate_ids),
+    }

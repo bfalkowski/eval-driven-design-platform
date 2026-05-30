@@ -21,8 +21,9 @@ def _ensure_api_import_path() -> None:
 _ensure_api_import_path()
 
 from app.domain.edd.agent import Agent, AgentTarget  # noqa: E402
-from app.domain.edd.artifacts import load_yaml_document  # noqa: E402
+from app.domain.edd.artifacts import load_graph_design_bundle, load_yaml_document  # noqa: E402
 from app.domain.edd.eval_contract import EvalContract  # noqa: E402
+from app.domain.edd.graph_design import GraphDesign, GraphNode  # noqa: E402
 from app.domain.edd.rules import BehaviorRule  # noqa: E402
 
 
@@ -47,12 +48,27 @@ def resolve_reference_scenario_dir() -> Path:
 
 
 @dataclass(frozen=True)
+class GraphDesignBundle:
+    design: GraphDesign
+    nodes: list[GraphNode]
+
+
+@dataclass(frozen=True)
 class ReferenceScenario:
     scenario_dir: Path
     agent: Agent
     agent_target: AgentTarget
     behavior_rules: list[BehaviorRule]
     eval_contract: EvalContract
+    graph_design_v0: GraphDesignBundle
+    graph_design_v1: GraphDesignBundle
+
+
+def load_graph_design(version: str, scenario_dir: Path | None = None) -> GraphDesignBundle:
+    root = scenario_dir or resolve_reference_scenario_dir()
+    filename = "graph-design-v0.yaml" if version == "v0" else "graph-design-v1.yaml"
+    design, nodes = load_graph_design_bundle(root / filename)
+    return GraphDesignBundle(design=design, nodes=nodes)
 
 
 def load_reference_scenario(
@@ -77,4 +93,6 @@ def load_reference_scenario(
         agent_target=agent_target,
         behavior_rules=behavior_rules,
         eval_contract=eval_contract,
+        graph_design_v0=load_graph_design("v0", root),
+        graph_design_v1=load_graph_design("v1", root),
     )

@@ -10,6 +10,8 @@ from components.edd_views import (
     design_context_rows,
     eval_gates_rows,
     eval_metrics_rows,
+    graph_design_diff,
+    graph_node_rows,
     target_detail_sections,
 )
 
@@ -61,3 +63,16 @@ def test_eval_contract_view_rows(reference_scenario: ReferenceScenario) -> None:
     gates = eval_gates_rows(reference_scenario)
     assert any(row["id"] == "diagnostic_grounding" for row in metrics)
     assert any(row["id"] == "must_separate_facts_and_hypotheses" for row in gates)
+
+
+def test_graph_node_rows(reference_scenario: ReferenceScenario) -> None:
+    rows = graph_node_rows(reference_scenario.graph_design_v1)
+    node_ids = {row["id"] for row in rows}
+    assert "separate_facts_hypotheses_unknowns" in node_ids
+    assert any(row["tool_mode"] == "mock" for row in rows)
+
+
+def test_graph_design_diff(reference_scenario: ReferenceScenario) -> None:
+    diff = graph_design_diff(reference_scenario.graph_design_v0, reference_scenario.graph_design_v1)
+    assert "single_pass_response" in diff["removed_nodes"]
+    assert "normalize_evidence" in diff["added_nodes"]
