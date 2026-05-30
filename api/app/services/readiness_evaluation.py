@@ -201,8 +201,9 @@ def _evaluate_production_status(
         )
 
     if tool_status == _TOOL_PRODUCTION_READY:
-        all_live = bool(tool_bindings) and all(
-            str(binding.get("mode", "")).strip().lower() == "live" for binding in tool_bindings
+        bindings = tool_bindings or []
+        all_live = bool(bindings) and all(
+            str(binding.get("mode", "")).strip().lower() == "live" for binding in bindings
         )
         if all_live:
             return _PRODUCTION_READY, "Active tool bindings use live implementations."

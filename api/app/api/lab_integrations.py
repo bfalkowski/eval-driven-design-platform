@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, Request, status
 from app.api.run_integrations import get_run_ingest_service, publish_external_run
 from app.core.auth import RequestContext, get_request_context
 from app.domain.models import LabPublishEnvelope, LabPublishResponse
+from app.services.publish_envelope import ParsePublishEnvelope
+from app.services.run_ingest_service import RunIngestService
 
 router = APIRouter(prefix="/v1/integrations/lab", tags=["integrations"])
 
@@ -20,7 +22,8 @@ router = APIRouter(prefix="/v1/integrations/lab", tags=["integrations"])
 async def publish_lab_run(
     payload: LabPublishEnvelope,
     request: Request,
-    service=Depends(get_run_ingest_service),
+    service: RunIngestService = Depends(get_run_ingest_service),
     context: RequestContext | None = Depends(get_request_context),
 ) -> LabPublishResponse:
-    return await publish_external_run(payload, request, service, context)
+    parse_payload = ParsePublishEnvelope.model_validate(payload.model_dump())
+    return await publish_external_run(parse_payload, request, service, context)
