@@ -1411,6 +1411,6 @@ If the implementation can represent that story cleanly, the domain model is doin
 | [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Console information architecture |
 | [HLD-012](HLD-012-versioning-gates-and-promotion.md) | eval-driven-design-platform | Versioning, gates, and promotion |
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
-| `EVAL_DRIVEN_DESIGN_PLAN.md` | eval-driven-design-platform | Phased build plan |
+| `docs/HLD_TEST_FIRST_IMPLEMENTATION.md` | eval-driven-design-platform | Phased build plan |
 | `docs/10-ideal-developer-experience.md` | edd-agent-lab | Target EDD lifecycle |
 | `docs/11-ideal-console-design.md` | edd-agent-lab | Target platform console UX |

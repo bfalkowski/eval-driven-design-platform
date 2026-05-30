@@ -990,4 +990,4 @@ If a feature does not support this loop, it should be treated as secondary.
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
 | `docs/10-ideal-developer-experience.md` | edd-agent-lab | Target EDD lifecycle (narrative) |
 | `docs/11-ideal-console-design.md` | edd-agent-lab | Console workspaces per phase |
-| `EVAL_DRIVEN_DESIGN_PLAN.md` | eval-driven-design-platform | Phased build plan (current MVP) |
+| [`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`](../HLD_TEST_FIRST_IMPLEMENTATION.md) | eval-driven-design-platform | Active execution plan (Phases 9–13) |

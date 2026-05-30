@@ -2,7 +2,7 @@
 
 Architecture and product-boundary documents for the **EDD stack** (**eval-driven-design-platform** + **edd-agent-lab**).
 
-These HLDs define intent and constraints for the full HLD pack (HLD-001 through HLD-012). Platform delivery phases are in [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) (MVP Phases 0–8 done; post-MVP Phases 9–14).
+These HLDs define intent and constraints for the full HLD pack (HLD-001 through HLD-012). Platform delivery phases are in [`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`](../HLD_TEST_FIRST_IMPLEMENTATION.md) (Phases 9–13 active; **15–16** greenfield entry + generation; **14** operate; MVP Phases 0–8 complete).
 
 | ID | Title | Status |
 |---|---|---|

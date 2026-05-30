@@ -1,7 +1,7 @@
 # Product vision — historical notes + future workload ideas
 
 > **Status (2026):** Superseded for **architecture**, **system boundaries**, and the **canonical reference scenario** by [`docs/hld/`](hld/README.md) (HLD-001 through HLD-005).  
-> For **phased delivery of the platform MVP**, see [`EVAL_DRIVEN_DESIGN_PLAN.md`](../EVAL_DRIVEN_DESIGN_PLAN.md).  
+> For **phased delivery**, see [`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`](../HLD_TEST_FIRST_IMPLEMENTATION.md) and [HLD-006](hld/HLD-006-mvp-implementation-plan.md).  
 > For **runnable agents**, see the separate **[edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab)** repo.
 
 This document captures early design thinking. It is **not** the implementation spec. Keep it for context and for a possible **second demo workload** (prioritization agent), not as the primary product narrative.
@@ -196,7 +196,7 @@ Use HLD-003 workflow phases when turning any of these into a real agent.
 | Document | Purpose |
 |---|---|
 | [`docs/hld/README.md`](hld/README.md) | **Canonical** architecture and reference scenario |
-| [`EVAL_DRIVEN_DESIGN_PLAN.md`](../EVAL_DRIVEN_DESIGN_PLAN.md) | Platform MVP phases + post-MVP roadmap |
+| [`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`](../HLD_TEST_FIRST_IMPLEMENTATION.md) | Platform execution plan (Phases 9–13) |
 | [`AGENTS.md`](../AGENTS.md) | Constraints for coding assistants |
 | [`README.md`](../README.md) | Quick start and current status |
 | [edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab) | Agents, local evals, publish client |

@@ -92,13 +92,14 @@ External producers (e.g. `edd-agent-lab`) publish runs via `POST /v1/integration
 
 ### Remaining (MVP polish)
 
-See **`EVAL_DRIVEN_DESIGN_PLAN.md`** — Phase 8 complete except README diagram and Helm polish. Post-MVP Phases 9–14 align with `docs/hld/`.
+See **`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`** — Phases 9–12 complete; 13b in progress. Remaining MVP polish: README diagram (HLD-009) and Helm.
 
 | Phase | Scope | Status |
 |-------|--------|--------|
-| 0–7 | Platform spine through quality gates + run ingest | Done |
-| 8 | Demo docs, HLD series, ingest migration | Done *(diagram/Helm polish open)* |
-| 9+ | Contract CI, HLD domain, tool feasibility, console lifecycle | Planned |
+| 0–8 | Platform MVP spine (EvalSpec, runs, gates, ingest) | Done |
+| 9–12 | Contract CI, HLD domain, tool feasibility, evidence loop | Done |
+| 13 | Reference scenario demo + lifecycle console | In progress (13b) |
+| 14 | Operational mode | Deferred |
 
 **Demo walkthrough:** `docs/DEMO_SCRIPT.md` · **CI gate:** `docs/QUALITY_GATE_CI.md`
 
@@ -120,7 +121,7 @@ Architecture and MVP implementation for the **EDD stack** (**eval-driven-design-
 - [HLD-011: Console information architecture](docs/hld/HLD-011-console-information-architecture.md)
 - [HLD-012: Versioning, gates, and promotion](docs/hld/HLD-012-versioning-gates-and-promotion.md)
 
-Phased platform delivery: **`EVAL_DRIVEN_DESIGN_PLAN.md`** (MVP Phases 0–8 done; post-MVP aligns with HLD-006 milestones M2–M6).
+Execution plan: **[HLD Test-First Implementation](docs/HLD_TEST_FIRST_IMPLEMENTATION.md)** (Phases 9–13; Phase 14 deferred). Architecture: **[HLD-006](docs/hld/HLD-006-mvp-implementation-plan.md)**.
 
 ## Repo layout
 
@@ -160,4 +161,4 @@ GitHub Actions: API/console tests, Ruff, mypy, OpenAPI drift, pip-audit, Dockerf
 
 ## Plan
 
-Phased implementation: **`EVAL_DRIVEN_DESIGN_PLAN.md`** (MVP + post-MVP). Stack architecture: **`docs/hld/`**.
+Phased implementation: **`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`** (active) + **`docs/hld/HLD-006-mvp-implementation-plan.md`** (MVP narrative).

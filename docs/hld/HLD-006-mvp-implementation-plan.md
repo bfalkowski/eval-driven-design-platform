@@ -39,7 +39,7 @@ See also:
 
 - [HLD-003: Evaluation-Driven Design Workflow](HLD-003-evaluation-driven-design-workflow.md)
 - [HLD-005: Reference Scenario](HLD-005-reference-scenario-customer-escalation-triage.md)
-- [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) — platform Phases 0–8 (MVP spine done) and post-MVP Phases 9–14
+- [`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`](../HLD_TEST_FIRST_IMPLEMENTATION.md) — active execution plan (Phases 9–13; MVP Phases 0–8 complete)
 
 ---
 
@@ -185,7 +185,7 @@ M5: Platform console MVP
 M6: End-to-end demo script and validation
 ```
 
-These map to [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) post-MVP Phases 9–14.
+These map to [`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`](../HLD_TEST_FIRST_IMPLEMENTATION.md) Phases 9–13.
 
 ---
 
@@ -713,6 +713,6 @@ If the Customer Escalation Triage Agent works end to end, the foundation is soun
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design and rule mapping |
 | [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Console IA spec |
 | [HLD-012](HLD-012-versioning-gates-and-promotion.md) | eval-driven-design-platform | Gates and promotion |
-| [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) | eval-driven-design-platform | Phases 9–14 mapping |
+| [`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`](../HLD_TEST_FIRST_IMPLEMENTATION.md) | eval-driven-design-platform | Phases 9–13 execution plan |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Current platform demo |
 | `docs/05-platform-integration.md` | edd-agent-lab | Publish seam today |

@@ -51,8 +51,9 @@ Cursor also loads `.cursor/rules/karpathy-guidelines.mdc` (`alwaysApply: true`) 
 
 ## Planning
 
-- Follow `EVAL_DRIVEN_DESIGN_PLAN.md` phase by phase.
-- Do not implement later phases while earlier validation is incomplete.
+- Follow `docs/HLD_TEST_FIRST_IMPLEMENTATION.md` PR-by-PR; do not skip ahead while earlier exit criteria are incomplete.
+- Lab console (`:8502`): implement against **edd-agent-lab** [`docs/12-lab-console-design.md`](https://github.com/bfalkowski/edd-agent-lab/blob/main/docs/12-lab-console-design.md).
+- Do not implement Phase 14 while Phases 9–13 validation is incomplete.
 - Optional local-only detail: if `.local/PRODUCT_SPEC_REFERENCE.md` exists, use it for UI wireframes, DDL, example payloads, and phase prompts. Do not commit `.local/` or treat it as canonical over the phased plan.
 
 ## Commits
