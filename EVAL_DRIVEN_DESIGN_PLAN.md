@@ -1,8 +1,19 @@
 # Eval Driven Design Platform — Build Plan
 
-Canonical north star for this monorepo (committed). Build **phase by phase**; do not skip validation.
+Canonical **platform MVP** delivery plan for this monorepo. Build **phase by phase**; do not skip validation.
 
-For your original long-form spec (UI pages, SQL, payloads, Cursor prompts), keep a private copy at `.local/PRODUCT_SPEC_REFERENCE.md` — not in git, so contributors and agents are not pulled between two public docs.
+**Document hierarchy:**
+
+| Doc | Scope |
+|---|---|
+| **This file** | What is built in **eval-driven-design-platform** (Phases 0–8 MVP + post-MVP roadmap) |
+| [`docs/hld/`](docs/hld/README.md) | **EDD stack** intent, domain model, workflow, tool feasibility, reference scenario |
+| [`docs/PRODUCT_VISION.md`](docs/PRODUCT_VISION.md) | Historical notes + optional future workloads (not canonical) |
+| **edd-agent-lab** (separate repo) | Runnable agents, local evals, publish to platform |
+
+Do not implement later HLD milestones while earlier platform validation is incomplete.
+
+Optional local detail (not in git): `.local/PRODUCT_SPEC_REFERENCE.md` — original long-form spec (UI pages, SQL, payloads).
 
 ## 1. Product summary
 
@@ -16,6 +27,8 @@ For your original long-form spec (UI pages, SQL, payloads, Cursor prompts), keep
 
 **One line:** A lightweight eval-driven design control plane on Langfuse — observe traces, convert failures into eval cases, run candidates, score results, enforce gates before shipping AI changes.
 
+**EDD stack:** This repo is the platform control plane. **[edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab)** owns runnable agents and publishes runs via `POST /v1/integrations/runs/publish`. See [HLD-001](docs/hld/HLD-001-product-intent-and-system-boundaries.md).
+
 ## 2. Design principle
 
 The **evaluated workflow** is the product boundary — not the LLM call.
@@ -25,16 +38,19 @@ Answer: *Given this task, eval spec, case set, scaffold, candidate version, and 
 ## 3. Architecture
 
 ```text
-Operator → Streamlit Console → FastAPI Control Plane → Postgres
-                                      ↓
-                              Worker / Evaluator
-                              (scaffold + mock judge)
-                                      ↓
-                              Langfuse Adapter (optional)
+Operator → Streamlit Console (:8501) → FastAPI Control Plane (:8000) → Postgres
+                                              ↓
+                                    Worker / Evaluator (shell)
+                                    scaffold + mock judge in API today
+                                              ↓
+                                    Langfuse Adapter (optional)
+
+edd-agent-lab (:8502 / CLI) ──HTTP publish──► POST /v1/integrations/runs/publish
+     (separate repo; platform must not depend on lab)
 ```
 
 Langfuse: trace inspection, observations, score analytics.  
-EDD: EvalSpec, EvalCase, ExperimentRun, quality gates, workflow UI.
+Platform: EvalSpec, EvalCase, ExperimentRun, quality gates, ingest provenance, workflow UI.
 
 ## 4. Monorepo images
 
@@ -46,11 +62,13 @@ EDD: EvalSpec, EvalCase, ExperimentRun, quality gates, workflow UI.
 
 ## 5. Product boundary
 
-**EDD owns:** EvalSpec, EvalCase, ExperimentRun, scaffold, quality gates, console workflow, Langfuse integration orchestration.
+**Platform owns:** EvalSpec, EvalCase, ExperimentRun, scaffold, quality gates, external run ingest, console workflow, Langfuse integration orchestration.
+
+**edd-agent-lab owns:** LangGraph agents, local eval suites, mock tools, lab-run artifacts, side-by-side dev console. Publishes to platform; must not be imported by platform.
 
 **Langfuse owns:** Trace storage, detailed debugging UI, score analytics, SDK ingestion.
 
-**Do not build:** Langfuse clone, full dataset product, custom trace browser, real LLM calls in MVP.
+**Do not build:** Langfuse clone, full dataset product, custom trace browser, embedded agent runtime in this monorepo.
 
 ## 6. Main user journey (demo)
 
@@ -62,14 +80,19 @@ EDD: EvalSpec, EvalCase, ExperimentRun, quality gates, workflow UI.
 6. Push scores to Langfuse (when enabled)  
 7. Inspect failures → open trace in Langfuse  
 8. Run quality gate → pass/fail for CI  
+9. *(Optional)* Publish run from **edd-agent-lab** → filter Runs by ingest source → gate on ingested run  
+
+See `docs/DEMO_SCRIPT.md` and edd-agent-lab `scripts/test_platform_publish.sh`.
 
 ## 7. Data model (Postgres)
 
-Tables: `eval_specs`, `eval_cases`, `experiment_runs`, `evaluation_results`, `quality_gate_results` — see Phase 1 migrations. All rows include `tenant_id`.
+**Shipped (MVP):** `eval_specs`, `eval_cases`, `experiment_runs` (with optional `ingest` JSON), `evaluation_results` — see Alembic migrations. All rows include `tenant_id`.
+
+**Target (HLD-002):** Agent, AgentTarget, BehaviorRule, EvalContract, tool requirements/feasibility, FailurePacket, FixPlan, PromotionRecord, etc. Evolve from EvalSpec/ingest blobs; see [HLD-002](docs/hld/HLD-002-domain-object-model.md).
 
 ## 8. API prefix
 
-`/v1` — health, eval-specs, eval-cases, experiment-runs, evaluation-results, quality-gates, integrations/langfuse.
+`/v1` — health, eval-specs, eval-cases, experiment-runs, evaluation-results, quality-gates, integrations/langfuse, **integrations/runs/publish** (legacy alias: integrations/lab/publish).
 
 ## Implementation phases
 
@@ -200,30 +223,93 @@ make test
 
 ---
 
-### Phase 8 — Polish + demo (in progress)
+### Phase 8 — Polish + demo ✅ (MVP complete)
 
 - [x] `docs/DEMO_SCRIPT.md`
+- [x] `docs/QUALITY_GATE_CI.md`
 - [x] Alembic migration for `experiment_runs.ingest`
-- [ ] Architecture diagram refresh in README
-- [ ] Helm chart skeleton polish
+- [x] `docs/hld/` — HLD-001 through HLD-005 (stack intent, domain, workflow, tools, reference scenario)
+- [ ] Architecture diagram refresh in README *(remaining polish)*
+- [ ] Helm chart skeleton polish *(remaining polish)*
 
-## MVP definition of done
+**Validation:** `./scripts/local_e2e.sh --postgres`, walk `docs/DEMO_SCRIPT.md`, lab `./scripts/test_platform_publish.sh` against local API.
 
-- One-command local run  
-- Create spec/case, run experiment, see results  
-- Optional Langfuse connect + score push + trace import  
-- Quality gate script  
-- README tells the story  
+---
+
+## Post-MVP roadmap (HLD-aligned)
+
+Build **after** Phase 8 validation. Follow [HLD-003](docs/hld/HLD-003-evaluation-driven-design-workflow.md) phase order. Do not skip contract tests.
+
+### Phase 9 — Integration contract + CI harness
+
+- [ ] Shared publish envelope fixtures (v1 today, v2 with `tool_bindings` / design IDs)
+- [ ] Platform tests: ingest + gate response shape
+- [ ] Lab tests: `publish.py` envelope matches fixtures
+- [ ] Cross-repo CI: platform up → `test_platform_publish.sh` (auth-aware)
+
+**Exit:** Lab publish seam protected in CI. See future HLD-006 (publish contract) when written.
+
+### Phase 10 — Design intent on platform
+
+- [ ] Persist Agent, AgentTarget, BehaviorRule, EvalContract (extend or map from EvalSpec)
+- [ ] Link ExperimentRun → target / contract / agent version IDs
+- [ ] Console: Target, Rules, Eval Contract (read/edit; generation optional)
+
+**Exit:** [HLD-005](docs/hld/HLD-005-reference-scenario-customer-escalation-triage.md) target/rules/contract registrable on platform.
+
+### Phase 11 — Tool feasibility + readiness gates
+
+- [ ] InformationRequirement, ToolRequirement, ToolFeasibilityReview (YAML artifact bridge OK)
+- [ ] Extend QualityGateService: behavior vs tool vs production readiness
+- [ ] Console: Information Requirements, Tool Requirements, Tool Feasibility
+
+**Exit:** `pass_for_demo_not_production` from [HLD-004](docs/hld/HLD-004-tool-requirements-and-feasibility.md) representable.
+
+### Phase 12 — Evidence loop (failure → fix → compare)
+
+- [ ] FailurePacket, FixPlan, Comparison as platform objects (normalize ingest blobs)
+- [ ] TraceLink metadata; lab publishes structured failure/fix artifacts
+- [ ] Console: Failure Packets, Fix Plans, Compare Versions
+
+**Exit:** HLD-005 v0→v1 story navigable in platform UI.
+
+### Phase 13 — Console lifecycle + lab reference scenario
+
+- [ ] Console nav: Design / Build / Evaluate / Promote (MVP subset of doc 11 in edd-agent-lab)
+- [ ] Lab: Customer Escalation Triage agent + mock data per HLD-005 *(or migrate from customer-solution)*
+
+**Exit:** End-to-end demo matches HLD-005 acceptance criteria.
+
+### Phase 14 — Operational mode *(defer)*
+
+- [ ] OperationalRun, PromotionRecord persistence, Live Run / Action Queue
+- [ ] Approval-gated write tools
+
+**Exit:** HLD-003 Phase 7 (Promote and Operate) — only after Phases 10–13 stable.
+
+## MVP definition of done ✅
+
+- [x] One-command local run  
+- [x] Create spec/case, run experiment, see results  
+- [x] Optional Langfuse connect + score push + trace import  
+- [x] Quality gate script + console page  
+- [x] External run ingest from edd-agent-lab  
+- [x] README + DEMO_SCRIPT tell the story  
+- [ ] Remaining: README diagram polish, cross-repo CI (Phase 9)
 
 ## Non-goals
 
-No Langfuse clone, no real LLM API in MVP, no agent framework, no sensitive text in metric labels.
+No Langfuse clone, no sensitive text in metric labels, no agent implementation in this monorepo (use edd-agent-lab), no pretending mock tools are production-ready (HLD-004).
 
 ## Cursor execution order
 
-1. Phase 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8  
-2. Small commits, tests green each phase  
-3. Langfuse optional until Phase 4  
+**MVP (complete):** Phase 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8  
+
+**Post-MVP:** Phase 9 → 10 → 11 → 12 → 13 → 14 — validate each phase before the next. Read relevant HLD before coding.
+
+1. Small commits, tests green each phase  
+2. Langfuse optional until Phase 4 (already satisfied)  
+3. Keep v0.1.0-style ingest + gate path working while adding HLD domain objects
 
 ## Relationship to llm-evaluation-service-starter
 

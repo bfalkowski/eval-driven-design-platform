@@ -90,16 +90,15 @@ External producers (e.g. `edd-agent-lab`) publish runs via `POST /v1/integration
 - Local dev: `local_e2e.sh`, seed script, Docker images, Helm skeleton
 - CI: tests, Ruff, mypy, OpenAPI drift, pip-audit, Dockerfile policy, image builds, kubeconform
 
-### Remaining
+### Remaining (MVP polish)
 
-See **`EVAL_DRIVEN_DESIGN_PLAN.md`** for Phase 8 polish (diagram refresh, Helm tweaks).
+See **`EVAL_DRIVEN_DESIGN_PLAN.md`** — Phase 8 complete except README diagram and Helm polish. Post-MVP Phases 9–14 align with `docs/hld/`.
 
 | Phase | Scope | Status |
 |-------|--------|--------|
-| 0–4 | Skeleton, platform spine, CRUD, Langfuse adapter | Done |
-| 5–6 | Score push, trace links, trace import | Done |
-| 7 | Quality gates + external run ingest | Done |
-| 8 | Demo script and baseline polish | In progress |
+| 0–7 | Platform spine through quality gates + run ingest | Done |
+| 8 | Demo docs, HLD series, ingest migration | Done *(diagram/Helm polish open)* |
+| 9+ | Contract CI, HLD domain, tool feasibility, console lifecycle | Planned |
 
 **Demo walkthrough:** `docs/DEMO_SCRIPT.md` · **CI gate:** `docs/QUALITY_GATE_CI.md` · **HLD:** `docs/hld/HLD-001-product-intent-and-system-boundaries.md`
 
@@ -141,4 +140,4 @@ GitHub Actions: API/console tests, Ruff, mypy, OpenAPI drift, pip-audit, Dockerf
 
 ## Plan
 
-Phased implementation is documented in **`EVAL_DRIVEN_DESIGN_PLAN.md`**.
+Phased implementation: **`EVAL_DRIVEN_DESIGN_PLAN.md`** (MVP + post-MVP). Stack architecture: **`docs/hld/`**.
