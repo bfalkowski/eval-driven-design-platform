@@ -1357,6 +1357,7 @@ If the implementation can represent and demonstrate this story cleanly, it is al
 | [HLD-004](HLD-004-tool-requirements-and-feasibility.md) | eval-driven-design-platform | Tool modeling |
 | [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | MVP implementation plan |
 | [HLD-007](HLD-007-platform-api-and-integration.md) | eval-driven-design-platform | Platform API and integration |
+| [HLD-008](HLD-008-langfuse-integration.md) | eval-driven-design-platform | Langfuse integration |
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Current platform demo |
 | `docs/06-demo-script.md` | edd-agent-lab | Current lab demo |

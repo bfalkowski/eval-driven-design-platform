@@ -114,6 +114,7 @@ Architecture and MVP implementation for the **EDD stack** (**eval-driven-design-
 - [HLD-005: Reference scenario — Customer Escalation Triage](docs/hld/HLD-005-reference-scenario-customer-escalation-triage.md)
 - [HLD-006: MVP implementation plan](docs/hld/HLD-006-mvp-implementation-plan.md)
 - [HLD-007: Platform API and integration](docs/hld/HLD-007-platform-api-and-integration.md)
+- [HLD-008: Langfuse integration](docs/hld/HLD-008-langfuse-integration.md)
 
 Phased platform delivery: **`EVAL_DRIVEN_DESIGN_PLAN.md`** (MVP Phases 0–8 done; post-MVP aligns with HLD-006 milestones M2–M6).
 
