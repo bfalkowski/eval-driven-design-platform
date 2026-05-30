@@ -1,0 +1,19 @@
+{
+  "description": "Minimal publish response shape for schema_version 1 ingest (HLD-007 snapshot).",
+  "required_top_level_fields": [
+    "platform_run_id",
+    "experiment_run_id",
+    "external_run_id",
+    "gate_status",
+    "gate_explanation",
+    "experiment_run"
+  ],
+  "gate_status_values": ["pass", "fail", "insufficient_evidence"],
+  "experiment_run_ingest_fields": [
+    "source",
+    "external_run_id",
+    "subject_id",
+    "suite_id",
+    "gate_status"
+  ]
+}
