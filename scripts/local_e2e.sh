@@ -6,6 +6,7 @@
 #   ./scripts/local_e2e.sh --postgres --langfuse  # above + Langfuse overlay on :3001
 #   ./scripts/local_e2e.sh --compose    # full stack via docker compose
 #   ./scripts/local_e2e.sh --no-smoke   # start only
+#   ./scripts/local_e2e.sh --demo-loop  # after start, run scripts/run_demo_loop.sh
 #   ./scripts/local_e2e.sh --stop
 
 set -euo pipefail
@@ -30,6 +31,7 @@ CONSOLE_URL="http://127.0.0.1:${CONSOLE_PORT}"
 USE_POSTGRES=false
 USE_LANGFUSE=false
 RUN_SMOKE=true
+RUN_DEMO_LOOP=false
 START_CONSOLE=true
 MODE="host"
 ACTION="start"
@@ -220,6 +222,15 @@ start_console() {
   wait_for_console
 }
 
+run_demo_loop() {
+  echo "=== demo loop ==="
+  EDD_API_BASE_URL="${BASE_URL}" \
+    EDD_TENANT_ID="${TENANT_ID}" \
+    EDD_API_KEY="${1:-}" \
+    EDD_TOKEN_FILE="${TOKEN_FILE}" \
+    "${REPO_ROOT}/scripts/run_demo_loop.sh"
+}
+
 run_smoke_test() {
   echo "=== health ==="
   curl -sf "${BASE_URL}/v1/health"
@@ -261,6 +272,7 @@ while [[ $# -gt 0 ]]; do
     --postgres) USE_POSTGRES=true; shift ;;
     --langfuse) USE_LANGFUSE=true; shift ;;
     --no-smoke) RUN_SMOKE=false; shift ;;
+    --demo-loop) RUN_DEMO_LOOP=true; shift ;;
     --no-console) START_CONSOLE=false; shift ;;
     --stop) ACTION="stop"; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -313,6 +325,11 @@ if [[ "${RUN_SMOKE}" == "true" ]]; then
     echo
   fi
   echo "Smoke test passed."
+fi
+
+if [[ "${RUN_DEMO_LOOP}" == "true" ]]; then
+  run_demo_loop "${token}"
+  echo "Demo loop passed."
 fi
 
 print_urls "${token}"

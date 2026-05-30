@@ -89,3 +89,25 @@ Back on the platform **Runs** page, filter by ingest source `edd-agent-lab` and 
 ```bash
 ./scripts/local_e2e.sh --stop
 ```
+
+## Automated equivalent (API path)
+
+The manual steps above can be run against a live API without console clicks:
+
+```bash
+# API already running (e.g. from local_e2e.sh)
+./scripts/run_demo_loop.sh
+
+# Start API + run demo loop in one command
+./scripts/local_e2e.sh --no-console --demo-loop
+
+# Full verify: start stack, demo loop, optional lab smoke, stop
+./scripts/verify_demo.sh
+./scripts/verify_demo.sh --postgres --lab-smoke
+```
+
+`run_demo_loop.sh` covers steps 2–6 (spec → case → run → results → gate) with auth when
+`EDD_API_KEY` or `EDD_TOKEN_FILE` is set (default after `local_e2e.sh`). Step 7 lab publish
+runs when `RUN_DEMO_LAB_SMOKE=1` and `edd-agent-lab` is checked out as a sibling repo.
+
+CI runs the same demo loop on every platform PR (`demo-loop-api` job in `.github/workflows/ci.yml`).

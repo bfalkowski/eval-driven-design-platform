@@ -37,6 +37,41 @@ jobs:
       - name: Run Ruff
         run: uv run ruff check .
 
+  demo-loop-api:
+    name: Demo loop (live API)
+    runs-on: ubuntu-latest
+    needs:
+      - api-tests
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: api
+        run: uv sync --extra dev
+
+      - name: Start API and run demo loop
+        env:
+          APP_STORAGE_BACKEND: memory
+          APP_AUTH_ENABLED: "true"
+          APP_AUTH_DEMO_SECRET: ci-demo-secret
+          APP_OTEL_EXPORTER: none
+        run: |
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          for i in $(seq 1 40); do
+            curl -sf http://127.0.0.1:8000/v1/ready && break
+            sleep 0.25
+          done
+          curl -sf http://127.0.0.1:8000/v1/ready
+          TOKEN="$(uv run python ../scripts/create_demo_jwt.py --tenant-id tenant-a --subject demo-loop-ci)"
+          cd ..
+          EDD_API_KEY="${TOKEN}" EDD_API_BASE_URL=http://127.0.0.1:8000 ./scripts/run_demo_loop.sh
+        working-directory: api
+
   console-tests:
     name: Console tests
     runs-on: ubuntu-latest

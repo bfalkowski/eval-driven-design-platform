@@ -1,4 +1,4 @@
-.PHONY: test build up down e2e
+.PHONY: test build up down e2e demo-loop verify-demo
 
 test:
 	cd api && uv run pytest -q
@@ -15,3 +15,9 @@ down:
 
 e2e:
 	./scripts/local_e2e.sh
+
+demo-loop:
+	./scripts/run_demo_loop.sh
+
+verify-demo:
+	./scripts/verify_demo.sh

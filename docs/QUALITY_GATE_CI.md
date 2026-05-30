@@ -36,6 +36,19 @@ Environment:
 
 - `EDD_API_BASE_URL` (default `http://127.0.0.1:8000`)
 - `EDD_TENANT_ID` (default `tenant-a`)
+- `EDD_API_KEY` or `EDD_TOKEN_FILE` when auth is enabled (see `./scripts/local_e2e.sh`)
+
+## Automated demo loop
+
+The platform repo includes a script that mirrors the API portion of `docs/DEMO_SCRIPT.md`:
+
+```bash
+./scripts/run_demo_loop.sh
+./scripts/verify_demo.sh --postgres
+```
+
+GitHub Actions job **`demo-loop-api`** (in `.github/workflows/ci.yml`) starts the API with
+auth enabled and runs `run_demo_loop.sh` on every pull request after unit tests pass.
 
 ## GitHub Actions example
 
