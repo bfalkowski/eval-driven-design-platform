@@ -7,12 +7,13 @@ from uuid import UUID
 
 from app.core.errors import BadRequestError, NotFoundError
 from app.domain.models import (
-    ExperimentRun,
     ExperimentRunIngest,
     ExperimentRunStatus,
     RunIngestEnvelope,
     RunIngestResponse,
 )
+from app.services.readiness_evaluation import compute_gate as _compute_gate
+from app.services.readiness_evaluation import evaluate_readiness
 from app.storage.base import EddRepository
 
 INGEST_SCHEMA_VERSION = "1"
@@ -63,10 +64,13 @@ class RunIngestService:
         completed_at = _parse_timestamp(normalized.completed_at) or datetime.now(UTC)
         result_count = _result_count(normalized)
         overall_score = extract_overall_score(normalized.eval_summary)
-        gate_status, gate_explanation = compute_gate(
+        readiness = evaluate_readiness(
             pass_threshold=spec.pass_threshold,
             overall_score=overall_score,
             failure_packet=normalized.failure_packet,
+            tool_mode_summary=normalized.tool_mode_summary,
+            production_ready=normalized.production_ready,
+            tool_bindings=normalized.tool_bindings,
         )
 
         ingest = ExperimentRunIngest(
@@ -74,8 +78,14 @@ class RunIngestService:
             external_run_id=normalized.run_id,
             subject_id=resolve_subject_id(normalized),
             suite_id=resolve_suite_id(normalized),
-            gate_status=gate_status,
-            gate_explanation=gate_explanation,
+            gate_status=readiness.gate_status,
+            gate_explanation=readiness.gate_explanation,
+            behavior_status=readiness.behavior_status,
+            tool_status=readiness.tool_status,
+            production_status=readiness.production_status,
+            overall_status=readiness.overall_status,
+            readiness_explanation=readiness.readiness_explanation,
+            tool_mode_summary=normalized.tool_mode_summary,
             scenario_ids=list(normalized.scenario_ids),
             eval_summary=normalized.eval_summary,
             failure_packet=normalized.failure_packet,
@@ -97,8 +107,13 @@ class RunIngestService:
             experiment_run_id=run.experiment_run_id,
             external_run_id=normalized.run_id,
             lab_run_id=normalized.run_id,
-            gate_status=gate_status,
-            gate_explanation=gate_explanation,
+            gate_status=readiness.gate_status,
+            gate_explanation=readiness.gate_explanation,
+            behavior_status=readiness.behavior_status,
+            tool_status=readiness.tool_status,
+            production_status=readiness.production_status,
+            overall_status=readiness.overall_status,
+            readiness_explanation=readiness.readiness_explanation,
             experiment_run=run,
         )
 
@@ -166,28 +181,23 @@ def extract_overall_score(eval_summary: dict[str, Any] | None) -> float | None:
     return score
 
 
+# Backward-compatible alias; implementation lives in readiness_evaluation.
 def compute_gate(
     *,
     pass_threshold: float,
     overall_score: float | None,
     failure_packet: dict[str, Any] | None,
+    tool_mode_summary: str | None = None,
+    production_ready: bool | None = None,
+    tool_bindings: list[dict[str, Any]] | None = None,
 ) -> tuple[str, str]:
-    if failure_packet:
-        failure_type = failure_packet.get("failure_type") or failure_packet.get("summary")
-        detail = f" ({failure_type})" if failure_type else ""
-        return "fail", f"Ingest reported a failure packet{detail}."
-
-    if overall_score is None:
-        return "insufficient_evidence", "No overall_score in eval_summary."
-
-    if overall_score >= pass_threshold:
-        return (
-            "pass",
-            f"Ingest overall score {overall_score:.1f} meets pass threshold {pass_threshold:.1f}.",
-        )
-    return (
-        "fail",
-        f"Ingest overall score {overall_score:.1f} is below pass threshold {pass_threshold:.1f}.",
+    return _compute_gate(
+        pass_threshold=pass_threshold,
+        overall_score=overall_score,
+        failure_packet=failure_packet,
+        tool_mode_summary=tool_mode_summary,
+        production_ready=production_ready,
+        tool_bindings=tool_bindings,
     )
 
 

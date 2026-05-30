@@ -69,8 +69,55 @@ def test_quality_gate_for_ingested_run(client: TestClient) -> None:
     body = gate.json()
     assert body["evaluation_source"] == "ingest"
     assert body["gate_status"] == "pass"
+    assert body["behavior_status"] == "pass"
+    assert body["overall_status"] == "pass"
     assert body["ingest_source"] == "edd-agent-lab"
     assert body["external_run_id"] == "gate-ingest-run-1"
+
+
+def test_quality_gate_pass_for_demo_not_production(client: TestClient) -> None:
+    spec = create_spec(client, name="Gate demo not production")
+    publish = client.post(
+        "/v1/integrations/runs/publish",
+        json={
+            "schema_version": "1",
+            "source": "edd-agent-lab",
+            "run_id": "gate-demo-not-prod-1",
+            "agent": "customer_escalation_triage",
+            "agent_version": "v1-evidence-triage-graph",
+            "suite": "escalation_triage",
+            "tenant_id": "tenant-a",
+            "eval_spec_id": spec["eval_spec_id"],
+            "scenario_ids": ["apex_health_latency"],
+            "eval_summary": {"overall_score": 0.91},
+            "failure_packet": None,
+            "tool_mode_summary": "mock_local",
+            "production_ready": False,
+            "tool_bindings": [
+                {"mode": "mock", "requirement_id": "trace_evidence_source"},
+                {"mode": "local", "requirement_id": "customer_report_source"},
+            ],
+            "outputs": {},
+            "artifact_paths": {},
+        },
+    )
+    assert publish.status_code == 201
+    body = publish.json()
+    assert body["gate_status"] == "pass"
+    assert body["overall_status"] == "pass_for_demo_not_production"
+    assert body["behavior_status"] == "pass"
+    assert body["tool_status"] == "mock_local"
+    assert body["production_status"] == "blocked"
+
+    gate = client.get(
+        f"/v1/experiment-runs/{body['platform_run_id']}/gate",
+        params={"tenant_id": "tenant-a"},
+    )
+    assert gate.status_code == 200
+    gate_body = gate.json()
+    assert gate_body["overall_status"] == "pass_for_demo_not_production"
+    assert gate_body["production_status"] == "blocked"
+    assert gate_body["gate_status"] == "pass"
 
 
 def test_quality_gate_tenant_isolation(client: TestClient) -> None:

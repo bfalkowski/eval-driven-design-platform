@@ -10,6 +10,7 @@ from app.domain.edd.requirements import (
     ToolFeasibilityReview,
     ToolRequirement,
 )
+from app.domain.edd.readiness import ReadinessEvaluation
 from app.domain.edd.rules import BehaviorRule
 
 __all__ = [
@@ -22,6 +23,7 @@ __all__ = [
     "GraphDesign",
     "GraphNode",
     "InformationRequirement",
+    "ReadinessEvaluation",
     "ToolBinding",
     "ToolFeasibilityReview",
     "ToolRequirement",

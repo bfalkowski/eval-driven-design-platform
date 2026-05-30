@@ -107,6 +107,12 @@ class ExperimentRunIngest(BaseModel):
     suite_id: str | None = None
     gate_status: str | None = None
     gate_explanation: str | None = None
+    behavior_status: str | None = None
+    tool_status: str | None = None
+    production_status: str | None = None
+    overall_status: str | None = None
+    readiness_explanation: str | None = None
+    tool_mode_summary: str | None = None
     scenario_ids: list[str] = Field(default_factory=list)
     eval_summary: dict[str, Any] | None = None
     failure_packet: dict[str, Any] | None = None
@@ -169,6 +175,11 @@ class QualityGateEvaluation(BaseModel):
     evaluation_source: str
     pass_threshold: float
     average_score: float | None = None
+    behavior_status: str | None = None
+    tool_status: str | None = None
+    production_status: str | None = None
+    overall_status: str | None = None
+    readiness_explanation: str | None = None
     ingest_source: str | None = None
     external_run_id: str | None = None
 
@@ -254,6 +265,9 @@ class RunIngestEnvelope(BaseModel):
     eval_summary: dict[str, Any] | None = None
     failure_packet: dict[str, Any] | None = None
     artifact_paths: dict[str, Any] = Field(default_factory=dict)
+    tool_mode_summary: str | None = Field(default=None, max_length=64)
+    production_ready: bool | None = None
+    tool_bindings: list[dict[str, Any]] | None = None
 
 
 class RunIngestResponse(BaseModel):
@@ -262,6 +276,11 @@ class RunIngestResponse(BaseModel):
     external_run_id: str
     gate_status: str
     gate_explanation: str
+    behavior_status: str | None = None
+    tool_status: str | None = None
+    production_status: str | None = None
+    overall_status: str | None = None
+    readiness_explanation: str | None = None
     experiment_run: ExperimentRun
     request_id: str | None = None
     lab_run_id: str | None = None
