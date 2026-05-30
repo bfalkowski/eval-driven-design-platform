@@ -1,6 +1,7 @@
 import streamlit as st
 
 from components.layout import load_css
+from navigation import build_navigation
 
 st.set_page_config(
     page_title="Eval Driven Design",
@@ -9,4 +10,4 @@ st.set_page_config(
 )
 
 load_css()
-st.switch_page("pages/1_Overview.py")
+build_navigation().run()
