@@ -1089,5 +1089,6 @@ The API must preserve that distinction.
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | eval-driven-design-platform | Golden publish payloads |
 | [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | Milestone 4 scope |
 | [HLD-008](HLD-008-langfuse-integration.md) | eval-driven-design-platform | Trace links and metadata |
+| [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Architecture diagrams |
 | `docs/05-platform-integration.md` | edd-agent-lab | Publish seam today |
 | `scripts/test_platform_publish.sh` | edd-agent-lab | Auth-aware smoke test |

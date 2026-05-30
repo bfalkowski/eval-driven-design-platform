@@ -229,7 +229,7 @@ make test
 - [x] `docs/QUALITY_GATE_CI.md`
 - [x] Alembic migration for `experiment_runs.ingest`
 - [x] `docs/hld/` — HLD-001 through HLD-005 (stack intent, domain, workflow, tools, reference scenario)
-- [ ] Architecture diagram refresh in README *(remaining polish)*
+- [ ] Architecture diagram refresh in README — see [HLD-009](docs/hld/HLD-009-architecture-and-flow-diagrams.md) *(remaining polish)*
 - [ ] Helm chart skeleton polish *(remaining polish)*
 
 **Validation:** `./scripts/local_e2e.sh --postgres`, walk `docs/DEMO_SCRIPT.md`, lab `./scripts/test_platform_publish.sh` against local API.
@@ -295,7 +295,7 @@ Build **after** Phase 8 validation. Follow [HLD-006](docs/hld/HLD-006-mvp-implem
 - [x] Quality gate script + console page  
 - [x] External run ingest from edd-agent-lab  
 - [x] README + DEMO_SCRIPT tell the story  
-- [ ] Remaining: README diagram polish, cross-repo CI (Phase 9)
+- [ ] Remaining: README diagram polish ([HLD-009](docs/hld/HLD-009-architecture-and-flow-diagrams.md)), cross-repo CI (Phase 9)
 
 ## Non-goals
 

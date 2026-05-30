@@ -14,3 +14,4 @@ These HLDs define intent and constraints. Platform delivery phases are in [`EVAL
 | [HLD-006](HLD-006-mvp-implementation-plan.md) | MVP Implementation Plan | Draft |
 | [HLD-007](HLD-007-platform-api-and-integration.md) | Platform API and Integration | Draft |
 | [HLD-008](HLD-008-langfuse-integration.md) | Langfuse Integration | Draft |
+| [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | Architecture and Flow Diagrams | Draft |

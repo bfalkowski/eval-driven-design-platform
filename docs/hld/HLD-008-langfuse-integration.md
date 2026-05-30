@@ -854,5 +854,6 @@ The platform should make the design decision traceable.
 | [HLD index](README.md) | eval-driven-design-platform | HLD series |
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | eval-driven-design-platform | Reference trace fixtures |
 | [HLD-007](HLD-007-platform-api-and-integration.md) | eval-driven-design-platform | Publish `trace_links` |
+| [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Architecture diagrams |
 | `docs/05-platform-integration.md` | edd-agent-lab | Lab must not bypass platform for Langfuse |
 | `AGENTS.md` | eval-driven-design-platform | Langfuse client constraint |

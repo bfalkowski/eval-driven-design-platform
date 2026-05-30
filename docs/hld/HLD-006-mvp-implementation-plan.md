@@ -707,6 +707,7 @@ If the Customer Escalation Triage Agent works end to end, the foundation is soun
 | [HLD-005](HLD-005-reference-scenario-customer-escalation-triage.md) | eval-driven-design-platform | Golden payloads |
 | [HLD-007](HLD-007-platform-api-and-integration.md) | eval-driven-design-platform | Publish API contract |
 | [HLD-008](HLD-008-langfuse-integration.md) | eval-driven-design-platform | Langfuse trace evidence |
+| [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Architecture diagrams |
 | [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) | eval-driven-design-platform | Phases 9–14 mapping |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Current platform demo |
 | `docs/05-platform-integration.md` | edd-agent-lab | Publish seam today |
