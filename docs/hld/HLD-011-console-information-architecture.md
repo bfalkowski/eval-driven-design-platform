@@ -924,5 +924,6 @@ If the console tells that story clearly, it is aligned with the product intent.
 | [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | M5 console MVP |
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Console information flow (§11) |
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph Design screen |
+| [HLD-012](HLD-012-versioning-gates-and-promotion.md) | eval-driven-design-platform | Gates and Promotion screens |
 | `docs/11-ideal-console-design.md` | edd-agent-lab | Ideal-state narrative |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Current operator walkthrough |

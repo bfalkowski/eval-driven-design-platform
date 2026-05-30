@@ -498,6 +498,8 @@ flowchart TD
 
 Promotion is not binary. A version may be promoted for demo while blocked for production.
 
+See [HLD-012: Versioning, gates, and promotion](HLD-012-versioning-gates-and-promotion.md) for promotion states, policy, and `PromotionRecord` requirements.
+
 ---
 
 ## 11. Platform Console Information Flow
@@ -684,4 +686,5 @@ The diagrams in this document should help coding agents and reviewers keep those
 | [HLD-008](HLD-008-langfuse-integration.md) | eval-driven-design-platform | Trace evidence flow |
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design detail |
 | [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Console IA spec |
+| [HLD-012](HLD-012-versioning-gates-and-promotion.md) | eval-driven-design-platform | Promotion flow detail |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Operator walkthrough |

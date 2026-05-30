@@ -712,6 +712,7 @@ If the Customer Escalation Triage Agent works end to end, the foundation is soun
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Architecture diagrams |
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design and rule mapping |
 | [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Console IA spec |
+| [HLD-012](HLD-012-versioning-gates-and-promotion.md) | eval-driven-design-platform | Gates and promotion |
 | [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) | eval-driven-design-platform | Phases 9–14 mapping |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Current platform demo |
 | `docs/05-platform-integration.md` | edd-agent-lab | Publish seam today |

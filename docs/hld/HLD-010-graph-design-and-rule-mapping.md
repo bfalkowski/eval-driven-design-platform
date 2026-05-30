@@ -794,3 +794,4 @@ That is the relationship this HLD exists to preserve.
 | [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | M2 artifacts, M3 lab agent |
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Target-to-graph diagram |
 | [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Graph Design screen |
+| [HLD-012](HLD-012-versioning-gates-and-promotion.md) | eval-driven-design-platform | Gates and promotion |

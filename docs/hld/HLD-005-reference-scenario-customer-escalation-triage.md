@@ -1361,6 +1361,7 @@ If the implementation can represent and demonstrate this story cleanly, it is al
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Architecture diagrams |
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design and rule mapping |
 | [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Console information architecture |
+| [HLD-012](HLD-012-versioning-gates-and-promotion.md) | eval-driven-design-platform | Versioning, gates, and promotion |
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Current platform demo |
 | `docs/06-demo-script.md` | edd-agent-lab | Current lab demo |

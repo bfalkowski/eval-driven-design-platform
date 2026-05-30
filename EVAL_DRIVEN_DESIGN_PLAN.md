@@ -263,7 +263,7 @@ Build **after** Phase 8 validation. Follow [HLD-006](docs/hld/HLD-006-mvp-implem
 - [ ] Extend QualityGateService: behavior vs tool vs production readiness
 - [ ] Console: Information Requirements, Tool Requirements, Tool Feasibility
 
-**Exit:** `pass_for_demo_not_production` from [HLD-004](docs/hld/HLD-004-tool-requirements-and-feasibility.md) representable.
+**Exit:** `pass_for_demo_not_production` from [HLD-004](docs/hld/HLD-004-tool-requirements-and-feasibility.md) and [HLD-012](docs/hld/HLD-012-versioning-gates-and-promotion.md) representable.
 
 ### Phase 12 — Evidence loop (failure → fix → compare)
 
@@ -271,7 +271,7 @@ Build **after** Phase 8 validation. Follow [HLD-006](docs/hld/HLD-006-mvp-implem
 - [ ] TraceLink metadata; lab publishes structured failure/fix artifacts
 - [ ] Console: Failure Packets, Fix Plans, Compare Versions
 
-**Exit:** HLD-005 v0→v1 story navigable in platform UI.
+**Exit:** HLD-005 v0→v1 story navigable in platform UI. See [HLD-012](docs/hld/HLD-012-versioning-gates-and-promotion.md) comparison and gate artifacts.
 
 ### Phase 13 — Console lifecycle + lab reference scenario
 
@@ -282,7 +282,7 @@ Build **after** Phase 8 validation. Follow [HLD-006](docs/hld/HLD-006-mvp-implem
 
 ### Phase 14 — Operational mode *(defer)*
 
-- [ ] OperationalRun, PromotionRecord persistence, Live Run / Action Queue
+- [ ] OperationalRun, PromotionRecord persistence, Live Run / Action Queue — [HLD-012](docs/hld/HLD-012-versioning-gates-and-promotion.md)
 - [ ] Approval-gated write tools
 
 **Exit:** HLD-003 Phase 7 (Promote and Operate) — only after Phases 10–13 stable.

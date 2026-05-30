@@ -986,6 +986,7 @@ If a feature does not support this loop, it should be treated as secondary.
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Architecture diagrams |
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design and rule mapping |
 | [HLD-011](HLD-011-console-information-architecture.md) | eval-driven-design-platform | Console information architecture |
+| [HLD-012](HLD-012-versioning-gates-and-promotion.md) | eval-driven-design-platform | Versioning, gates, and promotion |
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
 | `docs/10-ideal-developer-experience.md` | edd-agent-lab | Target EDD lifecycle (narrative) |
 | `docs/11-ideal-console-design.md` | edd-agent-lab | Console workspaces per phase |

@@ -2,7 +2,7 @@
 
 Architecture and product-boundary documents for the **EDD stack** (**eval-driven-design-platform** + **edd-agent-lab**).
 
-These HLDs define intent and constraints. Platform delivery phases are in [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) (MVP Phases 0–8 done; post-MVP Phases 9–14).
+These HLDs define intent and constraints for the full HLD pack (HLD-001 through HLD-012). Platform delivery phases are in [`EVAL_DRIVEN_DESIGN_PLAN.md`](../../EVAL_DRIVEN_DESIGN_PLAN.md) (MVP Phases 0–8 done; post-MVP Phases 9–14).
 
 | ID | Title | Status |
 |---|---|---|
@@ -17,3 +17,4 @@ These HLDs define intent and constraints. Platform delivery phases are in [`EVAL
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | Architecture and Flow Diagrams | Draft |
 | [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | Graph Design and Rule Mapping | Draft |
 | [HLD-011](HLD-011-console-information-architecture.md) | Console Information Architecture | Draft |
+| [HLD-012](HLD-012-versioning-gates-and-promotion.md) | Versioning, Gates, and Promotion | Draft |
