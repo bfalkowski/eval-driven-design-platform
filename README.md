@@ -12,9 +12,11 @@ You can run the stack locally to walk through the operator loop end to end, with
 
 ## Console
 
-Streamlit operator UI — Observe → Case → Run → Evaluate → Decide:
+Streamlit operator UI on **`:8501`** — Design → Build → Evaluate → Promote lifecycle for the **Customer Escalation Triage** reference scenario (read-only HLD artifacts today):
 
 ![Eval Driven Design Platform console — Overview](docs/images/console-overview.jpg)
+
+**Lab workbench** (compare v0/v1, publish runs) lives in [edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab) on **`:8502`** — see [12-lab-console-design.md](https://github.com/bfalkowski/edd-agent-lab/blob/main/docs/12-lab-console-design.md).
 
 ## Why this exists
 
@@ -65,6 +67,8 @@ With Langfuse enabled (`./scripts/local_e2e.sh --postgres --langfuse`), runs can
 
 External producers (e.g. `edd-agent-lab`) publish runs via `POST /v1/integrations/runs/publish`; gate and provenance are stored on the experiment run.
 
+**Reference demo:** `edd-lab demo-escalation` and `./scripts/demo_customer_escalation_triage.sh` in [edd-agent-lab](https://github.com/bfalkowski/edd-agent-lab) — see [HLD-005](docs/hld/HLD-005-reference-scenario-customer-escalation-triage.md).
+
 ## What you get (target MVP)
 
 - **EvalSpec** — what “good” means (rubric, thresholds, judge config)
@@ -83,23 +87,27 @@ External producers (e.g. `edd-agent-lab`) publish runs via `POST /v1/integration
 - FastAPI control plane: health, ready, metrics, demo JWT auth, tenant-scoped APIs
 - **EvalSpec** and **EvalCase** CRUD (Postgres and in-memory storage)
 - **ExperimentRun** API with deterministic mock scaffold and mock evaluator
-- Run summaries, **evaluation results**, and **quality gate** evaluation
-- **External run ingest** (`POST /v1/integrations/runs/publish`) with persisted provenance
-- Streamlit console: Overview, Eval Specs, Cases, Runs, Results Explorer, Quality Gates, Langfuse, Operations
+- Run summaries, **evaluation results**, and **quality gate** evaluation (behavior / tool / production dimensions)
+- **External run ingest** (`POST /v1/integrations/runs/publish`, v1 + v2 envelopes) with persisted provenance
+- HLD domain schemas + `examples/customer_escalation_triage/*.yaml` (AgentTarget, rules, graph, failure, gate, …)
+- Streamlit console (`:8501`): lifecycle nav — Overview, Design (target/rules/eval/tools), Build (graph), Evaluate (runs/failures/compare), Promote (gates)
 - Optional **Langfuse**: health, get trace, import case, push scores, create trace on run
 - Local dev: `local_e2e.sh`, seed script, Docker images, Helm skeleton
-- CI: tests, Ruff, mypy, OpenAPI drift, pip-audit, Dockerfile policy, image builds, kubeconform
+- CI: tests, Ruff, mypy, OpenAPI drift, pip-audit, Dockerfile policy, image builds, kubeconform, lab publish smoke
 
-### Remaining (MVP polish)
+### Roadmap (Phases 9–16)
 
-See **`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`** — Phases 9–12 complete; 13b in progress. Remaining MVP polish: README diagram (HLD-009) and Helm.
+Canonical plan: **`docs/HLD_TEST_FIRST_IMPLEMENTATION.md`**
 
 | Phase | Scope | Status |
 |-------|--------|--------|
 | 0–8 | Platform MVP spine (EvalSpec, runs, gates, ingest) | Done |
 | 9–12 | Contract CI, HLD domain, tool feasibility, evidence loop | Done |
-| 13 | Reference scenario demo + lifecycle console | In progress (13b) |
-| 14 | Operational mode | Deferred |
+| 13a–13b | Reference agent + lab workbench (doc 12) + platform lifecycle pages | Done |
+| 13c | Gates/Promotion UI + `validate_reference_scenario.sh` | Next |
+| 14 | OperationalRun, promotion persistence, approval-gated writes | Deferred |
+| 15 | Greenfield agent/scenario **entry** (platform create + lab selector) | Planned |
+| 16 | Derived artifact generation (rules/eval/graph from target) | Planned |
 
 **Demo walkthrough:** `docs/DEMO_SCRIPT.md` · **CI gate:** `docs/QUALITY_GATE_CI.md`
 
@@ -121,7 +129,7 @@ Architecture and MVP implementation for the **EDD stack** (**eval-driven-design-
 - [HLD-011: Console information architecture](docs/hld/HLD-011-console-information-architecture.md)
 - [HLD-012: Versioning, gates, and promotion](docs/hld/HLD-012-versioning-gates-and-promotion.md)
 
-Execution plan: **[HLD Test-First Implementation](docs/HLD_TEST_FIRST_IMPLEMENTATION.md)** (Phases 9–13; Phase 14 deferred). Architecture: **[HLD-006](docs/hld/HLD-006-mvp-implementation-plan.md)**.
+Execution plan: **[HLD Test-First Implementation](docs/HLD_TEST_FIRST_IMPLEMENTATION.md)** (Phases 9–13 active; **15–16** greenfield entry + generation; **14** operate). Architecture: **[HLD-006](docs/hld/HLD-006-mvp-implementation-plan.md)**.
 
 ## Repo layout
 
@@ -146,6 +154,8 @@ cp .env.example .env
 - Console: http://localhost:8501 (Bearer token printed by the script)
 - API: http://localhost:8000/docs
 - Langfuse: http://localhost:3001 when using `--langfuse` (`admin@local.dev` / `local-demo-password`)
+
+Lab workbench (separate repo): `edd-lab console` → http://localhost:8502
 
 Stop: `./scripts/local_e2e.sh --stop`
 
