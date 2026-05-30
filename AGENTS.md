@@ -46,6 +46,7 @@ Cursor also loads `.cursor/rules/karpathy-guidelines.mdc` (`alwaysApply: true`) 
 - Do not log prompt, answer, or rubric content in metrics or OTel span attributes by default.
 - Keep Langfuse SDK/API calls behind `integrations/langfuse_client.py` only.
 - Keep tests deterministic; mock evaluator by default until explicitly requested.
+- **CI has no AI provider keys by design.** All pytest suites, smoke scripts (`test_platform_publish.sh`), demo-loop scripts (`run_demo_loop.sh`, `verify_demo.sh`), and validation scripts must pass without model-provider credentials (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.). Live LLM evaluation or generation is opt-in only (explicit env/flag) and must skip or fall back to mock when credentials are absent. Do not add required CI jobs that call model providers. (`EDD_API_KEY` in CI is the platform bearer JWT for auth, not an AI provider key.)
 - Do not mention employers, interviews, or proprietary systems in public docs.
 
 ## Planning

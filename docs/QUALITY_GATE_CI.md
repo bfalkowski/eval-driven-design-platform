@@ -53,6 +53,20 @@ auth enabled and runs `run_demo_loop.sh` on every pull request after unit tests 
 Job **`integration-lab-smoke`** checks out **edd-agent-lab**, starts the platform API
 (auth disabled, memory backend), and runs `edd-agent-lab/scripts/test_platform_publish.sh`.
 
+## CI invariants (no AI provider keys)
+
+GitHub Actions workflows intentionally **do not** receive model-provider API keys.
+
+All required jobs — unit tests, `demo-loop-api`, `integration-lab-smoke`, container builds — must pass using:
+
+- deterministic mock evaluation on the platform
+- mock/local tools and fixtures in the lab
+- platform bearer auth only where needed (`EDD_API_KEY` minted in CI; not an OpenAI key)
+
+Live LLM or live provider calls belong behind an **explicit opt-in flag** for local or nightly runs only. When credentials are missing, code must skip live mode or fall back to mock automatically — never fail CI for absent provider keys.
+
+See `AGENTS.md` in each repo for the agent-facing rule.
+
 ## GitHub Actions example
 
 After publishing or creating a run in CI, fail the job when the gate does not pass:
