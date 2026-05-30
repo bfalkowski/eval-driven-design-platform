@@ -1,0 +1,36 @@
+tool_bindings:
+  - graph_node: collect_customer_report
+    requirement_id: customer_report_source
+    active_implementation: fetch_customer_report_from_scenario
+    mode: local
+    environment: local_demo
+
+  - graph_node: collect_trace_evidence
+    requirement_id: trace_evidence_source
+    active_implementation: fetch_trace_summary_mock
+    mode: mock
+    environment: local_demo
+
+  - graph_node: collect_eval_history
+    requirement_id: eval_history_source
+    active_implementation: fetch_eval_results_local
+    mode: local
+    environment: local_demo
+
+  - graph_node: collect_recent_changes
+    requirement_id: recent_changes_source
+    active_implementation: fetch_recent_changes_mock
+    mode: mock
+    environment: local_demo
+
+  - graph_node: collect_tool_health
+    requirement_id: tool_health_source
+    active_implementation: fetch_tool_health_mock
+    mode: mock
+    environment: local_demo
+
+  - graph_node: collect_customer_context
+    requirement_id: customer_context_source
+    active_implementation: fetch_customer_context_from_scenario
+    mode: local
+    environment: local_demo

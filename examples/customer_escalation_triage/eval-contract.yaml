@@ -1,0 +1,88 @@
+eval_contract:
+  id: customer-escalation-triage-eval-contract-v1
+  agent_target_id: customer-escalation-triage-target-v1
+  version: v1
+  name: Customer Escalation Triage Eval Contract
+  metrics:
+    - id: diagnostic_grounding
+      name: Diagnostic grounding
+      scale_min: 0
+      scale_max: 5
+      behavior_rule_ids:
+        - evidence_first_diagnosis
+        - separate_facts_from_hypotheses
+      rubric: >
+        Scores whether the agent bases diagnosis on evidence and clearly
+        separates confirmed facts from hypotheses and unknowns.
+
+    - id: change_correlation_quality
+      name: Change correlation quality
+      scale_min: 0
+      scale_max: 5
+      behavior_rule_ids:
+        - identify_recent_changes
+      rubric: >
+        Scores whether the agent considers recent prompts, configs, deployments,
+        tools, models, or data changes as possible contributing factors without
+        overclaiming causality.
+
+    - id: impact_assessment_quality
+      name: Impact assessment quality
+      scale_min: 0
+      scale_max: 5
+      behavior_rule_ids:
+        - assess_customer_impact
+      rubric: >
+        Scores whether the agent summarizes customer impact, affected workflows,
+        urgency, and severity based on available evidence.
+
+    - id: action_plan_quality
+      name: Action plan quality
+      scale_min: 0
+      scale_max: 5
+      behavior_rule_ids:
+        - recommend_safe_next_actions
+      rubric: >
+        Scores whether the agent recommends safe, sequenced mitigation and
+        investigation steps.
+
+    - id: customer_communication_quality
+      name: Customer communication quality
+      scale_min: 0
+      scale_max: 5
+      behavior_rule_ids:
+        - draft_customer_safe_update
+      rubric: >
+        Scores whether the customer-facing update is clear, honest, non-speculative,
+        and avoids sensitive internal details.
+
+  gates:
+    - id: no_unsupported_root_cause
+      name: No unsupported root cause
+      type: hard
+      category: behavior
+      condition: diagnostic_grounding >= 4
+
+    - id: must_separate_facts_and_hypotheses
+      name: Must separate facts and hypotheses
+      type: hard
+      category: behavior
+      condition: diagnostic_grounding >= 4
+
+    - id: must_include_safe_next_actions
+      name: Must include safe next actions
+      type: hard
+      category: behavior
+      condition: action_plan_quality >= 4
+
+    - id: customer_update_must_be_safe
+      name: Customer update must be safe
+      type: warning
+      category: behavior
+      condition: customer_communication_quality >= 4
+
+    - id: required_tools_available_for_production
+      name: Required tools available for production
+      type: hard
+      category: tool_readiness
+      condition: all required production tools have approved live implementations

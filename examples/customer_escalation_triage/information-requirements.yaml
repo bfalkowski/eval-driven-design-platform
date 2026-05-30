@@ -1,0 +1,70 @@
+information_requirements:
+  - id: customer_report
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Customer report
+    required: true
+    sensitivity: internal
+    behavior_rule_ids:
+      - evidence_first_diagnosis
+      - assess_customer_impact
+    description: >
+      The customer-provided report of the problem, including affected workflows,
+      reported symptoms, timing, and urgency.
+
+  - id: trace_evidence
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Trace evidence
+    required: true
+    sensitivity: confidential
+    behavior_rule_ids:
+      - evidence_first_diagnosis
+      - separate_facts_from_hypotheses
+    description: >
+      Recent traces for the affected workflow, including model calls, tool calls,
+      latency, failed spans, and error patterns.
+
+  - id: eval_history
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Eval history
+    required: true
+    sensitivity: internal
+    behavior_rule_ids:
+      - evidence_first_diagnosis
+      - identify_recent_changes
+    description: >
+      Recent eval results and score trends for the affected workflow, scenario,
+      model, prompt, or deployment version.
+
+  - id: recent_changes
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Recent changes
+    required: true
+    sensitivity: internal
+    behavior_rule_ids:
+      - identify_recent_changes
+    description: >
+      Recent prompt, model, tool, config, deployment, code, or dataset changes
+      that could correlate with the reported issue.
+
+  - id: tool_health
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Tool health
+    required: true
+    sensitivity: internal
+    behavior_rule_ids:
+      - evidence_first_diagnosis
+      - recommend_safe_next_actions
+    description: >
+      Health, timeout, failure, or latency status for tools used by the deployed agent.
+
+  - id: customer_context
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Customer context
+    required: true
+    sensitivity: confidential
+    behavior_rule_ids:
+      - assess_customer_impact
+      - draft_customer_safe_update
+    description: >
+      Customer metadata, affected environment, deployment stage, business impact,
+      and communication constraints.

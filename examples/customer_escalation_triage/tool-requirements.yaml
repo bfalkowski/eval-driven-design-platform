@@ -1,0 +1,54 @@
+tool_requirements:
+  - id: customer_report_source
+    information_requirement_id: customer_report
+    suggested_tool_name: fetch_customer_report
+    access_mode: read_only
+    required_for_demo: true
+    required_for_production: true
+    purpose: >
+      Retrieve the customer-reported issue, symptoms, timeline, and impact.
+
+  - id: trace_evidence_source
+    information_requirement_id: trace_evidence
+    suggested_tool_name: fetch_trace_summary
+    access_mode: read_only
+    required_for_demo: true
+    required_for_production: true
+    purpose: >
+      Retrieve trace-level evidence for the affected customer, workflow, and time period.
+
+  - id: eval_history_source
+    information_requirement_id: eval_history
+    suggested_tool_name: fetch_eval_results
+    access_mode: read_only
+    required_for_demo: true
+    required_for_production: true
+    purpose: >
+      Retrieve recent eval score trends and failures for the affected workflow.
+
+  - id: recent_changes_source
+    information_requirement_id: recent_changes
+    suggested_tool_name: fetch_recent_changes
+    access_mode: read_only
+    required_for_demo: true
+    required_for_production: true
+    purpose: >
+      Retrieve recent prompt, model, tool, config, deployment, or code changes.
+
+  - id: tool_health_source
+    information_requirement_id: tool_health
+    suggested_tool_name: fetch_tool_health
+    access_mode: read_only
+    required_for_demo: true
+    required_for_production: true
+    purpose: >
+      Retrieve recent tool failures, timeout rates, and latency trends.
+
+  - id: customer_context_source
+    information_requirement_id: customer_context
+    suggested_tool_name: fetch_customer_context
+    access_mode: read_only
+    required_for_demo: true
+    required_for_production: true
+    purpose: >
+      Retrieve customer deployment context and communication constraints.

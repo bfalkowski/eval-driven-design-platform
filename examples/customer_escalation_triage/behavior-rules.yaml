@@ -1,0 +1,52 @@
+behavior_rules:
+  - id: evidence_first_diagnosis
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Evidence-first diagnosis
+    severity: critical
+    category: evidence
+    description: >
+      The agent must base diagnosis on available evidence from traces, evals,
+      recent changes, customer reports, and tool health.
+
+  - id: separate_facts_from_hypotheses
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Separate facts from hypotheses
+    severity: critical
+    category: grounding
+    description: >
+      The agent must distinguish confirmed facts from likely causes and unknowns.
+
+  - id: identify_recent_changes
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Identify recent changes
+    severity: high
+    category: evidence
+    description: >
+      The agent must check whether recent prompts, model settings, tools, configs,
+      deployments, or data changes correlate with the issue.
+
+  - id: assess_customer_impact
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Assess customer impact
+    severity: high
+    category: planning
+    description: >
+      The agent must describe customer impact, affected workflows, severity,
+      and urgency where evidence is available.
+
+  - id: recommend_safe_next_actions
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Recommend safe next actions
+    severity: high
+    category: operations
+    description: >
+      The agent must recommend safe, sequenced mitigation and investigation steps.
+
+  - id: draft_customer_safe_update
+    agent_target_id: customer-escalation-triage-target-v1
+    name: Draft customer-safe update
+    severity: medium
+    category: communication
+    description: >
+      The agent should produce a concise customer-facing update that avoids
+      speculation and sensitive internal details.

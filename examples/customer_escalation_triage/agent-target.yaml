@@ -1,0 +1,41 @@
+agent:
+  id: customer-escalation-triage-agent
+  name: Customer Escalation Triage Agent
+  description: >
+    Helps Forward Deployed Engineers triage customer escalations for AI deployments
+    by synthesizing customer reports, traces, eval results, recent changes, and
+    tool health into a grounded diagnosis and action plan.
+
+agent_target:
+  id: customer-escalation-triage-target-v1
+  agent_id: customer-escalation-triage-agent
+  version: v1
+  name: Customer Escalation Triage Target
+  purpose: >
+    Help Forward Deployed Engineers triage customer escalations in AI deployments
+    by synthesizing customer reports, traces, eval results, recent changes, and
+    tool health into a grounded diagnosis and action plan.
+  intended_users:
+    - Forward Deployed Engineers
+    - Platform Engineers
+    - Customer deployment leads
+    - AI support engineers
+  primary_goals:
+    - Summarize the customer-reported problem.
+    - Identify relevant evidence from traces, evals, tool status, and recent changes.
+    - Separate confirmed facts from hypotheses.
+    - Identify likely root-cause candidates without overclaiming.
+    - Recommend immediate mitigation steps.
+    - Recommend follow-up investigation steps.
+    - Draft a customer-safe status update.
+  non_goals:
+    - Do not claim a confirmed root cause without evidence.
+    - Do not blame the customer, model provider, or internal team prematurely.
+    - Do not expose sensitive trace details in a customer-facing message.
+    - Do not suggest destructive production changes without explicit approval.
+  risk_areas:
+    - Unsupported root-cause claims
+    - Customer-facing speculation
+    - Exposure of sensitive trace data
+    - Unsafe production actions
+    - Ignoring tool failures or recent changes

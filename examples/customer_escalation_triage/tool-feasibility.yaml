@@ -1,0 +1,74 @@
+tool_feasibility:
+  - requirement_id: customer_report_source
+    suggested_tool_name: fetch_customer_report
+    implementation_status: local_only
+    mvp_strategy: scenario_yaml_or_manual_input
+    production_strategy: ticketing_or_customer_context_connector
+    feasibility_status: feasible_for_demo
+    demo_ready: true
+    production_ready: false
+    risks:
+      - Customer reports may be incomplete.
+      - Source system may vary by deployment.
+
+  - requirement_id: trace_evidence_source
+    suggested_tool_name: fetch_trace_summary
+    implementation_status: mock_only
+    mvp_strategy: mock_json_fixture
+    production_strategy: langfuse_api_connector
+    feasibility_status: needs_review
+    demo_ready: true
+    production_ready: false
+    risks:
+      - API permissions
+      - sensitive trace contents
+      - trace volume
+      - summarization latency
+
+  - requirement_id: eval_history_source
+    suggested_tool_name: fetch_eval_results
+    implementation_status: local_only
+    mvp_strategy: local_eval_summary_json
+    production_strategy: platform_run_database
+    feasibility_status: feasible_for_demo
+    demo_ready: true
+    production_ready: false
+    risks:
+      - Eval result formats may change.
+      - Historical runs may not be complete.
+
+  - requirement_id: recent_changes_source
+    suggested_tool_name: fetch_recent_changes
+    implementation_status: mock_only
+    mvp_strategy: mock_changelog_json
+    production_strategy: github_or_gitlab_api
+    feasibility_status: needs_review
+    demo_ready: true
+    production_ready: false
+    risks:
+      - Requires repo access.
+      - Needs mapping between customer deployment and code/config changes.
+
+  - requirement_id: tool_health_source
+    suggested_tool_name: fetch_tool_health
+    implementation_status: mock_only
+    mvp_strategy: mock_tool_health_json
+    production_strategy: metrics_or_logs_api
+    feasibility_status: needs_review
+    demo_ready: true
+    production_ready: false
+    risks:
+      - Tool health may live across multiple systems.
+      - Metrics may not map cleanly to customer workflows.
+
+  - requirement_id: customer_context_source
+    suggested_tool_name: fetch_customer_context
+    implementation_status: local_only
+    mvp_strategy: scenario_yaml_or_manual_input
+    production_strategy: CRM_docs_or_ticketing_connector
+    feasibility_status: feasible_for_demo
+    demo_ready: true
+    production_ready: false
+    risks:
+      - Customer context may contain sensitive information.
+      - Access controls may be required.
