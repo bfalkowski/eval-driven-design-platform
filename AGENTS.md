@@ -2,6 +2,10 @@
 
 Clean-room Eval Driven Design Platform. Langfuse is the observability data plane; this repo is the eval-driven development control plane.
 
+## Agent behavior
+
+Cursor loads `.cursor/rules/karpathy-guidelines.mdc` (`alwaysApply: true`) — four principles from [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills): think before coding, simplicity first, surgical changes, goal-driven execution. Project constraints below take precedence when they conflict.
+
 ## Constraints
 
 - Do not build a Langfuse clone or custom trace browser.
