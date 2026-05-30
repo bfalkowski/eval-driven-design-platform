@@ -1,0 +1,32 @@
+{
+  "description": "Publish response shape for schema_version 2 ingest (HLD-007 snapshot).",
+  "required_top_level_fields": [
+    "platform_run_id",
+    "experiment_run_id",
+    "external_run_id",
+    "gate_status",
+    "gate_explanation",
+    "behavior_status",
+    "tool_status",
+    "production_status",
+    "overall_status",
+    "experiment_run"
+  ],
+  "gate_status_values": ["pass", "fail", "insufficient_evidence"],
+  "overall_status_values": [
+    "pass",
+    "fail",
+    "insufficient_evidence",
+    "pass_for_demo_not_production"
+  ],
+  "experiment_run_ingest_fields": [
+    "source",
+    "external_run_id",
+    "schema_version",
+    "gate_status",
+    "behavior_status",
+    "tool_status",
+    "production_status",
+    "overall_status"
+  ]
+}

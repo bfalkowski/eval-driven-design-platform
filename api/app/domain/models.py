@@ -105,6 +105,8 @@ class ExperimentRunIngest(BaseModel):
     external_run_id: str
     subject_id: str | None = None
     suite_id: str | None = None
+    schema_version: str | None = None
+    idempotency_key: str | None = None
     gate_status: str | None = None
     gate_explanation: str | None = None
     behavior_status: str | None = None
@@ -113,6 +115,9 @@ class ExperimentRunIngest(BaseModel):
     overall_status: str | None = None
     readiness_explanation: str | None = None
     tool_mode_summary: str | None = None
+    target_id: str | None = None
+    eval_contract_ref_id: str | None = None
+    producer: dict[str, Any] | None = None
     scenario_ids: list[str] = Field(default_factory=list)
     eval_summary: dict[str, Any] | None = None
     failure_packet: dict[str, Any] | None = None
@@ -250,6 +255,7 @@ class RunIngestEnvelope(BaseModel):
     schema_version: str = Field(min_length=1, max_length=16)
     source: str = Field(min_length=1, max_length=64)
     run_id: str = Field(min_length=1, max_length=128)
+    idempotency_key: str | None = Field(default=None, min_length=1, max_length=256)
     candidate_version: str | None = Field(default=None, min_length=1, max_length=128)
     agent_version: str | None = Field(default=None, min_length=1, max_length=128)
     subject_id: str | None = Field(default=None, min_length=1, max_length=128)
@@ -268,6 +274,9 @@ class RunIngestEnvelope(BaseModel):
     tool_mode_summary: str | None = Field(default=None, max_length=64)
     production_ready: bool | None = None
     tool_bindings: list[dict[str, Any]] | None = None
+    producer: dict[str, Any] | None = None
+    target_id: str | None = Field(default=None, max_length=128)
+    eval_contract_ref_id: str | None = Field(default=None, max_length=128)
 
 
 class RunIngestResponse(BaseModel):

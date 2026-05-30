@@ -7,6 +7,7 @@ from uuid import UUID
 
 from app.core.errors import BadRequestError, NotFoundError
 from app.domain.models import (
+    ExperimentRun,
     ExperimentRunIngest,
     ExperimentRunStatus,
     RunIngestEnvelope,
@@ -40,6 +41,16 @@ class RunIngestService:
     ) -> RunIngestResponse:
         normalized = normalize_envelope(envelope)
         _validate_envelope(normalized, allowed_sources=self._allowed_sources)
+
+        if normalized.idempotency_key:
+            existing = await _find_idempotent_run(
+                self._repository,
+                tenant_id=tenant_id,
+                source=normalized.source,
+                idempotency_key=normalized.idempotency_key,
+            )
+            if existing is not None:
+                return _response_from_existing_run(existing)
 
         eval_spec_id = normalized.eval_spec_id or self._default_eval_spec_id
         if eval_spec_id is None:
@@ -78,6 +89,8 @@ class RunIngestService:
             external_run_id=normalized.run_id,
             subject_id=resolve_subject_id(normalized),
             suite_id=resolve_suite_id(normalized),
+            schema_version=normalized.schema_version,
+            idempotency_key=normalized.idempotency_key,
             gate_status=readiness.gate_status,
             gate_explanation=readiness.gate_explanation,
             behavior_status=readiness.behavior_status,
@@ -86,6 +99,9 @@ class RunIngestService:
             overall_status=readiness.overall_status,
             readiness_explanation=readiness.readiness_explanation,
             tool_mode_summary=normalized.tool_mode_summary,
+            target_id=normalized.target_id,
+            eval_contract_ref_id=normalized.eval_contract_ref_id,
+            producer=normalized.producer,
             scenario_ids=list(normalized.scenario_ids),
             eval_summary=normalized.eval_summary,
             failure_packet=normalized.failure_packet,
@@ -150,10 +166,9 @@ def _validate_envelope(
     *,
     allowed_sources: list[str],
 ) -> None:
-    if envelope.schema_version != INGEST_SCHEMA_VERSION:
+    if envelope.schema_version not in {"1", "2"}:
         raise BadRequestError(
-            f"Unsupported schema_version: {envelope.schema_version!r}. "
-            f"Expected {INGEST_SCHEMA_VERSION!r}.",
+            f"Unsupported schema_version: {envelope.schema_version!r}. Expected '1' or '2'.",
         )
     if not SOURCE_PATTERN.fullmatch(envelope.source):
         raise BadRequestError(
@@ -226,6 +241,44 @@ def _parse_timestamp(value: str | None) -> datetime | None:
     if parsed.tzinfo is None:
         return parsed.replace(tzinfo=UTC)
     return parsed
+
+
+async def _find_idempotent_run(
+    repository: EddRepository,
+    *,
+    tenant_id: str,
+    source: str,
+    idempotency_key: str,
+) -> ExperimentRun | None:
+    runs = await repository.list_experiment_runs(
+        tenant_id=tenant_id,
+        ingest_source=source,
+        limit=500,
+    )
+    for run in runs:
+        ingest = run.ingest
+        if ingest is not None and ingest.idempotency_key == idempotency_key:
+            return run
+    return None
+
+
+def _response_from_existing_run(run: ExperimentRun) -> RunIngestResponse:
+    ingest = run.ingest
+    assert ingest is not None
+    return RunIngestResponse(
+        platform_run_id=run.experiment_run_id,
+        experiment_run_id=run.experiment_run_id,
+        external_run_id=ingest.external_run_id,
+        lab_run_id=ingest.external_run_id,
+        gate_status=ingest.gate_status or "insufficient_evidence",
+        gate_explanation=ingest.gate_explanation or "No gate explanation recorded.",
+        behavior_status=ingest.behavior_status,
+        tool_status=ingest.tool_status,
+        production_status=ingest.production_status,
+        overall_status=ingest.overall_status,
+        readiness_explanation=ingest.readiness_explanation,
+        experiment_run=run,
+    )
 
 
 # Backward-compatible aliases for tests and legacy imports.
