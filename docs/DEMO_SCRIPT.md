@@ -58,22 +58,23 @@ Exit code `0` = pass, `1` = fail.
 
 ## 7. External ingest (edd-agent-lab, optional)
 
-With the platform API running on `:8000`:
+With the platform API running on `:8000` (from `./scripts/local_e2e.sh`, auth enabled by default):
 
 ```bash
 cd ../edd-agent-lab
+# Option A: smoke script (auto-mints JWT if platform repo is sibling)
+./scripts/test_platform_publish.sh
+
+# Option B: manual publish (paste JWT from local_e2e output into EDD_API_KEY)
 EDD_CLIENT_MODE=http \
 EDD_API_BASE_URL=http://127.0.0.1:8000 \
 EDD_TENANT_ID=tenant-a \
 EDD_EVAL_SPEC_ID=<your-spec-id> \
+EDD_API_KEY=<demo-jwt-from-local_e2e> \
 .venv/bin/edd-lab publish-run --agent customer-solution --version v1-discovery-graph
 ```
 
-Or run the full smoke test:
-
-```bash
-./scripts/test_platform_publish.sh
-```
+Expect `published_http` in CLI output. With auth disabled (`APP_AUTH_ENABLED=false`), omit `EDD_API_KEY` and pass `tenant_id` on the envelope only.
 
 Back on the platform **Runs** page, filter by ingest source `edd-agent-lab` and inspect ingest provenance JSON.
 

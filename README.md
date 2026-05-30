@@ -30,7 +30,7 @@ This project explores an **eval-driven design** workflow where:
 
 - Evaluation-driven design for AI workflows
 - Turning observed failures into reusable eval cases (including Langfuse trace import)
-- Separating eval specs, cases, experiment runs, and quality gates (gate execution planned)
+- Separating eval specs, cases, experiment runs, and quality gates
 - Using observability and traces as part of the development loop
 - Treating AI behavior as measurable and testable before release (deterministic mock evaluator today)
 - Designing a lightweight platform / control-plane abstraction around Langfuse
@@ -101,7 +101,7 @@ See **`EVAL_DRIVEN_DESIGN_PLAN.md`** for Phase 8 polish (diagram refresh, Helm t
 | 7 | Quality gates + external run ingest | Done |
 | 8 | Demo script and baseline polish | In progress |
 
-**Demo walkthrough:** `docs/DEMO_SCRIPT.md` · **CI gate:** `docs/QUALITY_GATE_CI.md`
+**Demo walkthrough:** `docs/DEMO_SCRIPT.md` · **CI gate:** `docs/QUALITY_GATE_CI.md` · **HLD:** `docs/hld/HLD-001-product-intent-and-system-boundaries.md`
 
 ## Repo layout
 
@@ -111,7 +111,7 @@ console/   Streamlit operator UI (edd-console)
 worker/    Platform shell (OTel/logging; async eval jobs later)
 deploy/    docker-compose, Helm
 scripts/   local_e2e.sh, build_images.sh, seed_demo_data.py, run_quality_gate.sh
-docs/      DEMO_SCRIPT.md, QUALITY_GATE_CI.md, PRODUCT_VISION.md
+docs/      DEMO_SCRIPT.md, QUALITY_GATE_CI.md, PRODUCT_VISION.md, hld/
 ```
 
 ## Quick start

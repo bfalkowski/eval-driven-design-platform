@@ -16,6 +16,15 @@ Response fields:
 | `pass_threshold` | From EvalSpec |
 | `average_score` | Platform avg score or ingest `overall_score` |
 
+When `APP_AUTH_ENABLED=true` (default in `./scripts/local_e2e.sh`), pass a bearer token:
+
+```bash
+curl -sf "$EDD_API_BASE_URL/v1/experiment-runs/$RUN_ID/gate" \
+  -H "Authorization: Bearer $EDD_API_KEY"
+```
+
+Or use tenant query param when auth is disabled: `?tenant_id=tenant-a`.
+
 ## Local script
 
 ```bash
