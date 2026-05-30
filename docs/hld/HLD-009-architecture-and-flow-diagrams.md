@@ -174,6 +174,8 @@ Graph impact:
 
 Graph nodes should not be arbitrary. They should be justified by rules, information needs, tool requirements, failure packets, or operational safety constraints.
 
+See [HLD-010: Graph design and rule mapping](HLD-010-graph-design-and-rule-mapping.md) for node traceability, mappings, and artifact requirements.
+
 ---
 
 ## 4. Lab-to-Platform Publish API Flow
@@ -600,7 +602,7 @@ flowchart TD
 
 File artifacts are useful for the lab and for coding agents. The platform should eventually own canonical objects, but MVP can import/publish structured artifacts.
 
-See [HLD-006](HLD-006-mvp-implementation-plan.md) milestones M2–M3.
+See [HLD-006](HLD-006-mvp-implementation-plan.md) milestones M2���M3.
 
 ---
 
@@ -614,17 +616,17 @@ Recommended usage:
 
 | Question | Diagram |
 |---|---|
-| Explaining the system | System Context (§1) |
-| Explaining user experience | User Lifecycle Flow (§2) |
-| Explaining why the graph exists | Target-to-Graph Design Flow (§3) |
-| Explaining repo integration | Lab-to-Platform Publish API Flow (§4) |
-| Explaining Langfuse | Langfuse Trace Evidence Flow (§6) |
-| Explaining tool honesty | Tool Feasibility and Readiness Flow (§7) |
-| Explaining v0/v1 improvement | v0-to-v1 Improvement Flow (§8) |
-| Explaining promotion | Promotion and Operational Use Flow (§10) |
-| Explaining the reference demo | Customer Escalation Triage Reference Story (§9) |
-| Explaining console UX | Platform Console Information Flow (§11) |
-| Explaining lab artifacts | File / Artifact Flow (§12) |
+| Explaining the system | System Context (?1) |
+| Explaining user experience | User Lifecycle Flow (?2) |
+| Explaining why the graph exists | Target-to-Graph Design Flow (?3) |
+| Explaining repo integration | Lab-to-Platform Publish API Flow (?4) |
+| Explaining Langfuse | Langfuse Trace Evidence Flow (?6) |
+| Explaining tool honesty | Tool Feasibility and Readiness Flow (?7) |
+| Explaining v0/v1 improvement | v0-to-v1 Improvement Flow (?8) |
+| Explaining promotion | Promotion and Operational Use Flow (?10) |
+| Explaining the reference demo | Customer Escalation Triage Reference Story (?9) |
+| Explaining console UX | Platform Console Information Flow (?11) |
+| Explaining lab artifacts | File / Artifact Flow (?12) |
 
 ---
 
@@ -678,4 +680,5 @@ The diagrams in this document should help coding agents and reviewers keep those
 | [HLD-006](HLD-006-mvp-implementation-plan.md) | eval-driven-design-platform | MVP milestones |
 | [HLD-007](HLD-007-platform-api-and-integration.md) | eval-driven-design-platform | Publish API flow |
 | [HLD-008](HLD-008-langfuse-integration.md) | eval-driven-design-platform | Trace evidence flow |
+| [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design detail |
 | `docs/DEMO_SCRIPT.md` | eval-driven-design-platform | Operator walkthrough |

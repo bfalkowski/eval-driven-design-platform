@@ -1407,6 +1407,7 @@ If the implementation can represent that story cleanly, the domain model is doin
 | [HLD-007](HLD-007-platform-api-and-integration.md) | eval-driven-design-platform | Platform API and integration |
 | [HLD-008](HLD-008-langfuse-integration.md) | eval-driven-design-platform | Langfuse integration |
 | [HLD-009](HLD-009-architecture-and-flow-diagrams.md) | eval-driven-design-platform | Architecture diagrams |
+| [HLD-010](HLD-010-graph-design-and-rule-mapping.md) | eval-driven-design-platform | Graph design and rule mapping |
 | [HLD index](README.md) | eval-driven-design-platform | HLD series overview |
 | `EVAL_DRIVEN_DESIGN_PLAN.md` | eval-driven-design-platform | Phased build plan |
 | `docs/10-ideal-developer-experience.md` | edd-agent-lab | Target EDD lifecycle |
