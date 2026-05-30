@@ -50,6 +50,9 @@ The platform repo includes a script that mirrors the API portion of `docs/DEMO_S
 GitHub Actions job **`demo-loop-api`** (in `.github/workflows/ci.yml`) starts the API with
 auth enabled and runs `run_demo_loop.sh` on every pull request after unit tests pass.
 
+Job **`integration-lab-smoke`** checks out **edd-agent-lab**, starts the platform API
+(auth disabled, memory backend), and runs `edd-agent-lab/scripts/test_platform_publish.sh`.
+
 ## GitHub Actions example
 
 After publishing or creating a run in CI, fail the job when the gate does not pass:

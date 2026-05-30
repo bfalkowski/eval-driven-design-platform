@@ -72,6 +72,46 @@ jobs:
           EDD_API_KEY="${TOKEN}" EDD_API_BASE_URL=http://127.0.0.1:8000 ./scripts/run_demo_loop.sh
         working-directory: api
 
+  integration-lab-smoke:
+    name: Integration lab publish smoke
+    runs-on: ubuntu-latest
+    needs:
+      - api-tests
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/checkout@v5
+        with:
+          repository: bfalkowski/edd-agent-lab
+          path: edd-agent-lab
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install platform API dependencies
+        working-directory: api
+        run: uv sync --extra dev
+
+      - name: Start API and run lab publish smoke
+        env:
+          APP_STORAGE_BACKEND: memory
+          APP_AUTH_ENABLED: "false"
+          APP_OTEL_EXPORTER: none
+        run: |
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          for i in $(seq 1 40); do
+            curl -sf http://127.0.0.1:8000/v1/ready && break
+            sleep 0.25
+          done
+          curl -sf http://127.0.0.1:8000/v1/ready
+          cd ../edd-agent-lab
+          EDD_PLATFORM_ROOT="${GITHUB_WORKSPACE}" \
+            EDD_API_BASE_URL=http://127.0.0.1:8000 \
+            ./scripts/test_platform_publish.sh
+        working-directory: api
+
   console-tests:
     name: Console tests
     runs-on: ubuntu-latest
