@@ -12,7 +12,11 @@ from components.edd_views import (
     eval_metrics_rows,
     graph_design_diff,
     graph_node_rows,
+    information_requirements_rows,
+    production_readiness_blocked,
     target_detail_sections,
+    tool_feasibility_rows,
+    tool_requirements_rows,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -32,6 +36,9 @@ def test_load_reference_scenario(reference_scenario: ReferenceScenario) -> None:
     assert reference_scenario.agent.id == "customer-escalation-triage-agent"
     assert reference_scenario.agent_target.id == "customer-escalation-triage-target-v1"
     assert len(reference_scenario.behavior_rules) == 6
+    assert len(reference_scenario.information_requirements) == 6
+    assert len(reference_scenario.tool_requirements) == 6
+    assert len(reference_scenario.tool_feasibility) == 6
     assert reference_scenario.eval_contract.id == "customer-escalation-triage-eval-contract-v1"
     assert len(reference_scenario.eval_contract.metrics) == 5
     assert len(reference_scenario.eval_contract.gates) == 5
@@ -76,3 +83,28 @@ def test_graph_design_diff(reference_scenario: ReferenceScenario) -> None:
     diff = graph_design_diff(reference_scenario.graph_design_v0, reference_scenario.graph_design_v1)
     assert "single_pass_response" in diff["removed_nodes"]
     assert "normalize_evidence" in diff["added_nodes"]
+
+
+def test_information_requirements_rows(reference_scenario: ReferenceScenario) -> None:
+    rows = information_requirements_rows(reference_scenario)
+    trace_row = next(row for row in rows if row["id"] == "trace_evidence")
+    assert "evidence_first_diagnosis" in trace_row["behavior_rules"]
+    assert trace_row["tool_requirements"] == "trace_evidence_source"
+    assert trace_row["sensitivity"] == "confidential"
+
+
+def test_tool_requirements_rows(reference_scenario: ReferenceScenario) -> None:
+    rows = tool_requirements_rows(reference_scenario)
+    trace_row = next(row for row in rows if row["id"] == "trace_evidence_source")
+    assert trace_row["suggested_tool_name"] == "fetch_trace_summary"
+    assert trace_row["information_requirement"] == "trace_evidence"
+    assert trace_row["implementation_status"] == "mock_only"
+
+
+def test_tool_feasibility_rows(reference_scenario: ReferenceScenario) -> None:
+    rows = tool_feasibility_rows(reference_scenario)
+    trace_row = next(row for row in rows if row["requirement_id"] == "trace_evidence_source")
+    assert trace_row["demo_ready"] is True
+    assert trace_row["production_ready"] is False
+    assert trace_row["blocker"] == "langfuse_api_connector"
+    assert production_readiness_blocked(reference_scenario) is True

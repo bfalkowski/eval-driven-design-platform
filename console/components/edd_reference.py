@@ -24,6 +24,11 @@ from app.domain.edd.agent import Agent, AgentTarget  # noqa: E402
 from app.domain.edd.artifacts import load_graph_design_bundle, load_yaml_document  # noqa: E402
 from app.domain.edd.eval_contract import EvalContract  # noqa: E402
 from app.domain.edd.graph_design import GraphDesign, GraphNode  # noqa: E402
+from app.domain.edd.requirements import (  # noqa: E402
+    InformationRequirement,
+    ToolFeasibilityReview,
+    ToolRequirement,
+)
 from app.domain.edd.rules import BehaviorRule  # noqa: E402
 
 
@@ -60,6 +65,9 @@ class ReferenceScenario:
     agent_target: AgentTarget
     behavior_rules: list[BehaviorRule]
     eval_contract: EvalContract
+    information_requirements: list[InformationRequirement]
+    tool_requirements: list[ToolRequirement]
+    tool_feasibility: list[ToolFeasibilityReview]
     graph_design_v0: GraphDesignBundle
     graph_design_v1: GraphDesignBundle
 
@@ -79,6 +87,9 @@ def load_reference_scenario(
     agent_target_doc = load_yaml_document(root / "agent-target.yaml")
     behavior_rules_doc = load_yaml_document(root / "behavior-rules.yaml")
     eval_contract_doc = load_yaml_document(root / "eval-contract.yaml")
+    information_doc = load_yaml_document(root / "information-requirements.yaml")
+    tool_requirements_doc = load_yaml_document(root / "tool-requirements.yaml")
+    tool_feasibility_doc = load_yaml_document(root / "tool-feasibility.yaml")
 
     agent = Agent.model_validate(agent_target_doc["agent"])
     agent_target = AgentTarget.model_validate(agent_target_doc["agent_target"])
@@ -86,6 +97,17 @@ def load_reference_scenario(
         BehaviorRule.model_validate(item) for item in behavior_rules_doc["behavior_rules"]
     ]
     eval_contract = EvalContract.model_validate(eval_contract_doc["eval_contract"])
+    information_requirements = [
+        InformationRequirement.model_validate(item)
+        for item in information_doc["information_requirements"]
+    ]
+    tool_requirements = [
+        ToolRequirement.model_validate(item) for item in tool_requirements_doc["tool_requirements"]
+    ]
+    tool_feasibility = [
+        ToolFeasibilityReview.model_validate(item)
+        for item in tool_feasibility_doc["tool_feasibility"]
+    ]
 
     return ReferenceScenario(
         scenario_dir=root,
@@ -93,6 +115,9 @@ def load_reference_scenario(
         agent_target=agent_target,
         behavior_rules=behavior_rules,
         eval_contract=eval_contract,
+        information_requirements=information_requirements,
+        tool_requirements=tool_requirements,
+        tool_feasibility=tool_feasibility,
         graph_design_v0=load_graph_design("v0", root),
         graph_design_v1=load_graph_design("v1", root),
     )
